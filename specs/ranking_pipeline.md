@@ -2,13 +2,9 @@
 
 ## 1. Obiettivo
 
-Costruire un ranking storico dei calciatori di Serie A per il fantacalcio, partendo dalle statistiche delle stagioni:
+Costruire un ranking storico dei calciatori di Serie A per il fantacalcio, partendo dalle statistiche storiche disponibili e dalla lista dei giocatori disponibili per la stagione corrente 2026/27.
 
-- 2023/24
-- 2024/25
-- 2025/26
-
-e dalla lista dei giocatori disponibili per la stagione corrente 2026/27.
+Sono disponibili 10 stagioni di statistiche (2016/17 → 2025/26) e 11 di quotazioni (2016/17 → 2026/27, sezione 2). Questa finestra serve innanzitutto a **calibrare i parametri del modello** tramite backtest rolling (sezione 20): quante stagioni di storico usare (`train_window`), il decadimento temporale, la forma della Reliability, il peso del BonusProfile. Il ranking di **produzione** per il 2026/27 userà poi solo la finestra di stagioni indicata dal backtest come `train_window` (plausibilmente 3-5, sezione 4 del piano di revisione), non tutte e 10 le stagioni: più storico non significa automaticamente un rating migliore, ed è esattamente ciò che il backtest deve stabilire (sezione 20.2, B8).
 
 Il ranking deve:
 
@@ -17,9 +13,10 @@ Il ranking deve:
 - tenere conto della produzione di bonus/malus (gol, assist, rigori) come modulatore, non come somma aggiuntiva alla Fm;
 - distinguere i giocatori per ruolo Classic (P/D/C/A) — **il Mantra (colonna Rm) non viene usato in questa versione**;
 - escludere dal ranking finale i giocatori non più in Serie A 2026/27;
-- gestire separatamente i giocatori senza storico sufficiente (NEW / LIMITED_HISTORY);
+- gestire separatamente i giocatori senza storico sufficiente (NEW / LIMITED_HISTORY, sezione 6);
 - mantenere la Mv separata dalla Fm, perché base del Modificatore Difesa;
-- distinguere, tramite le quotazioni pre-stagione, "non era in Serie A" da "era in Serie A e non ha giocato", perché ai fini della disponibilità le due cose hanno significato opposto (sezione 9.1bis);
+- distinguere "non era in Serie A" da "era in Serie A e non ha giocato" (quest'ultimo direttamente dalle righe a `Pv = 0` del file statistiche, sezione 4), perché ai fini della disponibilità le due cose hanno significato opposto (sezione 9.1bis);
+- distinguere, dentro "era in Serie A e non ha giocato", chi è rimasto in rosa tutta la stagione da chi ne è uscito in corsa (flag `left_mid_season`, sezione 9.1bis), perché è la maggioranza dei casi a `Pv = 0`, non una coda (sezione 9.1bis);
 - produrre un output leggibile sia da un foglio di calcolo sia da Claude in chat durante l'asta;
 - essere facilmente ricalcolabile ogni stagione (pipeline, non classifica statica).
 
@@ -34,12 +31,25 @@ Fuori scope per questa versione (rimandato a fasi future):
 ### 2.1 File storici (statistiche consuntive)
 
 ```
-raw/stats/Statistiche_Fantacalcio_Stagione_2023_24.xlsx
-raw/stats/Statistiche_Fantacalcio_Stagione_2024_25.xlsx
-raw/stats/Statistiche_Fantacalcio_Stagione_2025_26.xlsx
+data/stats/Statistiche_Fantacalcio_Stagione_2016_17.xlsx
+data/stats/Statistiche_Fantacalcio_Stagione_2017_18.xlsx
+data/stats/Statistiche_Fantacalcio_Stagione_2018_19.xlsx
+data/stats/Statistiche_Fantacalcio_Stagione_2019_20.xlsx
+data/stats/Statistiche_Fantacalcio_Stagione_2020_21.xlsx
+data/stats/Statistiche_Fantacalcio_Stagione_2021_22.xlsx
+data/stats/Statistiche_Fantacalcio_Stagione_2022_23.xlsx
+data/stats/Statistiche_Fantacalcio_Stagione_2023_24.xlsx
+data/stats/Statistiche_Fantacalcio_Stagione_2024_25.xlsx
+data/stats/Statistiche_Fantacalcio_Stagione_2025_26.xlsx
 ```
 
-Ogni file contiene un solo foglio (`Tutti`) con una riga per giocatore **che ha ricevuto almeno un voto (Pv ≥ 1)** in quella stagione. Colonne:
+Ogni file contiene un foglio `Tutti` con **una riga per ogni giocatore che è stato in Serie A in quella stagione, indipendentemente da quante partite abbia giocato** — non solo chi ha ricevuto almeno un voto. Verificato su tutte e 10 le stagioni: 107-153 giocatori a stagione hanno `Pv = 0` (nessun voto mai ricevuto) e sono comunque presenti in `Tutti`. **Non esiste un'assunzione "le righe hanno `Pv ≥ 1`"**: è falsa e non va reintrodotta in fase di implementazione (piano di revisione §2.4). Questo è il fatto che guida la tassonomia delle righe della sezione 4.
+
+I file fino al 2021/22 incluso contengono anche quattro fogli per ruolo (`Portieri`, `Difensori`, `Centrocampisti`, `Attaccanti`), che duplicano `Tutti`: si legge **sempre e solo** `Tutti`, mai i fogli per ruolo.
+
+I file fino al 2021/22 incluso contengono inoltre un foglio `Ceduti` (114-155 giocatori a stagione), disgiunto da `Tutti`: sono i giocatori usciti dalla Serie A durante la stagione. Verificato su tutte e 6 le stagioni che lo hanno: `stats = Tutti ∪ Ceduti`, esatto in entrambe le direzioni. Il foglio `Ceduti`, quando presente, **va letto e unito a `Tutti`** nel dataset long (sezione 4) — è la fonte del flag `left_mid_season` per quelle stagioni (sezione 9.1bis). Dal 2022/23 il foglio non esiste più: lo stesso insieme si ricostruisce per differenza rispetto alle quotazioni (sezione 2.3).
+
+Colonne:
 
 | Colonna | Significato |
 |---|---|
@@ -62,64 +72,100 @@ Ogni file contiene un solo foglio (`Tutti`) con una riga per giocatore **che ha 
 | Esp | Espulsioni |
 | Au | Autogol |
 
+Schema stabile su tutte e 10 le stagioni: stessa intestazione, nessun parser condizionale per stagione.
+
 ### 2.2 Lista giocatori corrente
 
-File con l'elenco giocatori Serie A 2026/27 (formato da definire in fase di implementazione — minimo: Id, Nome, R, Squadra). Rappresenta l'universo dei giocatori da valutare nel ranking finale di produzione.
+L'universo dei giocatori da valutare nel ranking finale di produzione 2026/27 **è** il file quotazioni 2026/27 (sezione 2.3): a differenza di tutti i file storici, quello è un listone di **inizio** stagione (verificato, sezione 2.3), quindi rappresenta esattamente l'universo acquistabile in asta. Non serve un file separato. Colonne minime usate: `Id`, `Nome`, `R`, `Squadra`.
 
-### 2.3 Quotazioni pre-stagione (input di produzione **e** di validazione)
-
-Oltre alle statistiche consuntive, sono disponibili le **quotazioni pubblicate prima dell'inizio di ciascuna stagione** (fonte Fantacalcio.it):
+### 2.3 Quotazioni (input di produzione **e** di validazione)
 
 ```
-raw/quotazioni/Quotazioni_Fantacalcio_2023_24.xlsx
-raw/quotazioni/Quotazioni_Fantacalcio_2024_25.xlsx
-raw/quotazioni/Quotazioni_Fantacalcio_2025_26.xlsx
+data/player_lists/Quotazioni_Fantacalcio_Stagione_2016_17.xlsx
+data/player_lists/Quotazioni_Fantacalcio_Stagione_2017_18.xlsx
+data/player_lists/Quotazioni_Fantacalcio_Stagione_2018_19.xlsx
+data/player_lists/Quotazioni_Fantacalcio_Stagione_2019_20.xlsx
+data/player_lists/Quotazioni_Fantacalcio_Stagione_2020_21.xlsx
+data/player_lists/Quotazioni_Fantacalcio_Stagione_2021_22.xlsx
+data/player_lists/Quotazioni_Fantacalcio_Stagione_2022_23.xlsx
+data/player_lists/Quotazioni_Fantacalcio_Stagione_2023_24.xlsx
+data/player_lists/Quotazioni_Fantacalcio_Stagione_2024_25.xlsx
+data/player_lists/Quotazioni_Fantacalcio_Stagione_2025_26.xlsx
+data/player_lists/Quotazioni_Fantacalcio_Stagione_2026_27.xlsx
 ```
 
-Queste liste rappresentano l'universo di giocatori **noto prima che la stagione iniziasse**, cioè includono anche chi poi non ha effettivamente giocato (infortuni, esclusioni, cessioni). Sono strutturalmente diverse dai file statistiche (sezione 2.1), che contengono solo chi ha ricevuto almeno un voto.
+Colonne: `Id R RM Nome Squadra Qt.A Qt.I Diff. Qt.A M Qt.I M Diff.M FVM FVM M`. `FVM`/`FVM M` valgono 0 in tutte le stagioni fino al 2021/22 incluso (campo esistente ma non popolato): utilizzabile solo dal 2022/23.
 
-Questa fonte ha **due usi distinti, entrambi obbligatori**:
+**Attenzione — i file storici NON sono liste pre-stagione.** `Qt.A` (attuale) diverge da `Qt.I` (iniziale) per ~85% delle righe in tutti i file dal 2016/17 al 2025/26, e solo per il 17% delle righe nel file 2026/27 (516 righe, 90 con `Qt.A ≠ Qt.I`). Conclusione verificata: **i file storici sono snapshot di fine stagione**; solo `Quotazioni_Fantacalcio_Stagione_2026_27.xlsx` è un listone di inizio stagione. Conseguenze obbligatorie:
 
-1. **Produzione — ricostruzione delle stagioni a Pv = 0** (sezione 9.1bis). Le statistiche consuntive non possono, per costruzione, distinguere "il giocatore non era in Serie A quella stagione" da "era in Serie A e non ha mai preso un voto". Sono due informazioni opposte ai fini della Reliability, e solo le quotazioni permettono di separarle.
-2. **Validazione — costruzione dell'universo di test** (sezione 20.1), per evitare il survivorship bias descritto lì.
+- **`Qt.I` resta un prezzo iniziale valido** su tutte le 11 stagioni: non viene sovrascritto dagli aggiornamenti in corso d'anno, è utilizzabile come baseline esterna (sezione 20.4.3, B9) e come prezzo di produzione.
+- **Il foglio `Tutti` è il roster di fine stagione**, non quello d'asta: include gli arrivi di gennaio. Per la costruzione dell'universo di test (sezione 20.1) questo non è più necessario — vedi sotto — ma va tenuto presente ovunque il foglio `Tutti` di un file storico venga letto per altri scopi (es. `left_mid_season`).
+- Per il 2026/27 il problema non esiste: quel file è pre-stagione, ed è la fonte della lista giocatori corrente (sezione 2.2).
 
-Colonne minime richieste: `Id`, `Nome`, `R`, `Squadra`. Le eventuali colonne di quotazione/prezzo **non** vengono usate in questa versione, né in produzione né in validazione: l'unica informazione utilizzata è la presenza o assenza dell'Id nella lista.
+Questa fonte ha **usi distinti, tutti obbligatori**:
+
+1. **Produzione — flag `left_mid_season`** (sezione 9.1bis). Le righe a `Pv = 0` del file statistiche (sezione 2.1) non distinguono da sole "rimasto in rosa tutta la stagione senza giocare" da "uscito dalla Serie A in corsa": la seconda situazione è la maggioranza dei casi a `Pv = 0` (56-75% a seconda della stagione) e va esclusa dalla Reliability, non trattata come le prime. Fonte del flag:
+   - 2016/17-2021/22: foglio `Ceduti` (sezione 2.1);
+   - 2022/23-2025/26: differenza `stats \ quotazioni_Tutti` per Id (nessun foglio `Ceduti` disponibile, ma l'insieme risultante ha lo stesso ordine di grandezza — 119-131 giocatori a stagione — di quello esplicito delle stagioni precedenti).
+2. **Produzione — prezzo `Qt.I`**, esposto nel dataset come baseline e informazione di prezzo (sezione 20.4.3).
+3. **Validazione — baseline esterna `Qt.I`/`FVM`** (sezione 20.4.3, B9): il ranking deve battere il prezzo che il mercato aveva già assegnato al giocatore prima della stagione.
+
+**Non più un uso**: la costruzione dell'universo di test (vecchia sezione 20.1) non passa più dalle quotazioni. Il file statistiche stesso, con le righe a `Pv = 0` (sezione 4), è già l'universo Serie A completo di ogni stagione — è la stessa scoperta che ha eliminato `QUOTED_ONLY` (sezione 4) applicata alla validazione (sezione 20.1).
+
+**Limite dichiarato, non risolto**: le quotazioni pre-stagione autentiche (agosto) delle stagioni storiche non sono recuperabili con questi dati. Non si tenta di ricostruirle.
 
 ## 3. Identificazione dei giocatori
 
 ### 3.1 Chiave primaria
 
-Usare **Id** come chiave di join. Mai il Nome (accenti, apostrofi, abbreviazioni, variazioni ortografiche lo rendono inaffidabile).
+Usare **Id** come chiave di join, **mai** il Nome, in nessun punto della pipeline — né per il join né come fallback quando l'Id sembra mancante. Verificato su 10 stagioni (2306 Id distinti, piano di revisione §2.2): l'Id è stabile e affidabile su tutta la finestra (0 duplicati intra-stagione), ma **4 Nomi sono associati a più Id diversi** (omonimi reali: Vergara, Gori, Buksa, Ndiaye). Un fallback per nome sarebbe scorretto esattamente nei casi in cui sembra più comodo usarlo. La normalizzazione della grafia (accenti, apostrofi, abbreviazioni — 24 Id hanno grafie multiple del nome, tutte varianti tipografiche) è ammessa **solo** per la leggibilità dell'output, mai per il match.
 
 ### 3.2 Controlli pre-merge
 
 Prima del merge, verificare e loggare in un file di controllo:
 - Id duplicati all'interno dello stesso file stagionale;
 - Id presenti in una stagione ma assenti nelle altre;
-- Id presenti nella lista 2026/27 ma senza storico nelle 3 stagioni;
-- eventuali cambiamenti anomali di Id per lo stesso Nome (possibile errore di dati).
+- Id presenti nella lista 2026/27 ma senza storico nella finestra di train;
+- eventuali cambiamenti anomali di Id per lo stesso Nome (possibile errore di dati);
+- Nomi associati a più Id diversi (omonimi, sezione 3.1): da elencare esplicitamente, non solo contare — sono i casi in cui un fallback per nome produrrebbe un errore silenzioso.
 
 ## 4. Struttura del dataset storico
 
 Dataset trasformato in formato long, una riga per giocatore/stagione:
 
-| Id | Nome | Stagione | R | Squadra | Pv | Mv | Fm | Gf | Gs | Rp | Rc | R+ | R- | Ass | Amm | Esp | Au |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Id | Nome | Stagione | R | Squadra | Pv | Mv | Fm | Gf | Gs | Rp | Rc | R+ | R- | Ass | Amm | Esp | Au | RowType | left_mid_season |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 
 (Rm viene mantenuto in una colonna a parte per uso futuro, ma non entra in nessun calcolo di questa versione.)
 
-Il dataset long contiene **due tipi di riga**, distinti da un flag esplicito `Fonte`:
+### 4.0 Tassonomia delle righe
 
-| Fonte | Origine | Contenuto |
+**Ogni riga viene dal file statistiche** (foglio `Tutti`, unito al foglio `Ceduti` quando presente — sezione 2.1): il file statistiche contiene per costruzione l'intero universo Serie A della stagione, non solo chi ha ricevuto un voto. Non esiste una categoria di riga sintetizzata dalle quotazioni: la vecchia categoria `QUOTED_ONLY` (righe costruite per differenza rispetto alle quotazioni pre-stagione) è **eliminata**, perché quella differenza è risultata vuota su tutte le 10 stagioni verificate — le quotazioni non aggiungono alcun Id che le statistiche non abbiano già.
+
+| `RowType` | Condizione | Contenuto |
 |---|---|---|
-| `STATS` | file statistiche (sezione 2.1) | riga completa, `Pv >= 1` |
-| `QUOTED_ONLY` | quotazioni pre-stagione (sezione 2.3), per gli Id **assenti** dalle statistiche della stessa stagione | `Pv = 0`; `Mv`, `Fm` e tutti i conteggi bonus/malus a `null`, **non a zero** |
+| `PLAYED` | `Pv >= 1` | riga completa, tutte le metriche popolate |
+| `IN_SQUAD_NO_PLAY` | `Pv = 0`, riga presente nel file statistiche | `Mv`, `Fm` e tutti i conteggi bonus/malus a `null`, **non a zero**: per quella stagione non esiste alcuna osservazione di rendimento |
 
-Le righe `QUOTED_ONLY` servono esclusivamente al calcolo della Reliability (sezione 9.1bis) e alla contabilizzazione delle stagioni in Serie A. **Non entrano in nessun calcolo di Performance, BonusProfile, Mv_Weighted, Fm_Weighted, Gf_Rate, Ass_Rate o Trend**, perché per quella stagione non esiste alcuna osservazione di rendimento: `Fm = null` non è `Fm = 0`.
+Un Id **assente** dal file statistiche di una stagione (nessuna riga `PLAYED` né `IN_SQUAD_NO_PLAY`) significa semplicemente "non era in Serie A quella stagione": non genera alcuna riga nel dataset long per quella stagione.
+
+Le righe `IN_SQUAD_NO_PLAY` servono esclusivamente al calcolo della Reliability (sezione 9.1bis) e alla contabilizzazione delle stagioni in Serie A. **Non entrano in nessun calcolo di Performance, BonusProfile, Mv_Weighted, Fm_Weighted, Gf_Rate, Ass_Rate o Trend**, perché per quella stagione non esiste alcuna osservazione di rendimento: `Fm = null` non è `Fm = 0`.
+
+### 4.0bis Flag `left_mid_season`
+
+Booleano su ogni riga, popolato a partire dalle quotazioni (sezione 2.3):
+
+| Stagioni | Fonte |
+|---|---|
+| 2016/17 - 2021/22 | appartenenza al foglio `Ceduti` delle quotazioni di quella stagione |
+| 2022/23 - 2025/26 | differenza per Id: `stats \ quotazioni_Tutti` |
+| 2026/27 (stagione corrente, non ancora conclusa) | non applicabile |
+
+Il flag è definito per costruzione anche sulle righe `PLAYED` (un giocatore può uscire dalla Serie A a stagione già ampiamente giocata), ma **cambia il trattamento della riga solo quando combinato con `RowType = IN_SQUAD_NO_PLAY`** (sezione 9.1bis, B3): chi è uscito in corsa con `Pv >= 1` resta una riga `PLAYED` normale, a peso pieno, in tutti i calcoli.
 
 ### 4.1 Ruolo del giocatore — quale R si usa e dove (vincolo esplicito)
 
-Il ruolo `R` può cambiare tra stagioni (riclassificazioni Fantacalcio.it, spostamenti di posizione: un C che diventa A). Quale ruolo usare in quale calcolo non va lasciato all'implementazione:
+Il ruolo `R` può cambiare tra stagioni (riclassificazioni Fantacalcio.it, spostamenti di posizione: un C che diventa A). Verificato su 10 stagioni: 74 Id su 2306 (3.2%) cambiano `R` almeno una volta nella finestra — un fenomeno marginale su 3 stagioni, non più marginale su 10. Il controllo QC `role_change` (sezione 22) è quindi **obbligatorio nel report**, non facoltativo. Quale ruolo usare in quale calcolo non va lasciato all'implementazione:
 
 | Calcolo | Ruolo usato |
 |---|---|
@@ -134,22 +180,23 @@ Razionale: le feature stagionali devono essere confrontate con il gruppo di rife
 
 Conseguenze operative obbligatorie:
 - ogni cambio di `R` tra stagioni per lo stesso Id genera una riga `WARNING role_change` nel qc_log (sezione 22): si stanno aggregando percentili calcolati su popolazioni diverse, cosa legittima ma da rendere visibile;
-- il cambio da o verso `P` è il caso critico, perché la Performance del portiere usa una formula diversa (sezione 13): severità dedicata `WARNING role_change_gk`, da elencare per controllo manuale;
+- il cambio da o verso `P` è il caso critico, perché la Performance del portiere usa una formula diversa (sezione 13) e non è confrontabile con quella degli altri ruoli nemmeno dopo normalizzazione a percentile — non è la stessa distribuzione con pesi diversi, è una formula strutturalmente diversa (Gs/Rp al posto di BonusProfile). **Regola, non solo avviso**: per un giocatore il cui cambio di ruolo attraversa il confine portiere (`P → non-P` o `non-P → P`), `Performance_Storica` (sezione 8) aggrega **solo le stagioni giocate nel ruolo corrente** (quello della lista 2026/27, sezione 4.1), ripesando proporzionalmente come da sezione 8 anche se questo lascia una sola stagione disponibile o nessuna (in quel caso il giocatore ricade nella classificazione di sezione 6 in base al `Pv_Totale` delle sole stagioni nel ruolo corrente). Per i cambi di ruolo che non attraversano il confine portiere (es. C → A) resta l'approccio corrente: tutte le stagioni disponibili contribuiscono, ciascuna già confrontata al proprio gruppo di ruolo/stagione tramite percentile — un cambio C → A è meno critico dopo normalizzazione a percentile, ma va comunque segnalato per controllo manuale. In entrambi i casi il qc_log riporta comunque `WARNING role_change_gk` per revisione manuale — la regola sopra è il comportamento di default della pipeline, non un sostituto della verifica umana su un caso raro;
 - il campo `R_Storico` (sequenza dei ruoli per stagione, es. `C/C/A`) va esposto nel CSV finale quando differisce dal ruolo corrente.
 
 ## 5. Join con la stagione corrente
 
 ```
-statistiche 2023/24 + 2024/25 + 2025/26      quotazioni 2023/24 + 2024/25 + 2025/26
-              ↓                                             ↓
-      righe STATS (Pv >= 1)              righe QUOTED_ONLY (Pv = 0, Id non nelle statistiche)
-              └───────────────────┬─────────────────────────┘
-                                  ↓
-                dataset storico unico (long format, sezione 4)
-                                  ↓
-                   JOIN con lista 2026/27 tramite Id
-                                  ↓
-                     universo giocatori 2026/27
+   statistiche (train_window stagioni, foglio Tutti + Ceduti se presente)
+                          ↓
+      righe PLAYED (Pv >= 1) + righe IN_SQUAD_NO_PLAY (Pv = 0)
+                          ↓
+   quotazioni delle stesse stagioni → flag left_mid_season (Ceduti o diff, sez. 2.3/4.0bis) + Qt.I
+                          ↓
+          dataset storico unico (long format, sezione 4)
+                          ↓
+             JOIN con lista 2026/27 tramite Id
+                          ↓
+               universo giocatori 2026/27
 ```
 
 - La Squadra storica per ogni stagione resta invariata (campo storico).
@@ -159,19 +206,21 @@ statistiche 2023/24 + 2024/25 + 2025/26      quotazioni 2023/24 + 2024/25 + 2025
 
 ## 6. Giocatori senza storico sufficiente
 
-Classificazione a tre livelli, basata sul totale di Pv sommato sulle stagioni disponibili:
+Classificazione a tre livelli, basata sul totale di Pv sommato sulle stagioni disponibili nella finestra di train (`train_window`, sezione 20.2):
 
 | Categoria | Condizione | Trattamento |
 |---|---|---|
-| STORICO | `Pv_Totale >= historical_min_pv_total` (default 15) | Rating calcolato normalmente |
+| PV_SUFFICIENTI | `Pv_Totale >= historical_min_pv_total` (default 15) | Rating calcolato normalmente |
 | LIMITED_HISTORY | `1 <= Pv_Totale < historical_min_pv_total` | Rating calcolato, tipicamente con Confidence bassa (sezione 19) |
-| NEW | `Pv_Totale = 0`: nessun voto ricevuto in nessuna delle 3 stagioni | Nessun rating storico; `HistoricalRating = null`, categoria esplicita (vedi sezione 21.3 per il trattamento in output) |
+| NEW | `Pv_Totale = 0`: nessun voto ricevuto in nessuna delle stagioni della finestra di train | Nessun rating storico; `HistoricalRating = null`, categoria esplicita (vedi sezione 21.3 per il trattamento in output) |
 
-dove `Pv_Totale = Σ Pv` sulle sole righe `STATS` (le righe `QUOTED_ONLY` hanno per definizione Pv = 0 e non contribuiscono).
+(Il nome `PV_SUFFICIENTI` sostituisce il precedente `STORICO`: quest'ultimo lasciava intendere che sopra soglia il dato diventasse "affidabile" in senso pieno, cosa che la soglia — un semplice conteggio di presenze — non misura. Cambio cosmetico, nessun impatto sulla condizione.)
+
+dove `Pv_Totale = Σ Pv` sulle sole righe `PLAYED` (le righe `IN_SQUAD_NO_PLAY` hanno per definizione Pv = 0 e non contribuiscono al totale, ma contribuiscono a `Seasons_In_Squad`, sezione 21).
 
 `historical_min_pv_total` è un **unico** parametro configurabile: la soglia superiore di LIMITED_HISTORY è derivata da esso (`< historical_min_pv_total`), non configurata separatamente. Due parametri per la stessa soglia sono due fonti di verità che prima o poi divergono.
 
-Nota sul caso limite: un giocatore quotato in tutte e 3 le stagioni ma mai impiegato risulta `NEW` per categoria (nessun dato di rendimento) pur avendo `Seasons_Quoted = 3` e una Reliability calcolabile e molto bassa. È raro ma legittimo, ed è il motivo per cui il CSV espone `Seasons_Available` (stagioni con `Pv >= 1`) e `Seasons_Quoted` come campi distinti.
+Nota sul caso limite: un giocatore in rosa in tutte le stagioni della finestra di train ma mai impiegato risulta `NEW` per categoria (nessun dato di rendimento) pur avendo `Seasons_In_Squad = train_window` e una Reliability calcolabile e molto bassa (se non è mai uscito in corsa; sezione 9.1bis). È raro ma legittimo, ed è il motivo per cui il CSV espone `Seasons_Available` (stagioni con `Pv >= 1`), `Seasons_In_Squad` (stagioni con una riga nel file statistiche, `PLAYED` o `IN_SQUAD_NO_PLAY`) e `Seasons_Quoted` (stagioni presenti nelle quotazioni, sezione 21) come campi distinti.
 
 ## 7. Performance vs Affidabilità (principio cardine)
 
@@ -190,13 +239,13 @@ Le stagioni più recenti pesano di più. Usare decadimento esponenziale invece d
 peso_stagione_i = 2^i / (somma di 2^i su tutte le stagioni disponibili)
 ```
 
-Con 3 stagioni disponibili (dalla più vecchia alla più recente), pesi relativi 1 : 2 : 4, normalizzati:
+Il numero di stagioni su cui si applica è `train_window` (parametro configurabile, sezione 20.2/20.5 — non più fissato a 3). Esempio con `train_window = 3` (dalla più vecchia alla più recente), pesi relativi 1 : 2 : 4, normalizzati:
 
-| Stagione | Peso |
+| Stagione (esempio, train_window=3) | Peso |
 |---|---|
-| 2023/24 | 1/7 ≈ 14.3% |
-| 2024/25 | 2/7 ≈ 28.6% |
-| 2025/26 | 4/7 ≈ 57.1% |
+| t-2 | 1/7 ≈ 14.3% |
+| t-1 | 2/7 ≈ 28.6% |
+| t (più recente) | 4/7 ≈ 57.1% |
 
 ```
 Performance_Storica = Σ (peso_stagione_i × Performance_stagione_i)
@@ -206,8 +255,8 @@ Performance_Storica = Σ (peso_stagione_i × Performance_stagione_i)
 
 | Famiglia di feature | Stagioni incluse | Trattamento delle stagioni mancanti |
 |---|---|---|
-| **Performance** (percentile Fm), `Fm_Weighted`, `Mv_Weighted`, BonusProfile, `Gf_Rate`, `Ass_Rate`, Trend | solo righe `STATS` (`Pv >= 1`) | pesi **ripesati proporzionalmente** (rinormalizzati a somma 1) |
-| **Reliability** | righe `STATS` **e** righe `QUOTED_ONLY` (`Pv = 0`) | vedi sezione 9.1bis: una stagione quotata senza presenze entra con `Reliability_stagione = 0` e **peso pieno** |
+| **Performance** (percentile Fm), `Fm_Weighted`, `Mv_Weighted`, BonusProfile, `Gf_Rate`, `Ass_Rate`, Trend | solo righe `PLAYED` (`Pv >= 1`) | pesi **ripesati proporzionalmente** (rinormalizzati a somma 1) |
+| **Reliability** | righe `PLAYED` **e** righe `IN_SQUAD_NO_PLAY` (`Pv = 0`) esclusi i casi `left_mid_season` (sezione 9.1bis) | vedi sezione 9.1bis: una stagione in rosa senza presenze, in cui il giocatore è rimasto tutto l'anno, entra con `Reliability_stagione = 0` e **peso pieno** |
 
 Razionale: la Performance è una misura **condizionata** ("quanto era forte quando giocava"), quindi una stagione senza osservazioni non è un valore basso, è un dato assente e va esclusa. La Reliability è una misura **non condizionata** ("quanto è stato disponibile"), quindi una stagione in cui era in Serie A e non ha giocato è l'osservazione più informativa che esista e non va esclusa.
 
@@ -242,34 +291,39 @@ La Reliability storica complessiva è la media pesata (stessi pesi temporali del
 
 Questo score è solo un punto di partenza: va validato e calibrato nella validazione retrospettiva (sezione 20), che include un test **diretto** del suo potere predittivo sulla disponibilità futura (sezione 20.6bis) e non solo il contributo indiretto misurato dall'ablation.
 
+**La forma della funzione, non solo `reference_pv`, va testata.** `sqrt` è una forma scelta per costruzione, non derivata dai dati: implica che passare da 5 a 10 presenze valga quanto passare da 20 a 30, un'assunzione che il backtest può verificare direttamente. `reliability.function` è quindi un parametro configurabile (`sqrt` di default; alternative da testare: `linear` — `min(1, Pv / reference_pv)` — e, se il tempo lo consente, una forma logistica), e va validato **esclusivamente** tramite il test diretto della sezione 20.6bis (`Spearman(Reliability_train, Pv_target)` e sulla disponibilità binaria), non facendolo passare attraverso `HistoricalRating`: il test diretto ha un target pulito e usa l'intero universo Serie A del target, mentre passare per il rating ne diluirebbe il segnale con Performance e BonusProfile.
+
 ### 9.1bis Perimetro delle stagioni per la Reliability (correzione della distorsione da storico corto)
 
 **Problema.** Se le stagioni mancanti vengono escluse e ripesate come per la Performance, due giocatori molto diversi risultano identici:
 
-| Giocatore | 2023/24 | 2024/25 | 2025/26 | Reliability (ripesatura semplice) |
+| Giocatore | t-2 | t-1 | t | Reliability (ripesatura semplice) |
 |---|---|---|---|---|
 | A | 30 Pv | 30 Pv | 30 Pv | 1.00 |
 | B | assente | assente | 30 Pv | 1.00 |
 
 Il giocatore B ha dimostrato la propria disponibilità su un terzo dei dati di A; e se le due stagioni assenti erano stagioni in Serie A senza impiego, la sua disponibilità reale è pessima. Poiché `Confidence` per vincolo esplicito non entra nel rating (sezione 19.1), senza una correzione questa distorsione arriverebbe intatta dentro `HistoricalRating` — cioè esattamente nel numero che si guarda in asta.
 
-**Regola.** Per ogni giocatore e ciascuna delle stagioni disponibili:
+**Regola (aggiornata — B1/B3).** Per ogni giocatore e ciascuna delle stagioni della finestra di train:
 
 | Situazione | Riconoscibile da | Reliability_stagione | Entra nella media pesata |
 |---|---|---|---|
-| Presente nelle statistiche | riga `STATS`, `Pv >= 1` | `min(1, sqrt(Pv / reference_pv))` | sì, peso pieno |
-| Quotato pre-stagione, nessun voto | riga `QUOTED_ONLY`, `Pv = 0` | `0` | **sì, peso pieno** |
-| Non quotato e non presente | Id assente da entrambe le fonti | non definita | no, peso ripesato (sezione 8) |
+| Ha giocato | `RowType = PLAYED`, `Pv >= 1` | `min(1, sqrt(Pv / reference_pv))` | sì, peso pieno |
+| In rosa, nessun voto, rimasto tutta la stagione | `RowType = IN_SQUAD_NO_PLAY`, `left_mid_season = false` | `0` | **sì, peso pieno** |
+| In rosa, nessun voto, uscito dalla Serie A in corsa | `RowType = IN_SQUAD_NO_PLAY`, `left_mid_season = true` | non definita | no, escluso e peso ripesato (sezione 8) — comportamento di default, disattivabile (vedi sotto) |
+| Non era in Serie A | nessuna riga per quella stagione | non definita | no, peso ripesato (sezione 8) |
 
-Con questa regola il giocatore B dell'esempio mantiene `Reliability = 1.00` solo se davvero non era in Serie A (caso legittimo: acquisto dall'estero), e scende molto se era presente e inutilizzato (infortunio lungo, esclusione tecnica). È precisamente la distinzione che serve in asta.
+Con questa regola il giocatore B dell'esempio mantiene `Reliability = 1.00` solo se davvero non era in Serie A (caso legittimo: acquisto dall'estero), e scende a `0` se era presente e inutilizzato per l'intera stagione (infortunio lungo, esclusione tecnica). Se invece era presente e inutilizzato ma è uscito dalla Serie A in corsa, la stagione viene **esclusa** anziché contargli come `0`: non ha avuto la stagione intera per dimostrare (o non dimostrare) disponibilità.
 
-**Limite dichiarato** (da scrivere nel README): la presenza nelle quotazioni pre-stagione non garantisce che il giocatore sia rimasto in Serie A per l'intera stagione. Chi viene quotato in agosto e ceduto all'estero in settembre riceve `Reliability_stagione = 0` senza aver avuto alcuna occasione di giocare. Le cessioni in uscita non sono ricostruibili con i dati di questa versione. È una distorsione **conservativa** (penalizza, non gonfia) e comunque preferibile a quella opposta descritta sopra, ma va misurata: la validazione deve riportare quanti giocatori ricevono almeno una stagione a `Reliability = 0` e verificarne a campione la plausibilità.
+**Perché l'esclusione, e non più `Reliability_stagione = 0` a peso pieno per tutte le `IN_SQUAD_NO_PLAY`.** La versione precedente di questa regola trattava il caso "uscito in corsa" come un limite dichiarato e accettato ("le cessioni in uscita non sono ricostruibili con i dati di questa versione"). Verifica eseguita sui 10 anni di dati (piano di revisione §2.9): **fra il 56% e il 75% dei giocatori con `Pv = 0`, a seconda della stagione, sono usciti dalla Serie A durante l'anno** — non è una coda, è il caso prevalente fra i `Pv = 0`. Penalizzare con `Reliability_stagione = 0` chi non ha avuto l'occasione di giocare per essere stato ceduto a settembre non è più una distorsione marginale accettabile; il flag `left_mid_season` (sezione 4.0bis) rende ora possibile distinguere i due casi, quindi la distorsione si corregge invece di dichiararla.
 
-Il comportamento va reso disattivabile da configurazione (`reliability.use_quoted_zero_seasons`, default `true`), così che l'impatto della scelta sia misurabile confrontando le due varianti in ablation (sezione 20.4.4, Model 3a).
+Restano genuini "in Serie A tutto l'anno, mai un voto" — cioè il caso a cui questa sezione applica davvero `Reliability_stagione = 0` — solo 35-52 giocatori a stagione: è un sottoinsieme minoritario di tutte le righe `IN_SQUAD_NO_PLAY`, ma è quello per cui la regola ha senso.
+
+Il comportamento è configurabile (`reliability.exclude_left_mid_season`, default `true`), così che l'impatto della scelta sia misurabile confrontando le due varianti in ablation (sezione 20.4.4, Model 3a): a `false` si torna al comportamento precedente (`Reliability_stagione = 0` a peso pieno anche per gli usciti in corsa).
 
 ### 9.2 Categoria di storico (etichetta, per filtro/comunicazione)
 
-Vedi tabella sezione 6 (STORICO / LIMITED_HISTORY / NEW), basata sul Pv totale cumulato. Serve a etichettare e filtrare, non entra nella formula numerica del rating.
+Vedi tabella sezione 6 (PV_SUFFICIENTI / LIMITED_HISTORY / NEW), basata sul Pv totale cumulato. Serve a etichettare e filtrare, non entra nella formula numerica del rating.
 
 ## 10. Performance score stagionale
 
@@ -313,7 +367,7 @@ NonPenaltyGoalRate = (Gf - R+) / Pv
 AssistRate         = Ass / Pv
 ```
 
-Le righe `QUOTED_ONLY` (`Pv = 0`, sezione 4) sono escluse per costruzione da questo calcolo: il risultato è `null`/non calcolabile, **non zero**. Nessuna divisione per zero deve poter avvenire; se avviene è un bug nel filtro sulle righe, non un caso da tamponare con un valore di default.
+Le righe `IN_SQUAD_NO_PLAY` (`Pv = 0`, sezione 4) sono escluse per costruzione da questo calcolo: il risultato è `null`/non calcolabile, **non zero**. Nessuna divisione per zero deve poter avvenire; se avviene è un bug nel filtro sulle righe, non un caso da tamponare con un valore di default.
 
 **`GoalRate` vs `NonPenaltyGoalRate` (da calibrare, non da scegliere a priori).** `Gf` include i gol su rigore, quindi `GoalRate` premia il rigorista designato. Quel ruolo è però il meno trasferibile di tutti: cambia con la cessione, con l'arrivo di un compagno, con una decisione dell'allenatore. `NonPenaltyGoalRate` isola la produzione realizzativa indipendente dai rigori.
 
@@ -364,9 +418,17 @@ Due contromisure obbligatorie:
 
 1. **Controllo QC bloccante** (sezione 22): per ogni ruolo e stagione, riportare la quota di giocatori nel blocco a `rate = 0` e la mediana risultante di `BonusProfile_normalized`. Se la quota a zero supera `bonus_profile.max_zero_share` (default 0.30) **oppure** la mediana si discosta da 0 più di 0.10, il comportamento va corretto prima di usare il ranking.
 
-2. **Metodo di centratura alternativo**, da attivare quando il controllo sopra scatta e da confrontare comunque in validazione:
+2. **Metodo di centratura**, di cui il default `recenter` garantisce il criterio del controllo QC per costruzione:
 
 ```
+zero_handling = recenter (default):
+  BonusProfile_stagione centrato = BonusProfile_stagione grezzo
+                                    - mediana_ruolo_stagione(BonusProfile_stagione grezzo)
+  applicato prima della normalizzazione /50 di sezione 11.2, sullo stesso gruppo/ruolo/stagione
+  usato per calcolare il percentile. Non modifica la forma della distribuzione (nessuna
+  chirurgia sui pareggi), sposta solo la sua posizione: la mediana risultante è
+  esattamente 0 per costruzione, indipendentemente da quanto grande sia il blocco a rate = 0.
+
 zero_handling = split:
   percentile calcolato solo sui giocatori con rate > 0, mappato su [50, 100]
   giocatori con rate = 0 → valore fisso al centro del blocco a zero, non midrank
@@ -376,18 +438,30 @@ zero_handling = midrank:
   comportamento standard (midrank sull'intera distribuzione, zeri inclusi)
 ```
 
-Default proposto: `split` per D e C, `midrank` per A. Per gli attaccanti `GoalRate = 0` non è la norma di ruolo ma un'informazione negativa reale, coerentemente con la natura bidirezionale del BonusProfile per quel ruolo (sezione 11.3). Come per tutto il resto, la scelta finale la decide la validazione, non l'intuizione.
+**Perché `recenter` come default.** Risolve direttamente il sintomo misurato dal controllo QC (mediana spostata da 0) con una singola sottrazione, senza introdurre la complessità aggiuntiva di `split` (percentile calcolato su un sotto-campione diverso per stagione) finché quella complessità non è dimostrata necessaria. Non risolve un problema diverso — la concentrazione del blocco a zero in sé, indipendente dalla sua posizione — che resta osservabile tramite la quota a zero riportata dal controllo QC e affrontabile con `split` se il backtest lo richiede. `split` e `midrank` restano parametri configurabili e testati esplicitamente in ablation (sezione 20.4.4, Model 3c e 3d). Come per tutto il resto, la scelta finale la decide la validazione, non l'intuizione.
 
 ### 11.3 Peso e configurazione per ruolo
 
 | Ruolo | Peso nel rating finale | goal_weight | assist_weight | Comportamento |
 |---|---|---|---|---|
 | Portieri | 0% (non usato come componente separata) | — | — | Gs/Pv e Rp restano nella Performance del portiere, sezione 13 |
-| Difensori | Alto (~20-25%) | 0.60 | 0.40 | Anche un tasso di gol/assist modesto in assoluto vale molto perché la mediana di ruolo è vicina a zero — il percentile cattura questo automaticamente |
-| Centrocampisti | Medio (~12-15%) | 0.60 | 0.40 | Nessuna distinzione tra centrocampisti offensivi/di rottura (rimandata a eventuale uso futuro di Rm) |
-| Attaccanti | Alto e bidirezionale (~20-25%) | 0.70 | 0.30 | Sotto la mediana di ruolo = malus reale, non "assenza di bonus". Segnare è il loro mestiere |
+| Difensori | 15% (default rivisto, B12) | 0.60 | 0.40 | Anche un tasso di gol/assist modesto in assoluto vale molto perché la mediana di ruolo è vicina a zero — il percentile cattura questo automaticamente |
+| Centrocampisti | 15% (invariato) | 0.60 | 0.40 | Nessuna distinzione tra centrocampisti offensivi/di rottura (rimandata a eventuale uso futuro di Rm) |
+| Attaccanti | 15% (default rivisto, B12), bidirezionale | 0.70 | 0.30 | Sotto la mediana di ruolo = malus reale, non "assenza di bonus". Segnare è il loro mestiere |
 
 Tutti i pesi (sia il peso del BonusProfile nel rating, sia goal_weight/assist_weight interni) sono parametri configurabili in config.yaml, da confermare/calibrare con la validazione retrospettiva (sezione 20).
+
+**Default di `bonus_weight` per D/A rivisto da 0.25 a 0.15 (B12, decisione presa).** Con 10 stagioni disponibili la potenza per calibrare il peso del BonusProfile è sufficiente per una griglia vera: `bonus_weight ∈ {0, 0.10, 0.15, 0.25, 0.35}` per D e A, dove **0 è l'ablation** ("serve?") e gli altri valori rispondono a "quanto pesa?" — un solo test invece di due (sezione 20.4.4/20.5a). Il valore **0.15 è pre-registrato come nuovo default**, prima di vedere i risultati del backtest, allineandolo al peso già usato per i Centrocampisti. Performance e Reliability si riscalano proporzionalmente per occupare lo spazio residuo mantenendo il rapporto originale 55:20 (sezione 20.5a), il che porta D e A alla stessa distribuzione di pesi di C: **Performance 0.60, Reliability 0.25, Bonus 0.15** (sezione 12). Resta un valore di partenza da confermare con la calibrazione (ordine fisso di sezione 20.5), non un risultato del backtest.
+
+**Nota di calibrazione — "modulatore" va verificato, non assunto.** Il termine "modulatore" (sezione 11) descrive un'intenzione, non una proprietà garantita dai numeri. Perché `Performance ∈ [0,1]` e `BonusProfile ∈ [-1,+1]`, l'escursione (span) realizzabile da ciascun termine nella formula del rating (sezione 12) è `peso × ampiezza_range`, non solo il peso nominale:
+
+| Ruolo | Span Performance (peso × 1) | Span BonusProfile (peso × 2) |
+|---|---|---|
+| D | 0.60 | 0.15 × 2 = 0.30 |
+| A | 0.60 | 0.15 × 2 = 0.30 |
+| C | 0.60 | 0.15 × 2 = 0.30 |
+
+Con il default rivisto (0.15), D, C e A hanno ora lo stesso rapporto Performance:BonusProfile (2:1): il BonusProfile resta un contributo significativo ma non più quasi co-primario come con il vecchio default 0.25 (dove lo span era quasi 1:1 con Performance per D/A). Questo era il problema che la nota di calibrazione segnalava nella revisione precedente; il nuovo default lo riduce ma non lo elimina come domanda aperta — il controllo doppio conteggio della sezione 11.4 e l'ablation della sezione 20.4.4 restano le sedi in cui il peso effettivo va confermato o ulteriormente ridimensionato, non la descrizione testuale del componente.
 
 ### 11.4 Controllo doppio conteggio (obbligatorio in fase di validazione)
 
@@ -407,10 +481,12 @@ Con le scale definite nelle sezioni 9-11 (`Performance ∈ [0,1]`, `Reliability 
 
 ```
 HistoricalRatingRaw_Portiere       = 0.75 × Performance + 0.25 × Reliability                                    # range [0, 1]
-HistoricalRatingRaw_Difensore      = 0.55 × Performance + 0.20 × Reliability + 0.25 × BonusProfile               # range [-0.25, 1]
+HistoricalRatingRaw_Difensore      = 0.60 × Performance + 0.25 × Reliability + 0.15 × BonusProfile               # range [-0.15, 1]
 HistoricalRatingRaw_Centrocampista = 0.60 × Performance + 0.25 × Reliability + 0.15 × BonusProfile               # range [-0.15, 1]
-HistoricalRatingRaw_Attaccante     = 0.55 × Performance + 0.20 × Reliability + 0.25 × BonusProfile               # range [-0.25, 1]
+HistoricalRatingRaw_Attaccante     = 0.60 × Performance + 0.25 × Reliability + 0.15 × BonusProfile               # range [-0.15, 1]
 ```
+
+Pesi D/C/A allineati con il nuovo default `bonus_weight = 0.15` (sezione 11.3, B12) — provvisorio, da confermare con la calibrazione (sezione 20.5).
 
 Nota: essendo BonusProfile potenzialmente negativo (un giocatore sotto la mediana di ruolo su gol/assist), `HistoricalRatingRaw` può essere negativo per difensori/centrocampisti/attaccanti con BonusProfile fortemente negativo. Questo è un comportamento accettato e voluto (sezione 11.3: per gli attaccanti in particolare, un rendimento realizzativo scarso deve pesare come malus reale).
 
@@ -427,15 +503,15 @@ Questo produce valori leggibili (es. 78.4, 72.1, 64.8) mantenendo tutti i calcol
 | Ruolo | Range `HistoricalRating` |
 |---|---|
 | P | 0 → 100 |
-| D | -25 → 100 |
+| D | -15 → 100 |
 | C | -15 → 100 |
-| A | -25 → 100 |
+| A | -15 → 100 |
 
 Questa colonna **non va descritta come "scala 0-100"** in nessun punto della documentazione, del CSV o dell'interfaccia: un valore negativo è un output valido e previsto, non un errore di calcolo.
 
 Tutti i pesi sono configurabili in un unico punto del codice (config.yaml), non sparsi/hard-coded nella logica.
 
-Il rating è calcolato solo per giocatori STORICO o LIMITED_HISTORY. Per i NEW il campo resta nullo con categoria esplicita.
+Il rating è calcolato solo per giocatori PV_SUFFICIENTI o LIMITED_HISTORY. Per i NEW il campo resta nullo con categoria esplicita.
 
 ### 12.0bis Tie-break deterministico per il Rank
 
@@ -468,9 +544,9 @@ HistoricalRating (output di questa versione)
 AuctionRating (in questa versione: AuctionRating = HistoricalRating)
 ```
 
-In futuro, quando sarà introdotto un modello predittivo (sezione 25), si aggiungerà `ProjectedRating` e `AuctionRating` potrà diventare una combinazione dei due, senza che questo richieda di rinominare o ristrutturare le colonne già esistenti. Nel CSV finale di questa versione, esporre sia `HistoricalRating` sia `AuctionRating` (identico a HistoricalRating per ora) per non dover cambiare il nome delle colonne quando arriverà la parte predittiva.
+In futuro, quando sarà introdotto un modello predittivo (sezione 25), si aggiungerà `ProjectedRating` e `AuctionRating` potrà diventare una combinazione dei due, senza che questo richieda di rinominare o ristrutturare le colonne già esistenti.
 
-**Nota di cautela sul naming**: `AuctionRating` è un nome concettualmente più impegnativo di `HistoricalRating`, perché suggerisce una decisione d'asta compiuta. Documentare esplicitamente nel README: *"In questa versione AuctionRating è un alias operativo di HistoricalRating e non incorpora prezzo, budget, scarsità di ruolo, composizione della rosa già acquistata, o strategia d'asta. È solo un segnaposto architetturale per l'evoluzione futura."* Questo evita che il campo venga interpretato oggi come più di quello che è.
+**Rimossa dal CSV (B11, revisione corrente).** Le versioni precedenti esponevano anche `AuctionRating`, identico a `HistoricalRating` in questa versione, come segnaposto architetturale. Una colonna duplicata con un nome che promette più di quanto contenga (`AuctionRating` suggerisce una decisione d'asta compiuta: prezzo, budget, scarsità di ruolo, rosa già acquistata — nessuno di questi fattori è nel modello) è un rischio concreto in asta, dove si legge veloce. La colonna **non va nel CSV** finché non porta informazione realmente distinta da `HistoricalRating`; il livello concettuale resta nell'architettura (schema sopra) per non dover ristrutturare quando arriverà `ProjectedRating`, ma non nell'output.
 
 ## 13. Portieri — dettagli specifici
 
@@ -533,7 +609,7 @@ Questo campo resta indipendente da `HistoricalRating`.
 
 ### 18.1 Trend
 
-Il Trend si calcola sulla `Performance_stagione` (scala 0-1) delle sole stagioni con `Pv >= 1` (righe `STATS`), usando **tutti** i punti disponibili e non soltanto il primo e l'ultimo:
+Il Trend si calcola sulla `Performance_stagione` (scala 0-1) delle sole stagioni con `Pv >= 1` (righe `PLAYED`), usando **tutti** i punti disponibili e non soltanto il primo e l'ultimo:
 
 ```
 Trend_Value = pendenza della regressione lineare OLS di Performance_stagione
@@ -542,6 +618,8 @@ Trend_Value = pendenza della regressione lineare OLS di Performance_stagione
 ```
 
 Con 2 stagioni la pendenza coincide con la semplice differenza; con 3 usa anche la stagione centrale, che una differenza prima↔ultima ignorerebbe (un giocatore 0.40 → 0.90 → 0.45 non è "in crescita").
+
+**Definizione dell'indice — vincolo esplicito.** "Indice progressivo di stagione" è ambiguo quando ci sono stagioni mancanti tra due stagioni con `Pv >= 1`, e le due letture possibili non sono equivalenti: l'indice è la posizione della stagione nella finestra di train effettivamente in uso (le `train_window` stagioni più recenti dell'elenco `seasons` di config.yaml, sezione 24 — non l'intero elenco delle 10 disponibili, che serve solo a definire il pool da cui `train_window` estrae la finestra), **buchi inclusi**, non la posizione compattata tra le sole stagioni disponibili per quel giocatore. Esempio con `train_window = 3`, finestra 2023/24-2025/26: un giocatore con dati in 2023/24 e 2025/26 ma non in 2024/25 usa indici `[0, 2]`, non `[0, 1]`. Compattare gli indici raddoppierebbe la pendenza calcolata (una variazione avvenuta su due stagioni verrebbe letta come una variazione per singola stagione), contraddicendo la comparabilità che questo stesso campo dichiara di garantire più sotto.
 
 **Casi non calcolabili — regola obbligatoria:**
 
@@ -571,7 +649,7 @@ Il Trend è una variabile informativa aggiuntiva, non modifica `HistoricalRating
 Da esporre come colonne/note testuali nel dataset finale, per uso conversazionale durante l'asta:
 - **Dipendenza da rigori** (attaccanti/centrocampisti con alto R+/Pv rispetto al totale gol);
 - **Storico volatile** (alta varianza di Fm tra stagioni disponibili);
-- **Poche presenze recenti** (Pv basso nell'ultima stagione anche se lo storico complessivo è STORICO).
+- **Poche presenze recenti** (Pv basso nell'ultima stagione anche se lo storico complessivo è PV_SUFFICIENTI).
 
 ## 19. Confidence Score
 
@@ -580,24 +658,25 @@ Non implementare direttamente una serie di soglie if/else arbitrarie (es. `if se
 **Formula di partenza per la v1** (semplice e trasparente, non un sotto-progetto a parte):
 
 ```
-SeasonCoverage    = seasons_available / 3                # stagioni con Pv >= 1, range 0-1
-AvailabilityScore = min(1, Pv_Totale / 90)               # 90 = 3 × reference_pv (30), range 0-1
-StabilityScore    = 1 - min(1, CV_Fm / cv_reference)     # range 0-1, definizione sotto
+SeasonCoverage    = seasons_available / train_window                       # stagioni con Pv >= 1, range 0-1
+AvailabilityScore = min(1, Pv_Totale / (train_window × reference_pv))      # range 0-1
+StabilityScore    = 1 - min(1, sd(Performance_stagione) / sd_reference)    # range 0-1, definizione sotto
 
 ConfidenceScore = 0.40 × SeasonCoverage + 0.40 × AvailabilityScore + 0.20 × StabilityScore
 ```
 
+**Normalizzato su `train_window`, non su 3 (B14).** Con N=3 stagioni fisse, `SeasonCoverage` e `AvailabilityScore` erano normalizzati su costanti (3 e 90 = 3 × reference_pv). Con `train_window` parametrico (sezione 20.2, ora testato fino a 5) una costante fissa a 3 farebbe saturare la Confidence per finestre più lunghe e smetterebbe di discriminare. La normalizzazione usa quindi sempre `train_window`, il valore effettivamente configurato per il ranking in corso — che sia la finestra di produzione o quella di un fold di backtest.
+
 **Definizione di `StabilityScore`.** `Fm_variance_normalizzata` non era una quantità definita, e senza specifica diventa una scelta arbitraria e non tracciata fatta in fase di implementazione. La definizione richiesta è:
 
 ```
-CV_Fm = deviazione_standard(Fm_stagionali) / media(Fm_stagionali)
-        # coefficiente di variazione, sulle sole stagioni con Pv >= 1
-        # adimensionale, quindi confrontabile tra giocatori con livelli di Fm diversi
-
-StabilityScore = 1 - min(1, CV_Fm / cv_reference)        # cv_reference = 0.20, configurabile
+StabilityScore = 1 - min(1, sd(Performance_stagione) / sd_reference)
+        # deviazione standard di Performance_stagione (scala 0-1, sezione 10),
+        # sulle sole stagioni con Pv >= 1
+        # sd_reference = 0.20, configurabile (punto di saturazione: sd >= 0.20 → stabilità 0)
 ```
 
-Si usa il coefficiente di variazione e non la varianza grezza perché la varianza dipende dal livello: un attaccante che oscilla tra 7.0 e 8.0 avrebbe la stessa varianza di uno che oscilla tra 5.0 e 6.0, senza avere la stessa instabilità relativa. `cv_reference` è il punto di saturazione (CV >= 0.20 → stabilità 0) e va calibrato osservando la distribuzione reale dei CV, non fissato a intuito.
+**Perché su `Performance_stagione` e non su `Fm`.** La formula precedente usava il coefficiente di variazione della Fm (`sd(Fm) / media(Fm)`) per ottenere una misura adimensionale, confrontabile tra giocatori con livelli di Fm diversi (un attaccante che oscilla tra 7.0 e 8.0 non è instabile quanto uno che oscilla tra 5.0 e 6.0 pur avendo la stessa varianza assoluta). Ma la Fm — come documentato in sezione 22 — può essere legittimamente **negativa o vicina a zero** (una presenza, voto basso, autogol ed espulsione). Con una media vicina a zero il coefficiente di variazione esplode o cambia segno in modo incontrollato, e `StabilityScore` può uscire dal range `[0, 1]` (es. media Fm = -0.5, sd = 1.0 → CV = -2.0 → `StabilityScore = 11`): il massimo di stabilità assegnato esattamente al caso più rumoroso, l'errore opposto a quello che il punteggio deve evitare. `Performance_stagione` risolve lo stesso problema di confrontabilità (è già adimensionale, scala 0-1 per costruzione, sezione 10) senza il rischio di dividere per una media vicina a zero: `sd(Performance_stagione)` da sola è sufficiente, senza bisogno del rapporto CV. `sd_reference` è il punto di saturazione e va calibrato osservando la distribuzione reale, non fissato a intuito.
 
 **Caso `seasons_available < 2` — regola obbligatoria.** Con una sola stagione la deviazione standard è `0` o `NaN`. Se il codice la tratta come `0`, allora `StabilityScore = 1`: il **massimo punteggio di stabilità assegnato al giocatore di cui si sa meno**, esattamente il contrario di ciò che la Confidence deve esprimere. La regola è:
 
@@ -610,7 +689,7 @@ seasons_available < 2  →  StabilityScore non definito
 
 La rinormalizzazione è preferibile a `StabilityScore = 0` perché non penalizza due volte lo stesso fenomeno: la scarsità di storico è già catturata da `SeasonCoverage` e `AvailabilityScore`, entrambi bassi in quel caso.
 
-Verifica di sanità obbligatoria (sezione 22): nessun giocatore con `seasons_available = 1` può risultare `Confidence = Alta`. Con la formula sopra il massimo raggiungibile è `(0.40 × 0.33 + 0.40 × 0.42) / 0.80 ≈ 0.38` → Bassa.
+Verifica di sanità obbligatoria (sezione 22): nessun giocatore con `seasons_available = 1` può risultare `Confidence = Alta`. Esempio con `train_window = 3`: il massimo raggiungibile è `(0.40 × 0.33 + 0.40 × 0.42) / 0.80 ≈ 0.38` → Bassa. Con `train_window` maggiore il caso `seasons_available = 1` diventa ancora più penalizzato (`SeasonCoverage` più basso), quindi la verifica resta valida a maggior ragione per qualunque finestra.
 
 Poi, discretizzazione per il CSV:
 
@@ -634,43 +713,60 @@ Questa fase non va trattata come un controllo a posteriori, ma come il criterio 
 
 ### 20.1 Universo di test — evitare il survivorship bias
 
-**Problema**: se l'universo di test per "2023/24+2024/25 → prevedi 2025/26" viene costruito usando i giocatori presenti nel file statistiche 2025/26 (cioè chi ha effettivamente ricevuto un voto, Pv≥1), si introduce informazione futura — si esclude implicitamente chi era atteso in campo ma poi non ha giocato (infortuni, esclusioni, cessioni), rendendo il test artificialmente più pulito di quanto sarebbe stato in tempo reale.
+**Problema**: se l'universo di test per un fold "train → target T" viene costruito usando solo i giocatori che hanno effettivamente ricevuto un voto in T (Pv≥1), si introduce informazione futura — si esclude implicitamente chi era in rosa e atteso in campo ma poi non ha giocato (infortuni, esclusioni, cessioni), rendendo il test artificialmente più pulito di quanto sarebbe stato in tempo reale.
 
-**Soluzione richiesta**: costruire l'universo di test usando le **quotazioni pre-stagione** (sezione 2.3), non le statistiche consuntive. Per il test "2023/24+2024/25 → 2025/26": l'universo è la lista quotazioni di inizio 2025/26 (che include anche chi poi non ha giocato). Il confronto con la Fm reale userà poi il file statistiche 2025/26, dove i giocatori quotati ma con Pv=0 (o molto basso) sono un caso legittimo da includere nelle metriche di errore — non un errore di join da scartare, ma un segnale reale sul limite del modello (non può prevedere infortuni/esclusioni).
+**Soluzione (aggiornata — B4).** La versione precedente di questa sezione costruiva l'universo di test dalle quotazioni pre-stagione, per differenza rispetto alle statistiche consuntive. Quel meccanismo è lo stesso che generava la categoria `QUOTED_ONLY`, risultata vuota su tutte le 10 stagioni (sezione 4): il file statistiche contiene già, per costruzione, l'intero universo Serie A della stagione — incluse le righe `IN_SQUAD_NO_PLAY` a `Pv = 0` (sezione 4). **L'universo di test per il fold con target T è quindi direttamente `PLAYED ∪ IN_SQUAD_NO_PLAY` della stagione T**, letto dal file statistiche di T: non serve più passare dalle quotazioni per evitare il survivorship bias, perché il file statistiche non lo introduce.
 
-**Coverage del test — da riportare sempre.** L'universo di test è la lista quotazioni, ma il rating è calcolabile solo per chi ha storico nelle stagioni di train: i `NEW` non ricevono un rating e restano necessariamente fuori dalle metriche. Il report deve quindi dichiarare, per ogni test rolling e **per ruolo**:
+Le quotazioni restano necessarie per altri due scopi, entrambi diversi dalla costruzione dell'universo: la baseline esterna `Qt.I`/`FVM` (sezione 20.4.3, B9) e il flag `left_mid_season` usato dalla Reliability (sezione 9.1bis) — quest'ultimo però è calcolato sulle stagioni di **train**, non sulla stagione target.
+
+**Limite da misurare, non da nascondere (§2.6).** Il file statistiche di fine stagione include anche gli arrivi di gennaio: l'universo di test "chiunque sia stato in Serie A in un qualche momento della stagione T" non coincide esattamente con "chiunque fosse acquistabile all'asta di agosto di T" (è comunque molto meglio del bias che questa sezione vuole evitare, perché include comunque i quotati che non hanno mai giocato). Il QC (sezione 22) deve contare, per ogni fold, quanti Id dell'universo di test T sono assenti dalla quotazione pre-stagione di T (quando disponibile) e riportarne la quota: sono gli arrivi tardivi, un limite noto del test, non un errore.
+
+**Coverage del test — da riportare sempre.** L'universo di test è `PLAYED ∪ IN_SQUAD_NO_PLAY` della stagione target, ma il rating è calcolabile solo per chi ha storico nelle stagioni di train: i `NEW` non ricevono un rating e restano necessariamente fuori dalle metriche. Il report deve quindi dichiarare, per ogni fold e **per ruolo**:
 
 ```
-Coverage = (giocatori dell'universo quotato con HistoricalRating non nullo) / (universo quotato)
+Coverage = (giocatori dell'universo Serie A target con HistoricalRating non nullo) / (universo Serie A target)
 ```
 
 Se il coverage è, per esempio, 0.62, tutte le metriche della sezione 20.4 vanno lette come "valide sul 62% dei giocatori acquistabili". Non è un dettaglio metodologico: è la misura di quanto il ranking sia effettivamente utile in un'asta reale, dove il 38% restante va comunque comprato da qualcuno.
 
 ### 20.2 Backtest rolling, parametrico
 
-Non implementare una funzione hard-coded "predici 2025/26". Strutturare `validate.py` con parametri espliciti:
+Non implementare una funzione hard-coded "predici una singola stagione". Strutturare `validate.py` con parametri espliciti:
 
 ```
 train_seasons: lista di stagioni usate per calcolare il rating
-target_season: stagione su cui si valuta la previsione (statistiche consuntive + quotazioni pre-stagione corrispondenti)
+train_window: len(train_seasons) — parametro esso stesso (B8, sotto)
+target_season: stagione su cui si valuta la previsione (statistiche consuntive; le quotazioni della stessa stagione
+                servono solo alla baseline Qt.I/FVM e al QC arrivi tardivi, sezione 20.1/20.4.3)
 ```
 
-Questo permette di eseguire più test quando saranno disponibili più stagioni, ad esempio:
-```
-train=[2023/24] → target=2024/25
-train=[2023/24, 2024/25] → target=2025/26
-train=[2023/24, 2024/25, 2025/26] → target=2026/27  (eseguibile solo quando i dati reali 2026/27 saranno disponibili a fine stagione)
-```
+**Rolling window a 7 target (B6, decisione presa).** Con 10 stagioni di statistiche (2016/17 → 2025/26) e `train_window = 3`, la finestra rolling produce 7 fold:
+
+| # | Target | Finestra di train | Ruolo |
+|---|---|---|---|
+| 1 | 2019/20 | 2016/17-2018/19 | selezione |
+| 2 | 2020/21 | 2017/18-2019/20 | selezione |
+| 3 | 2021/22 | 2018/19-2020/21 | selezione |
+| 4 | 2022/23 | 2019/20-2021/22 | selezione |
+| 5 | 2023/24 | 2020/21-2022/23 | selezione |
+| 6 | 2024/25 | 2021/22-2023/24 | selezione |
+| 7 | **2025/26** | 2022/23-2024/25 | **lock-box** |
+
+Il fold 7 (target 2025/26) è un **lock-box**: non va guardato durante la calibrazione, si apre una sola volta a configurazione congelata (sezione 20.5, B10). La sua finestra di training (2022/23-2024/25) è strutturalmente identica, per lunghezza e posizione relativa, a quella che userà la produzione 2026/27 (2023/24-2025/26 con `train_window = 3`): è per questo che la conferma avviene esattamente sullo scenario d'uso reale, non su un fold scelto a caso.
+
+**Nessuna esclusione a priori di stagioni.** La stagione 2019/20 (stop di tre mesi, cinque sostituzioni dal giugno 2020) è inclusa come tutti gli altri target: **verifica eseguita, esito negativo** — la distribuzione dei `Pv` non mostra alcuno scalino nel 2019/20 né in corrispondenza del cambio regime sostituzioni (mediana, media e quota `Pv≥30` restano nel range delle altre 9 stagioni; l'unico scostamento è la quota di `Pv=0`, 22.4% contro ~18%, coerente con i 155 giocatori usciti in corsa quell'anno e già gestiti dal flag `left_mid_season`, sezione 9.1bis). Questo è un fatto verificato da riportare nella spec, non un controllo da ripetere: se un fold emerge come outlier nelle metriche per fold (sezione 20.5), lo si constata a posteriori dai numeri, non lo si esclude in anticipo su un'ipotesi che i dati non confermano.
+
+**`train_window` è esso stesso un parametro da testare (B8).** Con N=3 la domanda "quante stagioni di storico servono" non era ponibile con potenza sufficiente. Con 10 stagioni si testa `train_window ∈ {2, 3, 4, 5}`, in griglia con `time_decay.base` perché i due parametri interagiscono direttamente (una finestra lunga con decadimento aggressivo equivale in pratica a una finestra corta). `train_window` maggiore riduce il numero di target disponibili (`target = 10 − train_window`, mantenendo comunque 2025/26 come lock-box finale e gli altri come selezione): il confronto fra finestre diverse va quindi fatto **sui soli target comuni a tutte le varianti testate**, altrimenti si confrontano medie calcolate su fold diversi.
 
 Nota per l'aggiornamento annuale (collegamento con sezione 26): a differenza della pipeline di produzione (che ogni anno richiede solo il nuovo file statistiche + la nuova lista giocatori), la pipeline di *validazione* richiede in più, ogni anno, anche la nuova quotazione pre-stagione corrispondente. Sono due flussi di aggiornamento leggermente diversi, da tenere distinti nella documentazione.
 
 ### 20.3 Separare performance prediction e availability outcome (giocatori con Pv=0 nel target)
 
-Un giocatore quotato pre-stagione ma con `Pv = 0` nella stagione target ha `Fm = null`: non può entrare in un calcolo di correlazione o errore rispetto alla Fm, perché quella Fm semplicemente non esiste. Questo non significa scartarlo dal test — significa smettere di trattare "previsione della performance" e "il giocatore ha effettivamente giocato" come lo stesso tipo di errore. Il backtest calcola quindi due famiglie di metriche distinte:
+Un giocatore in rosa (`IN_SQUAD_NO_PLAY`, sezione 4) ma con `Pv = 0` nella stagione target ha `Fm = null`: non può entrare in un calcolo di correlazione o errore rispetto alla Fm, perché quella Fm semplicemente non esiste. Questo non significa scartarlo dal test — significa smettere di trattare "previsione della performance" e "il giocatore ha effettivamente giocato" come lo stesso tipo di errore. Il backtest calcola quindi due famiglie di metriche distinte:
 
-**a) Performance outcome** (solo su giocatori con `Pv ≥ 1` nella stagione target): tutte le metriche della sezione 20.4 (Pearson, Spearman, MAE, precision@N) si calcolano esclusivamente su questo sottoinsieme osservabile.
+**a) Performance outcome** (solo su giocatori con `Pv ≥ 1` nella stagione target, righe `PLAYED`): tutte le metriche della sezione 20.4 (Pearson, Spearman, MAE, precision@N) si calcolano esclusivamente su questo sottoinsieme osservabile.
 
-**b) Availability outcome** (su tutto l'universo quotato pre-stagione, inclusi i `Pv = 0`): misura quanti dei giocatori con rating alto/nel top-N previsto hanno effettivamente prodotto una stagione osservabile. Definire:
+**b) Availability outcome** (su tutto l'universo Serie A della stagione target, `PLAYED ∪ IN_SQUAD_NO_PLAY`, sezione 20.1): misura quanti dei giocatori con rating alto/nel top-N previsto hanno effettivamente prodotto una stagione osservabile. Definire:
 
 ```
 Top-N Availability Rate = (giocatori nel Top-N previsto con Pv ≥ 1 nel target) / N
@@ -687,18 +783,33 @@ Esempio: Top 20 previsto → 18 con Pv > 0, 2 con Pv = 0 → Availability Rate =
 - **MAE e Median AE diventano privi di significato.** L'errore medio tra un rating a 78 e una Fm a 6.8 misura una differenza di unità di misura, non un errore di previsione. Nella tabella di sintesi la baseline `Fm_Weighted` (che predice Fm in unità di Fm, errore ~0.4) risulterebbe migliore del modello (errore ~70) per ragioni puramente dimensionali, e il Test C darebbe un verdetto falso.
 - **precision@N e Spearman cross-ruolo risultano distorti.** Il rating è deliberatamente role-neutral, mentre il top-N reale per Fm assoluta è dominato da attaccanti e trequartisti: si confronterebbe un ranking normalizzato con uno non normalizzato.
 
-**Target ufficiale della validazione**:
+**Target A — performance condizionata (primario)**:
 
 ```
-Target = percentile della Fm nella stagione target, calcolato dentro il ruolo R
-         della stagione target
-         (stesso metodo deterministico della sezione 10, stesso min_pv_for_percentile)
-         → scala 0-1
+Target_A = percentile della Fm nella stagione target, calcolato dentro il ruolo R
+           della stagione target, sui soli giocatori con Pv >= 1 nel target
+           (stesso metodo deterministico della sezione 10, stesso min_pv_for_percentile)
+           → scala 0-1
 ```
 
 Con questa definizione tutte le quantità confrontate vivono in [0, 1], `MAE` e `Median AE` sono interpretabili come errore di posizionamento percentile, e il confronto con le baseline è equo.
 
-**Conversione obbligatoria delle baseline.** `Fm_Last_Season` e `Fm_Weighted` sono in unità di Fm e vanno portate nello stesso spazio prima del confronto: percentile per ruolo (calcolato sulle stagioni di train) della metrica di baseline. Una baseline non convertita non è una baseline più semplice, è una baseline in un'altra unità di misura.
+**Target B — produzione totale, intero universo Serie A del target (secondario, obbligatorio).** Il Target A rimuove la disponibilità dal bersaglio per costruzione (è calcolato solo su chi ha effettivamente giocato, `Pv >= 1`). Questo rende strutturalmente sfavorevole qualunque test che, come il Test C (sezione 20.4.3), chieda al modello **completo** — che include Reliability al 25% di peso su tutti i ruoli (sezione 12) — di battere una baseline sul Target A: se Reliability ha poco potere predittivo sulla Fm condizionata (misura una cosa diversa, la disponibilità, sezione 7), includerla può solo peggiorare il punteggio su un bersaglio da cui la disponibilità è stata rimossa a monte. Serve quindi un secondo target che tratti la disponibilità come parte del valore, non come rumore da scartare:
+
+```
+Target_B = percentile di (Fm_target × Pv_target) nella stagione target, calcolato
+           dentro il ruolo R della stagione target, sull'intero universo Serie A
+           della stagione target (sezione 20.1: PLAYED ∪ IN_SQUAD_NO_PLAY, non solo
+           su chi ha Pv >= 1)
+           → scala 0-1; un giocatore con Pv_target = 0 riceve prodotto 0
+             e si colloca in fondo alla distribuzione del proprio ruolo
+```
+
+Nota: `Fm × Pv` resta vietato come **feature** in ingresso al modello (sezione 7, principio cardine) — qui è usato come **target** di validazione, un ruolo diverso. È la proxy più diretta disponibile con questi dati di "quanti punti fantacalcio ha effettivamente prodotto il giocatore", che è ciò che conta in una lega reale. È una proxy imperfetta e va dichiarata come tale nel report: un giocatore assente viene sostituito da una riserva di panchina, quindi il costo reale di un `Pv = 0` non è "zero punti" ma "zero punti meno quello che avrebbe fatto la riserva" — Target B tende quindi a **sovrastimare** il valore della disponibilità, così come Target A lo **sottostima** azzerandolo. Il peso corretto di Reliability nella formula del rating si colloca tra le due stime, non a un estremo.
+
+Il Test C (sezione 20.4.3) va quindi eseguito e riportato **su entrambi i target**, separatamente per ruolo, senza fondere i due risultati in un unico numero.
+
+**Conversione obbligatoria delle baseline.** `Fm_Last_Season` e `Fm_Weighted` sono in unità di Fm e vanno portate nello stesso spazio prima del confronto: percentile per ruolo (calcolato sulle stagioni di train) della metrica di baseline. Una baseline non convertita non è una baseline più semplice, è una baseline in un'altra unità di misura. Le stesse tre baseline (sezione 20.4.3) si confrontano contro **entrambi** i target, senza ridefinirle: contro Target B, `Baseline 2` (`percentile(Pv_Last_Season)`) diventa naturalmente più competitiva, il che è informativo, non un errore da correggere.
 
 **Tutte le metriche sono per ruolo.** Nessuna metrica di questa sezione va calcolata sull'universo indifferenziato (motivo in sezione 12.0bis). Il report riporta una riga per ruolo (P/D/C/A) e, opzionalmente, la media dei quattro valori come sintesi — mai una metrica calcolata su tutti i giocatori insieme.
 
@@ -721,11 +832,18 @@ Prima di valutare le componenti del modello, verificare che l'intero approccio b
 Baseline 0: percentile(Fm_Last_Season)    — ultima stagione disponibile, nessuna elaborazione
 Baseline 1: percentile(Fm_Weighted)       — media pesata delle Fm storiche (decadimento, sez. 8)
 Baseline 2: percentile(Pv_Last_Season)    — solo disponibilità recente, nessun dato di rendimento
+Baseline 3: percentile(Qt.I_target)       — prezzo di mercato pre-stagione del target (B9, tutti i fold)
+Baseline 4: percentile(FVM_target)        — valore di mercato Fantacalcio.it (B9, solo fold con target dal 2022/23 in poi:
+                                             FVM non è popolato prima, sezione 2.3)
 ```
 
 `Baseline 2` è aggiunta perché una parte importante del valore in asta è semplicemente "questo giocatore gioca". Se il modello completo non batte una baseline che ignora del tutto il rendimento, il problema non è la calibrazione dei pesi.
 
-**Criterio di superamento**: il modello completo (Performance + Reliability + BonusProfile) deve battere `Fm_Weighted` su **Spearman e precision@20, in almeno 3 ruoli su 4**. Il criterio è per ruolo e non aggregato perché un modello che funziona bene su D e C e male su P e A non è un modello valido: in asta i ruoli si comprano tutti. Se il criterio non è soddisfatto, tutta la complessità aggiuntiva (percentili per ruolo, Reliability, BonusProfile) non sta dimostrando valore reale e va rivista — indipendentemente da quanto sia concettualmente ben giustificata. Questo test decide se il progetto ha senso così com'è, non è un dettaglio opzionale.
+**Baseline 3/4 — il prezzo di mercato (B9, nuova).** `Qt.I` è ora disponibile per tutte le 11 stagioni di quotazioni ed è la baseline più severa e più onesta che si possa chiedere al modello: il mercato aveva già messo un prezzo sul giocatore prima dell'inizio della stagione target, senza vedere il resto della finestra di train usata dal modello. `FVM` (dal 2022/23) è un'ulteriore stima di mercato indipendente. Un modello che non batte `Qt.I` ha un problema che nessuna metrica interna (Baseline 0-2) avrebbe potuto rivelare, perché tutte le baseline interne condividono gli stessi dati di input del modello.
+
+**Criterio di superamento (bloccante, su Target A)**: il modello completo (Performance + Reliability + BonusProfile) deve battere `Fm_Weighted` su **Spearman e precision@20, in almeno 3 ruoli su 4**, misurato su **Target A** (sezione 20.4.0), **su ciascuno dei 6 fold di selezione** (sezione 20.2). Il criterio è per ruolo e non aggregato perché un modello che funziona bene su D e C e male su P e A non è un modello valido: in asta i ruoli si comprano tutti. Se il criterio non è soddisfatto sulla maggioranza dei fold di selezione, tutta la complessità aggiuntiva (percentili per ruolo, Reliability, BonusProfile) non sta dimostrando valore reale e va rivista — indipendentemente da quanto sia concettualmente ben giustificata. Il confronto con `Qt.I` (Baseline 3) è diagnostico e riportato nella stessa tabella, ma non sostituisce il gate su `Fm_Weighted`: sono domande diverse ("il modello batte una baseline interna più semplice" vs "il modello batte il mercato"). Il fold di lock-box (2025/26) **non entra in questo criterio**: ha il proprio criterio di fallimento indipendente, fissato prima di aprirlo (sezione 20.5, B10). Questo test decide se il progetto ha senso così com'è, non è un dettaglio opzionale.
+
+**Stesso test, ripetuto su Target B (obbligatorio, non bloccante).** Eseguire lo stesso confronto contro le stesse baseline misurando su **Target B** (produzione totale, intero universo Serie A della stagione target, sezione 20.4.0), e riportarlo nella stessa tabella di sintesi, senza fonderlo con l'esito su Target A. Questo secondo risultato non sostituisce né allenta il criterio bloccante sopra — resta l'unico gate che decide se il progetto procede — ma cambia la lettura di un eventuale fallimento: **se il modello non supera il criterio su Target A ma lo supera nettamente su Target B**, e l'ablation (sezione 20.4.4, Model 2 vs Model 1) mostra che è proprio l'aggiunta di Reliability a peggiorare il punteggio su Target A, la conclusione corretta non è "il modello non funziona" ma "Reliability pesa più di quanto la sua capacità predittiva sulla Fm condizionata giustifichi, e va ridotta" — una revisione del peso, non un rigetto dell'impianto (sezione 7 e 20.6bis restano comunque il test diretto della Reliability). Se invece il modello fallisce su **entrambi** i target, il problema è nel modello, non nella scelta del bersaglio.
 
 #### 20.4.4 Test D — ablation test (obbligatorio prima di considerare il modello definitivo)
 
@@ -742,45 +860,87 @@ Se il passaggio 2 non migliora sensibilmente rispetto a 1, o il passaggio 3 non 
 **Varianti di modellazione**, ciascuna ottenuta cambiando **una sola** scelta rispetto al Model 3, per attribuire l'effetto senza ambiguità:
 
 ```
-Model 3a: reliability.use_quoted_zero_seasons = false            (sezione 9.1bis)
-Model 3b: bonus_profile.goal_rate_metric = NonPenaltyGoalRate    (sezione 11.1)
-Model 3c: bonus_profile.zero_handling = midrank per tutti i ruoli (sezione 11.2)
+Model 3a: reliability.exclude_left_mid_season = false              (sezione 9.1bis, B3)
+Model 3b: bonus_profile.goal_rate_metric = NonPenaltyGoalRate      (sezione 11.1)
+Model 3c: bonus_profile.zero_handling = split per tutti i ruoli    (sezione 11.2, alternativa al default recenter)
+Model 3d: bonus_profile.zero_handling = midrank per tutti i ruoli  (sezione 11.2, comportamento pre-correzione)
 ```
 
-**Tabella di sintesi attesa** (una tabella **per ruolo**, report finale sezione 20.7):
+La griglia `bonus_weight ∈ {0, 0.10, 0.15, 0.25, 0.35}` per D/A (sezione 11.3, B12) è testata a parte, nell'ordine di calibrazione fisso della sezione 20.5, e non come ulteriore variante di questa tabella: a differenza di 3a-3d (una scelta binaria/discreta), è un parametro continuo con un default pre-registrato (0.15) da confermare o correggere, non un semplice on/off.
+
+**Tabella di sintesi attesa** (una tabella **per ruolo, per ciascun target (A e B), per fold** — sezione 20.5 vieta di mediare fra fold, report finale sezione 20.7 — 8 tabelle per fold con 4 ruoli × 2 target, 56 in tutto su 7 fold, non una tabella con doppie colonne o mediata: mescolare le due unità di misura in una sola tabella reintrodurrebbe l'errore di scala che il Target A è stato introdotto per evitare, e mediare fra fold nasconderebbe la varianza che il criterio di accettazione di B10 deve poter vedere):
 
 | Model | Pearson | Spearman | MAE | Median AE | Prec@10 | Prec@20 | Prec@30 | Avail@20 |
 |---|---|---|---|---|---|---|---|---|
 | Baseline 0: percentile(Fm_Last_Season) | | | | | | | | |
 | Baseline 1: percentile(Fm_Weighted) | | | | | | | | |
 | Baseline 2: percentile(Pv_Last_Season) | | | | | | | | |
+| Baseline 3: percentile(Qt.I_target) | | | | | | | | |
+| Baseline 4: percentile(FVM_target) — solo fold dal 2022/23 | | | | | | | | |
 | Model 1: Performance | | | | | | | | |
 | Model 2: + Reliability | | | | | | | | |
 | Model 3: + BonusProfile (base) | | | | | | | | |
 | Model 3a: senza stagioni quotate a zero | | | | | | | | |
 | Model 3b: NonPenaltyGoalRate | | | | | | | | |
-| Model 3c: zero_handling = midrank | | | | | | | | |
+| Model 3c: zero_handling = split | | | | | | | | |
+| Model 3d: zero_handling = midrank | | | | | | | | |
 
-### 20.5 Sensitivity analysis (dopo che il modello base ha superato i test C e D)
+#### 20.4.5 Test E — calibrazione per fascia (bucket)
 
-Prima di considerare definitivi i parametri di config.yaml, verificare la stabilità del ranking rispetto a piccole variazioni.
-
-**a) Pesi della formula di rating.** Esempio per i Difensori (pesi base 55/20/25):
-
-```
-50/25/25, 55/20/25 (base), 60/20/20
-```
-
-**b) Parametri strutturali del modello temporale — obbligatori, non erano coperti.** Sono i due parametri con l'impatto più forte su tutto il modello:
+Spearman e precision@N misurano l'ordinamento, non se il numero stesso è calibrato: un rating al 90° percentile dovrebbe corrispondere, in media, a un giocatore che realmente performa vicino al 90° percentile nel target, non solo "più in alto di uno all'80°". Da riportare, per ruolo e per target (A e B):
 
 ```
-time_decay.base:           1.3, 1.5, 2.0 (base), 2.5
-reliability.reference_pv:  25, 30 (base), 34
+Bucket predetto (HistoricalRatingRaw, in percentile di ruolo)  →  Target medio osservato nel bucket
+90-100  →  ...
+80-90   →  ...
+70-80   →  ...
+...
 ```
 
-`time_decay.base = 2` assegna il 57% del peso complessivo a una singola stagione; con base 1.5 i pesi diventano ≈ 26/33/41 e con base 1.3 ≈ 30/33/37. La differenza tra "il modello guarda soprattutto l'ultimo anno" e "il modello media tre anni" è una scelta di modellazione sostanziale, non un dettaglio di configurazione, e va decisa dai dati.
+**Interpretazione — attenzione alla compressione fisiologica.** È normale osservare regressione verso la media (il bucket 90-100 mostra un target medio osservato inferiore a 90, es. ~75): con un solo anno di dati storici e stagioni successive rumorose, nessun modello onesto raggiunge una calibrazione 1:1. Non è di per sé un difetto da correggere. Ciò che segnala un problema reale è **la non-monotonicità**: se il target medio osservato in un bucket è inferiore a quello di un bucket sottostante (es. il bucket 70-80 supera l'80-90), il modello sta invertendo l'ordine tra fasce di rating in modo sistematico — un'informazione che Spearman aggregato può nascondere se l'inversione è localizzata in una fascia stretta.
 
-**c) Filtri sul campione.**
+### 20.5 Regola di selezione — lock-box, ordine di calibrazione, criterio di accettazione (B10)
+
+Con 10 stagioni disponibili e 7 fold (6 di selezione + 1 lock-box, sezione 20.2) la potenza per calibrare è molto maggiore di quella disponibile con N=3, ma resta finita. Il vincolo della versione precedente di questa spec ("solo `time_decay.base` e `reference_pv` sono candidati a modifica") era la risposta corretta a 2 fold; con 6 va **rilassato, non rimosso**.
+
+**Lock-box su 2025/26.** La selezione dei parametri usa esclusivamente i 6 fold con target 2019/20 → 2024/25 (sezione 20.2). Il fold con target 2025/26 **non viene mai guardato durante la calibrazione** — non nei test C/D, non nella sensitivity analysis — e si apre una sola volta, a configurazione congelata, come passo finale.
+
+**Criterio di fallimento del lock-box (da fissare ora, prima di aprirlo).** Se sul fold di conferma il modello configurato non batte le baseline della sezione 20.4.3 in almeno 3 ruoli su 4, la risposta **non è ritoccare un parametro**: è tornare alla struttura del modello (sezione 12 e oltre). Fissarlo adesso, prima di vedere il risultato, è ciò che rende il lock-box qualcosa di diverso da un settimo fold di selezione qualunque.
+
+**Regola di accettazione per un cambio di default.** Un default (di questa sezione o della 20.4.4) si cambia solo se il miglioramento è **concorde in segno in almeno 4 dei 6 fold di selezione** **e** vale in **almeno 3 dei 4 ruoli**. Le 24 combinazioni ruolo×fold di selezione sono trattate come quasi-repliche (non indipendenti, ma un controllo più severo di un singolo numero aggregato).
+
+**Metriche sempre per fold e per ruolo.** La mediana può essere riportata, ma **solo affiancata** ai valori per singolo fold e a una misura di dispersione (es. IQR o min-max fra i 6 fold di selezione). Fra due configurazioni con mediana simile va preferita quella con dispersione minore fra fold: un parametro che vince "in media" ma con varianza alta fra fold è meno affidabile di uno che vince ovunque per un margine più piccolo.
+
+**Ordine fisso di calibrazione**, dal più strutturale al meno — un parametro si fissa e non si ritocca dopo aver visto i risultati dei successivi, per non introdurre overfitting sequenziale mascherato da "abbiamo già deciso quello":
+
+1. `train_window × time_decay.base` (griglia congiunta, sezione 20.2/B8: `train_window ∈ {2,3,4,5}` × `time_decay.base ∈ {1.3, 1.5, 2.0, 2.5}`, sui soli target comuni a tutte le finestre testate);
+2. `reliability.function × reference_pv` (sqrt/linear × 25/30/34, validati esclusivamente tramite il test diretto della sezione 20.6bis, non tramite `HistoricalRating`);
+3. `bonus_weight` (griglia B12, sezione 11.3: `{0, 0.10, 0.15, 0.25, 0.35}` per D e A, tenendo fisso il rapporto Performance:Reliability, sezione 20.5a);
+4. `min_pv_for_percentile` (performance e bonus_profile, indipendenti, sezione 20.5c);
+5. `penalty_save_weight` (goalkeeping, sezione 20.5c);
+6. pesi della formula di rating (redistribuzione fine Performance/Reliability/BonusProfile per ruolo, sezione 20.5a).
+
+#### 20.5a Pesi della formula di rating
+
+Isolare il peso del BonusProfile stesso, tenendo fisso il rapporto tra Performance e Reliability (sezione 11.3, B12):
+
+```
+bonus_weight: 0, 0.10, 0.15 (default pre-registrato), 0.25, 0.35   — per D e A
+```
+
+`0` è l'ablation (BonusProfile serve?), gli altri valori rispondono a "quanto pesa?" — con 6 fold di selezione la griglia ha potenza sufficiente per un solo test invece di due, cosa che con 2 fold non sarebbe stata difendibile. Con `bonus_weight = 0.15` (default), Performance e Reliability per D/A diventano 0.60/0.25, allineate a C (sezione 12): variazioni indipendenti di redistribuzione Performance↔Reliability a `bonus_weight` fisso, se necessarie, si esplorano solo dopo aver fissato `bonus_weight` (punto 6 dell'ordine di calibrazione).
+
+#### 20.5b Parametri strutturali del modello temporale
+
+```
+train_window:               2, 3 (base), 4, 5                    (sezione 20.2, B8 — in griglia con time_decay.base)
+time_decay.base:            1.3, 1.5, 2.0, 2.5
+reliability.reference_pv:   25, 30 (base), 34
+```
+
+`time_decay.base = 2` assegna il 57% del peso complessivo a una singola stagione; con base 1.5 i pesi diventano ≈ 26/33/41 e con base 1.3 ≈ 30/33/37. La differenza tra "il modello guarda soprattutto l'ultimo anno" e "il modello media più stagioni" è una scelta di modellazione sostanziale, non un dettaglio di configurazione, e va decisa dai dati — insieme a `train_window`, con cui interagisce direttamente.
+
+#### 20.5c Filtri sul campione
 
 ```
 performance.min_pv_for_percentile:    1, 3, 5
@@ -789,14 +949,18 @@ goalkeeping.penalty_save_weight:      0.00, 0.05, 0.10
 ```
 
 Per ciascuna variazione, calcolare:
-- Spearman e precision@20 rispetto al target (per capire se la variazione migliora o peggiora);
+- Spearman e precision@20 rispetto al target, per fold e per ruolo (per capire se la variazione migliora o peggiora, sezione 20.5 sopra);
 - **rank correlation tra la configurazione base e la configurazione variata** (`Spearman(Rank_base, Rank_variazione)`) — più intuitiva delle sole metriche predittive per capire quanto il ranking finale "si muove" al variare dei pesi. Un valore alto (es. 0.95+) indica un modello robusto; un valore basso indica che il ranking è instabile e sensibile a scelte arbitrarie dei pesi, cosa da segnalare esplicitamente prima di usarlo per un'asta reale.
 
-Questa fase è importante ma non bloccante quanto i test C/D: va eseguita dopo aver verificato che il modello base supera le baseline, non prima.
+Questa fase è importante ma non bloccante quanto i test C/D: va eseguita dopo aver verificato che il modello base supera le baseline sui fold di selezione, non prima.
+
+**Il paragrafo del `validation_report.md` che dichiara i limiti** resta obbligatorio, ma cambia natura: da "non ho potenza statistica per calibrare quasi nulla" (versione a 2 fold) a "ecco l'ordine in cui ho calibrato, su quali dei 6 fold di selezione, con quale criterio di accettazione, cosa ho lasciato al default pre-registrato per mancanza di segnale concorde, e l'esito — pass/fail — del lock-box aperto una sola volta alla fine".
 
 ### 20.6 Nota informativa: correlazione tra Performance e Reliability
 
 Aggiungere nel report, per ciascun ruolo, il calcolo di `corr(Performance, Reliability)`. Le due dimensioni sono concettualmente separate (sezione 7), ma nella realtà è plausibile che siano correlate (i giocatori più forti tendono a giocare di più, quelli fragili meno). Non è un errore da correggere, ma un'informazione da riportare: una correlazione molto alta (es. > 0.85) significa che il modello sta dando peso, indirettamente, due volte a un fenomeno in parte sovrapposto — utile saperlo per interpretare correttamente i pesi scelti, senza che questo richieda necessariamente un intervento.
+
+**Aggiungere anche `corr(Performance, BonusProfile)` per ruolo (D/C/A).** È il test più diretto per il rischio di doppio conteggio della sezione 11.4: la Fm che alimenta Performance già incorpora gol e assist, quindi una correlazione alta con BonusProfile (che li ripesa separatamente) è evidenza quantitativa diretta — più diretta del confronto sull'ordinamento della sezione 11.4 — che il "modulatore" sta in parte ripetendo lo stesso segnale, e va letta insieme alla nota di calibrazione della sezione 11.3.
 
 ### 20.6bis Test diretto della Reliability (non solo indiretto)
 
@@ -804,18 +968,18 @@ Oggi la Reliability sarebbe validata soltanto di rimbalzo, tramite l'ablation su
 
 ```
 Spearman(Reliability_train, Pv_target)          per ruolo, su performance outcome
-Spearman(Reliability_train, [Pv_target >= 1])   per ruolo, su TUTTO l'universo quotato
+Spearman(Reliability_train, [Pv_target >= 1])   per ruolo, su TUTTO l'universo Serie A del target
 ```
 
-Il secondo test si calcola sull'universo quotato completo (sezione 20.3b), non sul solo performance outcome: escludere i `Pv = 0` da un test sulla disponibilità significherebbe rimuovere esattamente i casi che il test deve spiegare.
+Il secondo test si calcola sull'intero universo Serie A della stagione target (sezione 20.1: `PLAYED ∪ IN_SQUAD_NO_PLAY`), non sul solo performance outcome: escludere i `Pv = 0` da un test sulla disponibilità significherebbe rimuovere esattamente i casi che il test deve spiegare.
 
-**Baseline obbligatoria**: `Spearman(Pv_Last_Season, Pv_target)`. Se la Reliability elaborata (radice, saturazione a `reference_pv`, media pesata su 3 stagioni, stagioni a zero ricostruite dalle quotazioni) non batte il semplice numero di presenze dell'ultima stagione, la sua costruzione è sovrastruttura e va semplificata.
+**Baseline obbligatoria**: `Spearman(Pv_Last_Season, Pv_target)`. Se la Reliability elaborata (radice, saturazione a `reference_pv`, media pesata su `train_window` stagioni, stagioni a zero identificate dalle righe `IN_SQUAD_NO_PLAY`) non batte il semplice numero di presenze dell'ultima stagione, la sua costruzione è sovrastruttura e va semplificata.
 
-Questo test è anche la verifica quantitativa della correzione della sezione 9.1bis: eseguirlo con `use_quoted_zero_seasons` a `true` e a `false` e riportare entrambi i valori. Se la correzione non migliora nulla su questa metrica, il problema conoscitivo che risolve resta reale ma il peso della Reliability nel rating va rivisto al ribasso.
+Questo test è anche la verifica quantitativa della correzione della sezione 9.1bis: eseguirlo con `reliability.exclude_left_mid_season` a `true` e a `false` e riportare entrambi i valori. Se la correzione non migliora nulla su questa metrica, il problema conoscitivo che risolve resta reale ma il peso della Reliability nel rating va rivisto al ribasso.
 
 ### 20.7 Output della validazione
 
-Un report (`validation_report.md`, con eventuale export CSV delle tabelle) contenente tutte le metriche delle sezioni 20.1 e 20.3-20.6bis, per ciascun test rolling eseguito e **con una tabella per ruolo**, da consultare prima di considerare definitivi i parametri di config.yaml. Il report deve aprirsi con: coverage per ruolo (sezione 20.1), esito del Test C bloccante ruolo per ruolo, e in caso di mancato superamento una riga esplicita che lo dichiari — un report che seppellisce un fallimento del Test C dentro una tabella è inutile. Questa fase serve anche a calibrare empiricamente i pesi delle sezioni 8, 9, 10, 11, 12, 13, 19 — che partono come ipotesi dichiarate, non verità.
+Un report (`validation_report.md`, con eventuale export CSV delle tabelle) contenente tutte le metriche delle sezioni 20.1 e 20.3-20.6bis, per ciascuno dei 7 fold eseguiti (6 di selezione + 1 lock-box, sezione 20.2), **riportato per fold separatamente (mai mediato tra fold, sezione 20.5)** e **con una tabella per ruolo per ciascun target A e B** (sezione 20.4.0), da consultare prima di considerare definitivi i parametri di config.yaml. Il report deve aprirsi con: coverage per ruolo (sezione 20.1), esito del Test C bloccante ruolo per ruolo su Target A su ciascuno dei 6 fold di selezione **e** l'esito informativo su Target B affiancato, e in caso di mancato superamento del criterio bloccante su un fold una riga esplicita che lo dichiari — un report che seppellisce un fallimento del Test C dentro una tabella è inutile. Segue, separata e ben visibile, la sezione dedicata al **lock-box**: la configurazione congelata usata, l'esito pass/fail rispetto al criterio fissato in anticipo (sezione 20.5), e — solo in caso di fail — la conclusione che ne segue (rivedere la struttura, non ritoccare un parametro). Il report chiude con il paragrafo sull'ordine di calibrazione e i parametri effettivamente calibrati vs. lasciati al default pre-registrato (sezione 20.5). Questa fase serve anche a calibrare empiricamente i pesi delle sezioni 8, 9, 10, 11, 12, 13, 19 — che partono come ipotesi dichiarate, non verità.
 
 ## 21. Output finale
 
@@ -834,11 +998,11 @@ Colonne minime richieste:
 | R | Ruolo Classic della lista 2026/27, quello usato per i pesi della formula (sezione 4.1) |
 | R_Storico | Sequenza dei ruoli per stagione (es. `C/C/A`); popolato solo se differisce da R |
 | Squadra_2026_27 | Squadra stagione corrente (se disponibile) |
-| Categoria | STORICO / LIMITED_HISTORY / NEW |
-| Seasons_Available | Numero di stagioni con `Pv >= 1` per il giocatore (0-3) |
-| Seasons_Quoted | Numero di stagioni in cui il giocatore era nelle quotazioni pre-stagione (0-3). Se > Seasons_Available esistono stagioni in Serie A senza presenze, che abbassano la Reliability (sezione 9.1bis) |
-| HistoricalRating | Rating storico finale (= HistoricalRatingRaw × 100, sezione 12). Range per ruolo: P 0→100, C -15→100, D/A -25→100. **Non è una scala 0-100**: i valori negativi sono validi. Null se NEW |
-| AuctionRating | In questa versione, identico a HistoricalRating (vedi sezione 12.1 e nota di cautela sul naming) |
+| Categoria | PV_SUFFICIENTI / LIMITED_HISTORY / NEW |
+| Seasons_Available | Numero di stagioni con `Pv >= 1` (righe `PLAYED`) per il giocatore, nella finestra di train (0-train_window) |
+| Seasons_In_Squad | Numero di stagioni con una riga nel file statistiche (`PLAYED` o `IN_SQUAD_NO_PLAY`), nella finestra di train (0-train_window). Se > Seasons_Available esistono stagioni in Serie A senza presenze, che entrano nella Reliability secondo la regola della sezione 9.1bis (a `0` se rimasto in rosa tutta la stagione, escluse se `left_mid_season`) |
+| Seasons_Quoted | Numero di stagioni in cui il giocatore compare nel file quotazioni (0-train_window). Riflette la disponibilità del prezzo `Qt.I`, non la disponibilità in campo — quella è `Seasons_In_Squad` (sezione 2.3) |
+| HistoricalRating | Rating storico finale (= HistoricalRatingRaw × 100, sezione 12). Range per ruolo: P 0→100, D/C/A -15→100. **Non è una scala 0-100**: i valori negativi sono validi. Null se NEW |
 | Confidence | Alta / Media / Bassa (sezione 19) |
 | ConfidenceScore | Score continuo 0-1 da cui deriva Confidence. Esposto e non solo in debug: le soglie 0.75/0.50 sono arbitrarie in v1 e il continuo permette di ordinare i casi di frontiera |
 | Performance | Performance storica pesata, scala 0-1 |
@@ -847,11 +1011,11 @@ Colonne minime richieste:
 | DefenseScore | = Mv_Weighted, per Modificatore Difesa |
 | Trend_Value | Pendenza OLS di Performance per stagione (sezione 18.1); null se meno di 2 stagioni con `Pv >= 1` |
 | Trend_Label | Etichetta/simbolo andamento; `N/D` se Trend_Value è null |
-| Trend_Points | Numero di stagioni usate per calcolare Trend_Value (2 o 3) |
+| Trend_Points | Numero di stagioni usate per calcolare Trend_Value (da 2 a train_window) |
 | Mv_Weighted | Mv storica pesata (decadimento esponenziale). Non è una "Mv media" in senso tradizionale, è una feature pesata a fini di modello — vedi nota 21.1 |
 | Fm_Weighted | Fm storica pesata (decadimento esponenziale) |
 | Pv_Weighted | Pv storiche pesate (decadimento esponenziale). **Non rappresenta una stima di partite giocate** — è una feature temporale derivata, usata solo a fini informativi/debug, non entra nel calcolo di Reliability (che usa il Pv di ogni singola stagione, sezione 9.1) |
-| Pv_Totale | Somma reale di Pv su tutte le stagioni disponibili (usato per la categoria, sezione 6) |
+| Pv_Totale | Somma reale di Pv sulle stagioni della finestra di train (usato per la categoria, sezione 6) |
 | Pv_Last_Season | Pv dell'ultima stagione disponibile per il giocatore (dato grezzo, non pesato) |
 | Fm_Last_Season | Fm dell'ultima stagione disponibile (dato grezzo, coincide con Baseline 0 della sezione 20.4) |
 | Mv_Last_Season | Mv dell'ultima stagione disponibile (dato grezzo) |
@@ -860,8 +1024,9 @@ Colonne minime richieste:
 | Ass_Rate | Assist per presenza, media pesata dei rate stagionali (vedi nota 21.2) |
 | RigoriDipendenza | Flag/valore su dipendenza da rigori (attaccanti/centrocampisti) |
 | RoleMedianRating | Mediana di HistoricalRating del proprio ruolo, su tutti i giocatori con rating. Popolata per tutti, NEW inclusi; **non è un rating personale** (sezione 21.3) |
-| Squadra_2023_24 / 2024_25 / 2025_26 | Storico squadre, per riferimento |
-| Note | Testo libero per i casi che richiedono contesto (es. `nessuno storico Serie A 2023/24–2025/26`) |
+| Qt.I_2026_27 | Prezzo iniziale dalla quotazione 2026/27 (sezione 2.3), per riferimento in asta — non entra in nessun calcolo del rating |
+| Squadra storiche (una colonna per stagione della finestra di train) | Storico squadre, per riferimento |
+| Note | Testo libero per i casi che richiedono contesto (es. `nessuno storico Serie A nella finestra di train`) |
 
 Nota: `Rating_Band` (es. Elite/A/B/C/D) è volutamente escluso da questa versione — è una classificazione decisionale che va introdotta solo dopo aver validato che `HistoricalRating` è ben calibrato (sezione 20).
 
@@ -869,7 +1034,7 @@ Nota: `Rating_Band` (es. Elite/A/B/C/D) è volutamente escluso da questa version
 
 ### 21.1 Chiarimento su Pv_Weighted vs Pv_Totale
 
-Da documentare esplicitamente nel README, perché sono due numeri che possono sembrare in contraddizione a chi legge il CSV senza contesto (es. `Pv_Totale = 70` ma `Pv_Weighted = 26.8`): *"Pv_Weighted non è una stima di partite giocate; è una feature temporale pesata (stesso decadimento esponenziale delle altre metriche storiche) usata a fini di analisi/debug. Pv_Totale è la somma reale e non pesata delle presenze disponibili, usata per determinare la categoria STORICO/LIMITED_HISTORY/NEW."*
+Da documentare esplicitamente nel README, perché sono due numeri che possono sembrare in contraddizione a chi legge il CSV senza contesto (es. `Pv_Totale = 70` ma `Pv_Weighted = 26.8`): *"Pv_Weighted non è una stima di partite giocate; è una feature temporale pesata (stesso decadimento esponenziale delle altre metriche storiche) usata a fini di analisi/debug. Pv_Totale è la somma reale e non pesata delle presenze disponibili, usata per determinare la categoria PV_SUFFICIENTI/LIMITED_HISTORY/NEW."*
 
 ### 21.2 Chiarimento sul metodo di aggregazione di Gf_Rate e Ass_Rate
 
@@ -885,7 +1050,7 @@ GoalRate_aggregato = Σ Gf_i / Σ Pv_i
 
 Il **Metodo 1** è quello richiesto, per coerenza con il resto del modello temporale (stessi pesi di decadimento esponenziale usati per Performance, Reliability, Mv_Weighted, Fm_Weighted — sezione 8). Il Metodo 2 darebbe un risultato numericamente diverso e non andrebbe usato al suo posto, né scambiato con esso in fase di implementazione.
 
-Lo stesso Metodo 1 si applica a `NonPenaltyGf_Rate` (sezione 11.1). E in entrambi i casi valgono le sole righe `STATS`: una stagione a `Pv = 0` non contribuisce con un rate pari a zero, non contribuisce affatto (sezioni 4 e 8).
+Lo stesso Metodo 1 si applica a `NonPenaltyGf_Rate` (sezione 11.1). E in entrambi i casi valgono le sole righe `PLAYED`: una stagione a `Pv = 0` non contribuisce con un rate pari a zero, non contribuisce affatto (sezioni 4 e 8).
 
 Non serve un file Excel separato per la vista sintetica in questa versione — un CSV unico, ben ordinabile per HistoricalRating decrescente e filtrabile per R, è sufficiente sia per la consultazione manuale sia per l'uso conversazionale.
 
@@ -897,10 +1062,10 @@ I `NEW` non sono un caso marginale: neopromosse e acquisti dall'estero possono r
 |---|---|
 | `Categoria` | `NEW` |
 | `HistoricalRating`, `Rank`, `Rank_Role` | `null` — mai un valore convenzionale, mai messi in coda alla classifica |
-| `Seasons_Quoted` | può essere > 0: quotato in passato e mai impiegato, informazione tutt'altro che neutra |
-| `Reliability` | calcolabile se `Seasons_Quoted > 0` (sarà molto bassa); null se mai quotato |
+| `Seasons_In_Squad` | può essere > 0: era in rosa in passato e mai impiegato, informazione tutt'altro che neutra |
+| `Reliability` | calcolabile se `Seasons_In_Squad > 0` (sarà molto bassa, salvo stagioni tutte `left_mid_season`, sezione 9.1bis); null se mai stato in rosa nella finestra di train |
 | `RoleMedianRating` | mediana di ruolo, come termine di paragone |
-| `Note` | es. `nessuno storico Serie A 2023/24–2025/26` |
+| `Note` | es. `nessuno storico Serie A nella finestra di train` |
 
 `RoleMedianRating` serve a un solo scopo: dare un punto di riferimento in asta ("questo sconosciuto va confrontato con un ruolo la cui mediana è 48"), senza attribuire al giocatore un valore che nessun dato supporta. Non entra in nessun calcolo, non è un'imputazione, e non va usata per ordinare i NEW tra loro.
 
@@ -940,26 +1105,30 @@ Prima di considerare valido il dataset, eseguire:
 - `Gf >= R+` per ogni riga (ERROR: i gol su rigore sono un sottoinsieme dei gol fatti, e altrimenti `NonPenaltyGoalRate` diventa negativo);
 - `Gs > 0` su giocatori con `R ≠ P` (WARNING: nel dataset i gol subiti riguardano i portieri; un valore popolato altrove va verificato prima di usarlo).
 
-**Righe QUOTED_ONLY (sezione 4)**
-- ogni riga `QUOTED_ONLY` ha `Pv = 0` e `Fm`/`Mv` a null, mai a zero (ERROR);
-- numero di righe `QUOTED_ONLY` generate per stagione (INFO): un valore nullo o implausibilmente alto segnala un problema di join tra quotazioni e statistiche;
-- Id presenti nelle statistiche di una stagione ma **assenti** dalle quotazioni della stessa stagione (WARNING): è possibile (giocatore aggiunto in corsa, listone aggiornato), ma se il numero è alto la lista quotazioni usata è probabilmente della versione sbagliata.
+**Righe `IN_SQUAD_NO_PLAY` e `left_mid_season` (sezione 4)**
+- ogni riga `IN_SQUAD_NO_PLAY` ha `Pv = 0` e `Fm`/`Mv` a null, mai a zero (ERROR);
+- numero di righe `IN_SQUAD_NO_PLAY` generate per stagione (INFO): un valore fuori dal range storico atteso (107-153 su 10 stagioni verificate) segnala un problema nella lettura del foglio `Tutti`/`Ceduti`;
+- quota di righe `IN_SQUAD_NO_PLAY` con `left_mid_season = true` per stagione (INFO): il range storico atteso è 56-75% dei `Pv = 0` — un valore molto fuori da quel range segnala un problema nella ricostruzione del flag (foglio `Ceduti` o diff `stats \ quotazioni_Tutti`, sezione 4.0bis), non un dato reale;
+- Id presenti nelle statistiche di una stagione ma **assenti** dalla quotazione della stessa stagione, esclusi quelli già marcati `left_mid_season` (WARNING): può indicare un problema di versione del file quotazioni, non necessariamente un errore.
+
+**Universo di test / arrivi tardivi (sezione 20.1, B4)**
+- per ogni fold, quota di Id dell'universo di test (target T) assenti dalla quotazione pre-stagione di T, quando disponibile (INFO): sono gli arrivi successivi all'inizio della stagione (es. gennaio), un limite noto e misurato dell'universo di test, non un errore.
 
 **Ruoli (sezione 4.1)**
-- cambio di `R` tra stagioni per lo stesso Id (WARNING `role_change`);
+- cambio di `R` tra stagioni per lo stesso Id (WARNING `role_change`, **obbligatorio nel report**: 74/2306 Id, 3.2%, cambiano ruolo su 10 stagioni — non un caso raro da poter ignorare, sezione 4.1);
 - cambio di `R` da o verso `P` (WARNING `role_change_gk`, da elencare per controllo manuale);
 - `R` della lista 2026/27 diverso da `R` dell'ultima stagione disponibile (INFO: frequente e legittimo, ma utile da sapere in asta).
 
 **Distribuzioni delle feature (bloccanti)**
 - per ogni ruolo e stagione: quota di giocatori nel blocco a `rate = 0` e mediana di `BonusProfile_normalized`. Se la quota supera `bonus_profile.max_zero_share` o la mediana si discosta da 0 più di 0.10 → ERROR: il modulatore non è centrato (sezione 11.2);
-- `Performance ∈ [0, 1]`, `Reliability ∈ [0, 1]`, `BonusProfile ∈ [-1, +1]` su ogni riga (ERROR se fuori range: tipicamente una divisione per 100 dimenticata, sezione 10);
+- `Performance ∈ [0, 1]`, `Reliability ∈ [0, 1]`, `BonusProfile ∈ [-1, +1]`, `ConfidenceScore ∈ [0, 1]` su ogni riga (ERROR se fuori range: tipicamente una divisione per 100 dimenticata, sezione 10 — o, per `ConfidenceScore`, un caso limite non gestito in sezione 19);
 - nessun giocatore con `Seasons_Available = 1` e `Confidence = Alta` (ERROR, sezione 19);
 - nessun giocatore con `Seasons_Available = 1` e `Trend_Label` diverso da `N/D` (ERROR, sezione 18.1);
-- quota di giocatori con almeno una stagione a `Reliability_stagione = 0` derivata da riga `QUOTED_ONLY` (INFO, con elenco da verificare a campione: è il limite delle cessioni in uscita dichiarato in sezione 9.1bis).
+- quota di giocatori con almeno una stagione a `Reliability_stagione = 0` (righe `IN_SQUAD_NO_PLAY` con `left_mid_season = false`, sezione 9.1bis) (INFO, con elenco da verificare a campione).
 
 **Coerenza Id ↔ Nome**
-- stesso Id con Nome che cambia tra stagioni (WARNING — puà rivelare un errore nel dataset sorgente, non necessariamente un problema, ma va segnalato);
-- stesso Nome associato a più Id diversi (WARNING, stesso motivo).
+- stesso Id con Nome che cambia tra stagioni (WARNING — puà rivelare un errore nel dataset sorgente, non necessariamente un problema, ma va segnalato; 24 Id nella finestra verificata hanno grafie multiple, tutte varianti tipografiche);
+- stesso Nome associato a più Id diversi (WARNING, stesso motivo — 4 casi noti nella finestra verificata: Vergara, Gori, Buksa, Ndiaye, sezione 3.1). Questo controllo è il presidio diretto contro un join per nome mai fatto per errore.
 
 **Join**
 - quanti giocatori storici sono presenti nella lista 2026/27 (INFO);
@@ -977,30 +1146,27 @@ Prima di considerare valido il dataset, eseguire:
 ```
 project/
 │
-├── raw/
-│   ├── stats/
-│   │   ├── Statistiche_Fantacalcio_Stagione_2023_24.xlsx
-│   │   ├── Statistiche_Fantacalcio_Stagione_2024_25.xlsx
-│   │   └── Statistiche_Fantacalcio_Stagione_2025_26.xlsx
-│   ├── quotazioni/
-│   │   ├── Quotazioni_Fantacalcio_2023_24.xlsx
-│   │   ├── Quotazioni_Fantacalcio_2024_25.xlsx
-│   │   └── Quotazioni_Fantacalcio_2025_26.xlsx
-│   └── current/
-│       └── giocatori_2026_27.xlsx
-│
 ├── data/
-│   ├── historical.csv          # dataset long, tutte le stagioni
-│   ├── merged.csv              # dopo join con lista 2026/27
+│   ├── stats/
+│   │   ├── Statistiche_Fantacalcio_Stagione_2016_17.xlsx
+│   │   ├── ...
+│   │   └── Statistiche_Fantacalcio_Stagione_2025_26.xlsx   (10 file)
+│   ├── player_lists/
+│   │   ├── Quotazioni_Fantacalcio_Stagione_2016_17.xlsx
+│   │   ├── ...
+│   │   └── Quotazioni_Fantacalcio_Stagione_2026_27.xlsx    (11 file — l'ultimo è anche
+│   │                                                          la lista giocatori corrente, sez. 2.2)
+│   ├── historical.csv          # dataset long, tutte le stagioni disponibili (sezione 4)
+│   ├── merged.csv              # dopo join con la lista corrente
 │   └── qc_log.csv              # controlli qualità/join (sezione 22)
 │
 ├── output/
 │   ├── ranking_dataset.csv     # output finale unico (sezione 21)
-│   └── validation_report.md    # metriche di backtest, una tabella per ruolo (sezione 20.7)
+│   └── validation_report.md    # metriche di backtest, per fold e per ruolo (sezione 20.7)
 │
 ├── src/
-│   ├── load_data.py            # statistiche + quotazioni + lista corrente
-│   ├── build_universe.py       # righe STATS/QUOTED_ONLY, join, categorie (sezioni 4, 6)
+│   ├── load_data.py            # statistiche + quotazioni
+│   ├── build_universe.py       # righe PLAYED/IN_SQUAD_NO_PLAY, left_mid_season, join, categorie (sezioni 4, 6)
 │   ├── merge_seasons.py
 │   ├── calculate_features.py   # performance, reliability, bonus profile, goalkeeping
 │   ├── calculate_rating.py
@@ -1014,24 +1180,36 @@ project/
 ## 24. Esempio config.yaml (indicativo, non esaustivo)
 
 ```yaml
-seasons:
+seasons:                           # tutte le stagioni disponibili; train_window seleziona la finestra
+  - "2016/17"
+  - "2017/18"
+  - "2018/19"
+  - "2019/20"
+  - "2020/21"
+  - "2021/22"
+  - "2022/23"
   - "2023/24"
   - "2024/25"
   - "2025/26"
 
+train_window: 3                    # numero di stagioni usate per il rating (sez. 8, 20.2) — parametro, non
+                                    # costante; da testare 2/3/4/5 in griglia con time_decay.base (sez. 20.5b, B8);
+                                    # la produzione 2026/27 usa il valore selezionato dal backtest
+
 paths:
-  stats: "raw/stats"
-  quotazioni: "raw/quotazioni"     # obbligatorio: produzione (sez. 9.1bis) + validazione (sez. 20.1)
-  current: "raw/current"
+  stats: "data/stats"
+  player_lists: "data/player_lists"   # quotazioni; l'ultimo file della serie è anche la lista corrente (sez. 2.2)
 
 time_decay:
-  base: 2                          # da testare: 1.3 / 1.5 / 2.0 / 2.5 (sez. 20.5b)
-  max_seasons: null                # finestra massima, utile al crescere di N (sez. 26.1)
+  base: 1.5                        # con base=2 l'ultima stagione pesa 57%, rendendo il modello quasi
+                                    # ridondante con Baseline 0 (sez. 20.4.3/27) — da testare: 1.3/1.5/2.0/2.5
+  max_seasons: null                # finestra massima entro train_window, se le stagioni più vecchie diventano
+                                    # numericamente irrilevanti (sez. 26.1)
 
 reliability:
   reference_pv: 30                 # da testare: 25 / 30 / 34 (sez. 20.5b)
-  function: sqrt
-  use_quoted_zero_seasons: true    # sez. 9.1bis; false = variante Model 3a in ablation
+  function: sqrt                   # alternative da testare: linear (sez. 9.1) — validato solo via 20.6bis
+  exclude_left_mid_season: true    # sez. 9.1bis, B3; false = variante Model 3a in ablation
 
 history:
   historical_min_pv_total: 15      # unico parametro: LIMITED_HISTORY = 1..(soglia-1), sez. 6
@@ -1043,13 +1221,13 @@ bonus_profile:
   min_pv_for_percentile: 1         # indipendente da performance.min_pv_for_percentile (sez. 11.1bis)
   goal_rate_metric: GoalRate       # oppure NonPenaltyGoalRate (sez. 11.1)
   max_zero_share: 0.30             # soglia del controllo QC bloccante (sez. 11.2 / 22)
-  zero_handling:                   # sez. 11.2
-    D: split
-    C: split
-    A: midrank
+  zero_handling:                   # sez. 11.2 — default recenter per tutti i ruoli;
+    D: recenter                    # split (Model 3c) e midrank (Model 3d) testati in ablation
+    C: recenter
+    A: recenter
   roles:
     D:
-      weight_in_rating: 0.25
+      weight_in_rating: 0.15       # default rivisto da 0.25 (B12) — griglia {0, 0.10, 0.15, 0.25, 0.35}
       goal_weight: 0.60
       assist_weight: 0.40
     C:
@@ -1057,7 +1235,7 @@ bonus_profile:
       goal_weight: 0.60
       assist_weight: 0.40
     A:
-      weight_in_rating: 0.25
+      weight_in_rating: 0.15       # default rivisto da 0.25 (B12) — griglia {0, 0.10, 0.15, 0.25, 0.35}
       goal_weight: 0.70
       assist_weight: 0.30
 
@@ -1067,17 +1245,17 @@ rating:
     reliability: 0.25
     bonus: 0.00
   D:
-    performance: 0.55
-    reliability: 0.20
-    bonus: 0.25
+    performance: 0.60              # rivisto da 0.55 (B12): Performance/Reliability riscalati a rapporto
+    reliability: 0.25              # costante 55:20 sullo spazio residuo dopo bonus=0.15 → allineato a C
+    bonus: 0.15
   C:
     performance: 0.60
     reliability: 0.25
     bonus: 0.15
   A:
-    performance: 0.55
-    reliability: 0.20
-    bonus: 0.25
+    performance: 0.60              # rivisto da 0.55 (B12), stessa logica di D
+    reliability: 0.25
+    bonus: 0.15
 
 goalkeeping:
   fm_weight: 0.75
@@ -1089,8 +1267,8 @@ confidence:
   season_coverage_weight: 0.40
   availability_weight: 0.40
   stability_weight: 0.20           # escluso, con pesi rinormalizzati, se seasons_available < 2 (sez. 19)
-  availability_reference_pv_total: 90   # = n_seasons × reference_pv, da ricalcolare al crescere di N (sez. 26.1)
-  cv_reference: 0.20               # saturazione del coefficiente di variazione della Fm (sez. 19)
+  # availability_reference_pv_total non è più una costante: è train_window × reliability.reference_pv (sez. 19, B14)
+  sd_reference: 0.20                # saturazione della deviazione standard di Performance_stagione (sez. 19)
   threshold_alta: 0.75
   threshold_media: 0.50
 
@@ -1103,9 +1281,13 @@ trend:
   strong_down: -0.20
 
 validation:
-  target: fm_percentile_by_role     # sez. 20.4.0 — mai la Fm assoluta
-  metrics_by_role: true             # sez. 20.4.0 — nessuna metrica cross-ruolo
+  train_window_grid: [2, 3, 4, 5]          # sez. 20.2/20.5b, B8 — in griglia con time_decay.base
+  target_a: fm_percentile_by_role          # sez. 20.4.0 — mai la Fm assoluta; solo Pv >= 1 nel target
+  target_b: fm_x_pv_percentile_by_role     # sez. 20.4.0 — intero universo Serie A del target, Pv = 0 incluso
+  metrics_by_role: true              # sez. 20.4.0 — nessuna metrica cross-ruolo
   baseline_in_percentile_space: true
+  external_baselines: [qt_i, fvm]    # sez. 20.4.3, B9 — fvm valido solo su fold con target >= 2022/23
+  lockbox_target: "2025/26"          # sez. 20.2/20.5, B10 — mai usato in calibrazione
   precision_n:
     P: [5, 10, 20]
     D: [10, 20, 30]
@@ -1116,49 +1298,47 @@ validation:
 ## 25. Roadmap di implementazione
 
 **Fase 1 — Dataset**
-- [ ] Importare i tre Excel statistiche **e** le tre quotazioni pre-stagione (sezione 2.3).
-- [ ] Uniformare nomi colonne, aggiungere campo Stagione e flag `Fonte` (STATS / QUOTED_ONLY).
-- [ ] Generare le righe `QUOTED_ONLY`: Id quotati e assenti dalle statistiche della stessa stagione, con `Pv = 0` e Fm/Mv null (sezione 4).
+- [ ] Importare i 10 Excel statistiche (foglio `Tutti`, più `Ceduti` dove presente) **e** gli 11 Excel quotazioni (sezione 2.1/2.3).
+- [ ] Uniformare nomi colonne, aggiungere campo Stagione e campo `RowType` (`PLAYED` / `IN_SQUAD_NO_PLAY`, sezione 4).
+- [ ] Popolare il flag `left_mid_season` (foglio `Ceduti` fino al 2021/22, diff `stats \ quotazioni_Tutti` dal 2022/23, sezione 4.0bis).
 - [ ] Eseguire i controlli sugli Id (sezione 3.2) e sui ruoli (sezione 4.1), produrre qc_log.
-- [ ] Costruire il dataset storico in formato long.
-- [ ] Importare la lista 2026/27.
-- [ ] Join tramite Id; classificare STORICO / LIMITED_HISTORY / NEW e popolare `Seasons_Available` e `Seasons_Quoted` (sezione 6).
+- [ ] Costruire il dataset storico in formato long, su tutte le stagioni disponibili.
+- [ ] Importare la lista giocatori corrente (= quotazione 2026/27, sezione 2.2).
+- [ ] Join tramite Id; classificare PV_SUFFICIENTI / LIMITED_HISTORY / NEW e popolare `Seasons_Available`, `Seasons_In_Squad` e `Seasons_Quoted` (sezione 6, 21).
 
 **Fase 2 — Feature**
-- [ ] Calcolare Fm/Mv/Pv pesate (decadimento esponenziale, sezione 8), ripesando le stagioni mancanti sulle sole righe STATS.
-- [ ] Calcolare Reliability per stagione e aggregata, includendo le stagioni quotate a `Pv = 0` con peso pieno (sezioni 9.1 e 9.1bis).
+- [ ] Calcolare Fm/Mv/Pv pesate (decadimento esponenziale, sezione 8, su `train_window` stagioni), ripesando le stagioni mancanti sulle sole righe `PLAYED`.
+- [ ] Calcolare Reliability per stagione e aggregata: righe `PLAYED` a peso pieno, righe `IN_SQUAD_NO_PLAY` con `left_mid_season = false` a `Reliability_stagione = 0` peso pieno, righe `IN_SQUAD_NO_PLAY` con `left_mid_season = true` escluse e ripesate (sezioni 9.1 e 9.1bis, B3).
 - [ ] Calcolare Performance come percentile Fm per ruolo/stagione, mappando **anche** i giocatori sotto `min_pv` sulla distribuzione filtrata (sezione 10).
 - [ ] Calcolare GoalRate, NonPenaltyGoalRate, AssistRate e BonusProfile per ruolo, con il trattamento dei blocchi a zero (sezioni 11.1, 11.2).
 - [ ] Verificare la centratura di BonusProfile per ruolo — controllo bloccante (sezioni 11.2, 22).
 - [ ] Calcolare Trend come pendenza OLS con la regola dei casi non calcolabili (sezione 18.1) e i flag di rischio (sezione 18.2).
 
 **Fase 3 — Rating**
-- [ ] Applicare le formule per ruolo usando `R` della lista 2026/27 per i pesi (sezioni 12, 4.1).
-- [ ] Calcolare ConfidenceScore con `StabilityScore` definito e la regola per `seasons_available < 2` (sezione 19).
+- [ ] Applicare le formule per ruolo usando `R` della lista corrente per i pesi (sezioni 12, 4.1), con `bonus_weight` di default 0.15 per D/A (sezione 11.3, B12).
+- [ ] Calcolare ConfidenceScore con `StabilityScore` definito, normalizzato su `train_window` (sezione 19, B14) e la regola per `seasons_available < 2`.
 - [ ] Calcolare DefenseScore da Mv_Weighted (sezione 17).
 - [ ] Calcolare `Rank_Role` (primario) e `Rank` globale (informativo) con tie-break deterministico (sezione 12.0bis).
 - [ ] Popolare `RoleMedianRating` e i campi previsti per i NEW (sezione 21.3).
 - [ ] Eseguire i controlli di qualità, inclusi quelli bloccanti su range e distribuzioni (sezione 22).
-- [ ] Esportare `ranking_dataset.csv`, ordinato per R + Rank_Role (sezione 21).
+- [ ] Esportare `ranking_dataset.csv`, ordinato per R + Rank_Role, **senza** colonna `AuctionRating` (sezione 21, B11).
 
 **Fase 4 — Validazione**
-- [ ] Costruire l'universo di test dalle quotazioni pre-stagione, non dalle statistiche consuntive (sezione 20.1, evita survivorship bias).
-- [ ] Calcolare e riportare il Coverage del test, per ruolo (sezione 20.1).
-- [ ] Implementare il target come percentile di Fm per ruolo nella stagione target e convertire le baseline nello stesso spazio (sezione 20.4.0) — **prima** di calcolare qualunque metrica.
-- [ ] Simulare previsione 2025/26 usando solo 2023/24+2024/25; se i dati bastano, eseguire anche train=[2023/24]→target=2024/25 (sezione 20.2, rolling parametrico).
-- [ ] Separare performance outcome (Pv≥1 nel target) da availability outcome (tutto l'universo quotato, inclusi Pv=0) — sezione 20.3.
-- [ ] Calcolare Pearson, Spearman, MAE, Median AE **per ruolo** nello spazio percentile (sezione 20.4.1, Test A).
+- [ ] Costruire l'universo di test per ogni fold direttamente dal file statistiche del target (`PLAYED ∪ IN_SQUAD_NO_PLAY`, sezione 20.1, B4) — non più dalle quotazioni.
+- [ ] Calcolare e riportare il Coverage del test, per ruolo e per fold (sezione 20.1), e la quota di arrivi tardivi rispetto alla quotazione pre-stagione del target quando disponibile.
+- [ ] Implementare Target A (percentile di Fm per ruolo, solo Pv≥1 nel target) e Target B (percentile di Fm×Pv per ruolo, intero universo Serie A del target) e convertire le baseline nello stesso spazio (sezione 20.4.0) — **prima** di calcolare qualunque metrica.
+- [ ] Eseguire il backtest rolling sui 7 fold (6 di selezione, target 2019/20→2024/25, 1 lock-box target 2025/26 mai guardato in calibrazione — sezione 20.2, B6).
+- [ ] Separare performance outcome (Pv≥1 nel target) da availability outcome (intero universo Serie A del target, inclusi Pv=0) — sezione 20.3.
+- [ ] Calcolare Pearson, Spearman, MAE, Median AE **per ruolo e per fold** nello spazio percentile (sezione 20.4.1, Test A).
 - [ ] Calcolare precision@N con N dimensionato sul ruolo e la Top-N Availability Rate corrispondente (sezione 20.4.2, Test B).
-- [ ] Calcolare le baseline 0/1/2 e verificare che il modello le batta in almeno 3 ruoli su 4 (sezione 20.4.3, Test C — bloccante).
-- [ ] Eseguire l'ablation Model 1/2/3 e le varianti 3a/3b/3c (sezione 20.4.4, Test D) e il controllo doppio conteggio del BonusProfile (sezione 11.4).
-- [ ] Eseguire il test diretto della Reliability contro `Pv_target` e contro la baseline `Pv_Last_Season` (sezione 20.6bis).
-- [ ] Testare `performance.min_pv_for_percentile` e `bonus_profile.min_pv_for_percentile`, indipendentemente, con valori 1, 3, 5.
-- [ ] Testare `time_decay.base` (1.3 / 1.5 / 2.0 / 2.5) e `reliability.reference_pv` (25 / 30 / 34) — sezione 20.5b.
-- [ ] Testare `goalkeeping.penalty_save_weight` con valori 0.00, 0.05, 0.10 (sezione 13).
-- [ ] Eseguire la sensitivity analysis dei pesi e calcolare la rank correlation tra configurazioni (sezione 20.5).
-- [ ] Calcolare corr(Performance, Reliability) per ruolo, come nota informativa (sezione 20.6).
-- [ ] Produrre `validation_report.md` con una tabella di sintesi per ruolo e l'esito del Test C in apertura (sezione 20.7).
-- [ ] Calibrare i parametri di config.yaml sulla base dei risultati.
+- [ ] Calcolare le baseline 0/1/2/3/4 (incluse `Qt.I` su tutti i fold e `FVM` sui fold con target dal 2022/23, B9) su Target A e verificare che il modello batta `Fm_Weighted` in almeno 3 ruoli su 4 su ciascuno dei 6 fold di selezione (sezione 20.4.3, Test C — bloccante); ripetere lo stesso confronto su Target B, obbligatorio ma non bloccante.
+- [ ] Eseguire l'ablation Model 1/2/3 e le varianti 3a (ora `exclude_left_mid_season`)/3b/3c/3d (sezione 20.4.4, Test D) su entrambi i target, e il controllo doppio conteggio del BonusProfile: `Rating_senza_BonusProfile` vs `con_BonusProfile` e `corr(Performance, BonusProfile)` per ruolo (sezione 11.4, sezione 20.6).
+- [ ] Eseguire il test diretto della Reliability contro `Pv_target` e contro la baseline `Pv_Last_Season` (sezione 20.6bis), incluso il confronto tra `reliability.function = sqrt` e `linear`, e fra `exclude_left_mid_season = true/false`.
+- [ ] Calcolare la calibrazione per fascia (bucket) per ruolo e per target, segnalando eventuali inversioni di monotonicità (sezione 20.4.5, Test E).
+- [ ] Calibrare nell'ordine fisso della sezione 20.5 (B10), sui 6 fold di selezione: `train_window × time_decay.base` (griglia 2/3/4/5 × 1.3/1.5/2.0/2.5, sui target comuni, B8) → `reliability.function × reference_pv` (via 20.6bis) → `bonus_weight` (griglia B12) → `min_pv_for_percentile` (performance e bonus_profile, indipendenti) → `penalty_save_weight` (0.00/0.05/0.10) → pesi della formula. Un parametro si fissa e non si ritocca dopo aver visto i successivi.
+- [ ] Accettare un cambio di default solo se concorde in segno in ≥4 dei 6 fold di selezione **e** in ≥3 dei 4 ruoli (sezione 20.5).
+- [ ] Produrre `validation_report.md`: coverage e Test C per ruolo/fold in apertura, tabelle sempre per fold (mai mediate) con mediana + dispersione quando riportata in sintesi, sezione dedicata al lock-box (esito pass/fail rispetto al criterio fissato in anticipo), paragrafo di chiusura sull'ordine di calibrazione e sui parametri lasciati al default (sezione 20.7).
+- [ ] **Aprire il lock-box (target 2025/26) una sola volta**, a configurazione congelata: se il criterio di fallimento scatta (non batte le baseline in ≥3 ruoli su 4), tornare alla struttura del modello, non ritoccare un parametro (sezione 20.5, B10).
 
 **Fase 5 — futuro (fuori scope ora)**
 - [ ] Aggiungere ruoli Mantra.
@@ -1172,22 +1352,27 @@ Ogni stagione la pipeline deve poter essere rieseguita aggiungendo **tre** file,
 
 | File | Serve a | Disponibilità |
 |---|---|---|
-| statistiche della stagione conclusa | storico, Performance, BonusProfile | a fine stagione |
-| quotazioni pre-stagione della stagione conclusa | righe `QUOTED_ONLY` per la Reliability (sezione 9.1bis) e universo di validazione (sezione 20.1) | era disponibile a inizio di quella stagione: **va archiviata quando esce, non recuperata dopo** |
-| lista giocatori della nuova stagione | universo di produzione (sezione 2.2) | prima dell'asta |
+| statistiche della stagione conclusa | storico, Performance, BonusProfile, righe `IN_SQUAD_NO_PLAY` (sezione 4) | a fine stagione |
+| quotazioni della stagione appena conclusa | flag `left_mid_season` per Reliability (sezione 9.1bis, tramite diff `stats \ quotazioni_Tutti`) e baseline `Qt.I`/`FVM` (sezione 20.4.3) | va archiviata **a inizio stagione**, quando è ancora un listone pre-asta: recuperata mesi dopo è già uno snapshot di fine stagione (sezione 2.3, verificato su 10 stagioni — l'errore già commesso in questa finestra) |
+| lista giocatori della nuova stagione | universo di produzione (sezione 2.2) = quotazione pre-stagione della nuova annata | prima dell'asta |
 
-**Nota operativa importante**: le quotazioni pre-stagione sono un dato **deperibile**. Vengono aggiornate in corso d'anno e la versione di inizio stagione può non essere più recuperabile mesi dopo. Ora che servono anche in produzione e non solo in validazione, l'archiviazione del file al momento della pubblicazione è un passo obbligatorio del ciclo annuale, non un'accortezza opzionale.
+**Nota operativa importante**: le quotazioni sono un dato **deperibile**, e questa revisione ne ha la controprova diretta: delle 11 stagioni disponibili, solo l'ultima (2026/27) è risultata un listone di inizio stagione — tutte le altre, recuperate successivamente, sono snapshot di fine stagione (`Qt.A ≠ Qt.I` per ~85% delle righe, sezione 2.3). `Qt.I` resta valido anche in quei file (non viene sovrascritto), ma il roster `Tutti` no. L'archiviazione della quotazione pre-stagione **al momento della pubblicazione**, non dopo, è un passo obbligatorio del ciclo annuale — l'unico modo per evitare che la prossima revisione di questa finestra scopra lo stesso limite sulla stagione appena giocata.
 
 L'unico aggiornamento previsto in `config.yaml` è l'elenco delle stagioni: i pesi del decadimento esponenziale si calcolano automaticamente dalla formula della sezione 8 e non vanno rimappati a mano.
 
-### 26.1 Cosa va riconsiderato quando la finestra storica cresce
+### 26.1 Cosa è già stato adeguato in questa revisione, e cosa resta da riconsiderare oltre N=10
 
-Con N che diventa 4, 5, 6 stagioni, alcune scelte tarate su N=3 non vanno ereditate per inerzia:
+Le voci elencate in questa sezione nella revisione precedente (scritta per N=3) sono state **attuate** in questa revisione, ora che N=10 è realtà e non ipotesi:
 
-- `SeasonCoverage` e `AvailabilityScore` (sezione 19) sono normalizzati su 3 e su 90 (`3 × reference_pv`): devono diventare `N` e `N × reference_pv`, altrimenti la Confidence si satura e smette di discriminare;
-- con `time_decay.base = 2` e N grande le stagioni più vecchie diventano numericamente irrilevanti (con N=6 la prima pesa l'1.6%): a quel punto conviene una finestra massima (`time_decay.max_seasons`) invece di trascinare stagioni che non spostano nulla;
-- il backtest rolling (sezione 20.2) guadagna un punto di valutazione per ogni stagione aggiunta: da quel momento le metriche vanno riportate come media su più test, non su un test singolo, che è statisticamente fragile;
-- il tie-break e la riproducibilità (sezione 12.0bis) restano invariati, ma va rifatto il controllo sui cambi di ruolo (sezione 4.1): più stagioni significano più riclassificazioni accumulate.
+- `SeasonCoverage` e `AvailabilityScore` (sezione 19) sono normalizzati su `train_window` e `train_window × reference_pv`, non più su costanti (B14, fatto);
+- `time_decay.max_seasons` esiste come parametro in config.yaml (sezione 24, fatto), da usare se una futura estensione della finestra rendesse numericamente irrilevanti le stagioni più vecchie;
+- il backtest rolling è passato da 2 fold a 7 (6 selezione + 1 lock-box, sezione 20.2), con reporting sempre per fold, mai mediato (sezione 20.5, fatto);
+- il controllo sui cambi di ruolo (sezione 4.1) è stato rifatto sui dati reali a 10 stagioni: 74 Id su 2306 (3.2%) cambiano ruolo, il check `role_change` è ora obbligatorio nel report (fatto).
+
+Cosa resta aperto oltre N=10, per una futura revisione:
+- con `time_decay.base` calibrato e finestre `train_window` fino a 5, valutare se `time_decay.max_seasons` va attivato di default anche per finestre già coperte da questa revisione;
+- se in futuro si volesse usare più di `train_window = 5` in produzione (oggi fuori scope, sezione 4 del piano di revisione), il numero di fold di selezione disponibili si riduce di conseguenza (`target = N − train_window`) e andrebbe rivalutato se 6 fold di selezione restano sufficienti;
+- il tie-break e la riproducibilità (sezione 12.0bis) restano invariati indipendentemente da N.
 
 ## 27. Changelog di questa revisione
 
@@ -1238,3 +1423,90 @@ Modifiche rispetto alla versione precedente della specifica, raggruppate per gra
 - Il vincolo della sezione 19.1 (Confidence non entra mai nel rating) resta. Diventa però sostenibile solo grazie alla correzione #2: senza di essa la Confidence sarebbe stata l'unico presidio contro una distorsione strutturale, senza avere alcun potere di correggerla.
 - Il divieto di `Fm × Pv` (sezione 7) e la separazione Performance/Reliability restano il principio cardine, ma la sezione 20.6 (correlazione tra le due) e la 20.6bis vanno lette insieme: se le due dimensioni risultano molto correlate *e* la Reliability non batte `Pv_Last_Season` sulla disponibilità, la separazione è concettuale e non empirica, e il peso della Reliability va ridotto.
 - Il contesto squadra, l'età e i ruoli Mantra restano fuori scope.
+
+## 28. Changelog della revisione corrente
+
+Modifiche rispetto alla versione precedente (sezione 27), a seguito di una seconda revisione della validazione e delle formule.
+
+**Correzioni bloccanti**
+
+| # | Problema | Intervento |
+|---|---|---|
+| 1 | `StabilityScore` poteva uscire dal range `[0,1]` (anche superarlo abbondantemente) perché basato sul coefficiente di variazione della Fm, che esplode o cambia segno quando la Fm media di un giocatore è vicina a zero o negativa — un caso legittimo secondo la sezione 22 | Sezione 19: `StabilityScore` ridefinito su `sd(Performance_stagione)` (già in scala 0-1, adimensionale per costruzione), niente più CV; aggiunto `ConfidenceScore ∈ [0,1]` ai controlli QC bloccanti (sezione 22) |
+| 2 | Il Test C bloccante (sezione 20.4.3) misurava il modello **completo**, Reliability inclusa, contro un target da cui la disponibilità era stata rimossa per costruzione (solo giocatori con Pv≥1 nel target): un gate strutturalmente sfavorevole a Reliability, indipendente dalla sua reale qualità | Nuova sezione 20.4.0 "Target B": percentile di `Fm × Pv` sull'universo quotato completo, riportato per ruolo accanto al Target A esistente; Test C eseguito ora su entrambi (A resta l'unico gate bloccante, B è diagnostico obbligatorio) |
+
+**Correzioni importanti**
+
+| # | Problema | Intervento |
+|---|---|---|
+| 3 | L'indice di stagione usato per la pendenza OLS del Trend (sezione 18.1) era ambiguo in presenza di stagioni mancanti: posizione compattata tra le disponibili o posizione nell'elenco completo? Le due letture differiscono di un fattore fino a 2× | Sezione 18.1: indice definito esplicitamente come posizione nell'elenco `seasons` di config.yaml, buchi inclusi |
+| 4 | Il cambio di ruolo attraverso il confine portiere (sezione 4.1) restava un semplice `WARNING role_change_gk`, senza una regola su cosa fare delle stagioni storiche aggregate — la Performance portiere e quella degli altri ruoli non sono la stessa distribuzione con pesi diversi, sono formule strutturalmente diverse | Sezione 4.1: regola esplicita — solo le stagioni nel ruolo corrente (rispetto al confine portiere) contribuiscono a `Performance_Storica`; il warning per controllo manuale resta, ma non è più l'unico presidio |
+| 5 | Il peso effettivo di BonusProfile nella formula del rating (sezione 12) non era mai stato confrontato con quello di Performance in termini di escursione realizzabile: per D/A, `peso × ampiezza_range` è quasi identico tra i due termini, mentre la sezione 11 lo descrive come "modulatore" | Sezione 11.3: nuova nota di calibrazione con la tabella degli span; sezione 20.5a estesa per testare il peso di BonusProfile isolato (non solo la redistribuzione P/R), sezione 20.6 estesa con `corr(Performance, BonusProfile)` per ruolo come test diretto del doppio conteggio |
+| 6 | Con `time_decay.base = 2` di default, l'ultima stagione pesa il 57% del totale: il modello completo diventa altamente correlato con `Baseline 0` (Fm_Last_Season), rendendo il Test C strutturalmente più facile da fallire e la giustificazione delle tre stagioni più debole | Sezione 24: default cambiato da `2` a `1.5`; range di test in sensitivity analysis invariato (1.3/1.5/2.0/2.5) |
+| 7 | La forma della funzione di Reliability (`sqrt`) non era mai testata, solo `reference_pv`: la scelta della forma è un'assunzione di modellazione quanto il punto di saturazione | Sezione 9.1: aggiunto `reliability.function` (sqrt/linear) come parametro, testato esclusivamente tramite il test diretto della sezione 20.6bis |
+| 8 | Con solo due fold di backtest realmente disponibili, l'elenco di parametri calibrabili (sezione 20.5, 20.4.4) era troppo numeroso per una calibrazione affidabile — rischio concreto di overfitting sui due fold | Sezione 20.5: nuovo paragrafo che limita la calibrazione del default a due soli parametri (`time_decay.base`, `reliability.reference_pv`), richiede concordanza di direzione su entrambi i fold e in ≥3 ruoli su 4, e impone reporting per fold (mai mediato) fino a N≥4 stagioni |
+
+**Aggiunte**
+
+| Aggiunta | Dove |
+|---|---|
+| `zero_handling = recenter` (sottrazione della mediana di ruolo/stagione) come nuovo default per BonusProfile, più semplice di `split` e sufficiente a soddisfare il controllo QC per costruzione; `split` e `midrank` restano varianti testate in ablation (Model 3c/3d) | Sezione 11.2, 20.4.4 |
+| Test E — calibrazione per fascia (bucket): target medio osservato per bucket di rating predetto, per ruolo e per target, con attenzione esplicita a distinguere compressione fisiologica da inversioni di monotonicità | Sezione 20.4.5 |
+
+**Punti volutamente non modificati**
+
+- Il range di `BonusProfile` resta `[-1, +1]` (normalizzazione `/50`, sezione 11.2): la correzione scelta per il problema di span (#5 sopra) è documentare e testare il peso effettivo in validazione, non alterare la scala della metrica, per non introdurre un secondo cambiamento coincidente e rendere l'attribuzione dell'effetto ambigua nell'ablation.
+- I criteri di superamento del Test C restano bloccanti solo su Target A: Target B è deliberatamente diagnostico, non un secondo gate, per evitare di rendere il criterio bloccante più facile da soddisfare per costruzione.
+
+## 29. Changelog della revisione corrente — finestra storica a 10 stagioni
+
+Modifiche rispetto alla versione precedente (sezioni 27-28), a seguito dell'arrivo di 10 stagioni di statistiche e 11 di quotazioni e dell'ispezione diretta dei dati documentata in `specs/piano_revisione_10_stagioni.md` (interventi B1-B14).
+
+**Correzioni bloccanti — modello dei dati**
+
+| # | Problema | Intervento |
+|---|---|---|
+| 1 | L'assunzione "le righe del file statistiche hanno `Pv ≥ 1`" (sezioni 2, 4, 6, 8, 9.1bis) è risultata falsa: il file statistiche contiene l'intero universo Serie A, con 107-153 giocatori a `Pv = 0` per stagione. La categoria `QUOTED_ONLY`, costruita per differenza rispetto alle quotazioni, era quindi sempre vuota | Nuova tassonomia (sezione 4, B1): `RowType = PLAYED` (`Pv >= 1`) / `IN_SQUAD_NO_PLAY` (`Pv = 0`, presente nel file statistiche). `QUOTED_ONLY` eliminata. La regola di pesatura (Performance esclude e ripesa, Reliability include a peso pieno con valore 0) resta identica, cambia solo la fonte del dato |
+| 2 | La Reliability penalizzava con `Reliability_stagione = 0` a peso pieno anche chi era uscito dalla Serie A in corsa senza aver mai giocato — dichiarato "limite accettato" nella versione precedente. Verifica su 10 stagioni: è il 56-75% dei casi a `Pv = 0`, non una coda | Flag `left_mid_season` (sezione 4.0bis, B3), da foglio `Ceduti` (fino al 2021/22) o diff `stats \ quotazioni_Tutti` (dal 2022/23). Una stagione `IN_SQUAD_NO_PLAY` con `left_mid_season = true` è esclusa dalla Reliability e ripesata, non più contata a zero (sezione 9.1bis). Configurabile (`reliability.exclude_left_mid_season`, default `true`), testato in ablation come Model 3a |
+| 3 | Le quotazioni storiche erano assunte come liste pre-stagione; verificate come snapshot di **fine** stagione per tutte le stagioni tranne il 2026/27 (`Qt.A ≠ Qt.I` per ~85% delle righe) | Sezione 2.3, B4: `Qt.I` dichiarato valido come prezzo su tutta la finestra; il roster `Tutti` dichiarato di fine stagione; la costruzione dell'universo di test (sezione 20.1) non dipende più dalle quotazioni; QC sugli arrivi tardivi (sezione 22) |
+| 4 | Il join per nome non era esplicitamente vietato in ogni punto della pipeline | Sezione 3.1, B5: divieto esplicito, motivato dai 4 omonimi verificati su 10 stagioni (Vergara, Gori, Buksa, Ndiaye); normalizzazione della grafia ammessa solo per l'output |
+
+**Struttura del backtest**
+
+| # | Problema | Intervento |
+|---|---|---|
+| 5 | Con 2 fold di backtest, il numero di target realmente osservabili non permetteva di calibrare quasi nulla in modo affidabile (sezione 20.5 della revisione precedente lo dichiarava esplicitamente) | Rolling window a 7 fold (B6, sezione 20.2): 6 di selezione (target 2019/20 → 2024/25) + 1 lock-box (target 2025/26, finestra di train strutturalmente identica a quella di produzione), mai guardato durante la calibrazione |
+| 6 | Non era mai stato verificato se il cambio a 5 sostituzioni (giugno 2020) avesse spostato la distribuzione dei `Pv`, quantità su cui si calibra `reference_pv` — la spec pianificava una stratificazione dei fold per questo | Verifica eseguita, esito negativo (nessuno scalino nel 2019/20 o nel 2020/21): nessuna esclusione a priori di stagioni, nessuna stratificazione. Riportato come fatto accertato (sezione 20.2), non come controllo pendente |
+| 7 | Il numero di stagioni di train era fissato a 3 per costruzione, mai messo in discussione come parametro | `train_window` reso parametrico (sezione 8, 20.2, B8), testato in griglia con `time_decay.base` su `train_window ∈ {2,3,4,5}`; confronto fra finestre solo sui target comuni |
+| 8 | Il confronto con il mercato reale (prezzo pre-stagione) non era mai stato fatto: tutte le baseline erano interne allo stesso dataset del modello | Baseline `Qt.I` (tutti i fold) e `FVM` (fold con target dal 2022/23, B9) aggiunte al Test C (sezione 20.4.3), diagnostiche e non bloccanti, accanto alle baseline interne esistenti |
+
+**Regola di selezione**
+
+| # | Problema | Intervento |
+|---|---|---|
+| 9 | Con 6 fold di selezione invece di 2, il vincolo "solo `time_decay.base` e `reference_pv` sono candidati a modifica" (sezione 20.5 della revisione precedente) era diventato troppo restrittivo rispetto alla potenza realmente disponibile | Sezione 20.5, B10: ordine fisso di calibrazione a 6 parametri (`train_window × time_decay.base` → `reliability.function × reference_pv` → `bonus_weight` → `min_pv_for_percentile` → `penalty_save_weight` → pesi della formula), un cambio di default accettato solo se concorde in segno in ≥4 dei 6 fold di selezione e in ≥3 dei 4 ruoli, criterio di fallimento del lock-box fissato prima di aprirlo |
+| 10 | Il peso del BonusProfile per D/A (25%) non era mai stato testato come parametro continuo, solo come nota di calibrazione (sezione 11.3 della revisione precedente) | Griglia unica `bonus_weight ∈ {0, 0.10, 0.15, 0.25, 0.35}` per D/A (sezione 11.3, B12), dove `0` è l'ablation. Default pre-registrato **0.15**, prima di vedere i risultati: D e A allineati a C (Performance 0.60 / Reliability 0.25 / Bonus 0.15, sezione 12), range `HistoricalRating` unificato a `-15 → 100` per D/C/A |
+
+**Adeguamento a N=10 e rimozioni**
+
+| # | Problema | Intervento |
+|---|---|---|
+| 11 | `SeasonCoverage`/`AvailabilityScore` (sezione 19) erano normalizzati su costanti (3, 90) tarate su N=3, anticipando un problema che la revisione precedente rimandava a "quando N cresce" (sezione 26.1) | Normalizzati su `train_window` (B14): `seasons_available / train_window` e `Pv_Totale / (train_window × reference_pv)` |
+| 12 | `AuctionRating`, colonna duplicata di `HistoricalRating` con un nome che promette una decisione d'asta compiuta, era esposta nel CSV finale | Rimossa dal CSV (B11, sezione 12.1, 21); resta solo come livello architetturale concettuale per l'evoluzione futura, non come colonna |
+| 13 | Il nome `STORICO` (sezione 6) suggeriva che sopra soglia il dato diventasse "affidabile" in senso pieno | Rinominato `PV_SUFFICIENTI` (B13) — cosmetico, nessun cambio di condizione |
+
+**Aggiunte**
+
+| Aggiunta | Dove |
+|---|---|
+| Campo `Seasons_In_Squad` nel CSV, a fianco di `Seasons_Available` e `Seasons_Quoted`: separa "in rosa" (dal file statistiche) da "prezzato" (dalle quotazioni), sostituendo il ruolo che `Seasons_Quoted` aveva prima nella logica di Reliability | Sezione 6, 21 |
+| Colonna `Qt.I_2026_27` nel CSV finale, per riferimento in asta (non entra nel rating) | Sezione 21 |
+| QC obbligatorio nel report su `role_change` (74/2306 Id, 3.2%, su 10 stagioni) — non più facoltativo | Sezione 4.1, 22 |
+| QC sulla quota di `left_mid_season` fra i `Pv=0` per stagione, e sugli arrivi tardivi rispetto alla quotazione pre-stagione del target | Sezione 22 |
+
+**Punti volutamente non modificati**
+
+- Il perimetro del rating (Performance / Reliability / BonusProfile, con Trend/Confidence/DefenseScore come metadati) resta invariato: nessuna feature nuova, nessun `ProjectedRating`, nessun uso dei ruoli Mantra (sezione 1).
+- Il divieto di `Fm × Pv` come feature (sezione 7) resta; `Fm × Pv` continua a comparire solo come Target B di validazione (sezione 20.4.0), un ruolo diverso già stabilito nella revisione precedente.
+- Il ranking di produzione 2026/27 non userà tutte le 10 stagioni disponibili: userà la finestra `train_window` indicata dal backtest come migliore (plausibilmente 3-5), perché le 10 stagioni servono a **calibrare**, non a massimizzare lo storico usato in produzione (sezione 1, sezione 4 del piano di revisione).
+- Le quotazioni pre-stagione autentiche (agosto) delle stagioni storiche restano irrecuperabili: non si tenta di ricostruirle, si dichiara il limite (sezione 2.3).
