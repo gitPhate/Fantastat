@@ -354,11 +354,11 @@ Performance_stagione = FmPercentile_stagione / 100                              
 **Importante — scale esplicite**: tutte le componenti che entrano nella formula del rating finale (sezione 12) devono avere una scala esplicitamente definita e coerente:
 - `Performance ∈ [0, 1]`
 - `Reliability ∈ [0, 1]`
-- `BonusProfile ∈ [-1, +1]`
+- `BonusProfile ∈ [-1, +1]` — range garantito **dal clip** definito in sezione 11.2, non dalla sola divisione `/50`: dopo la centratura di ruolo (`zero_handling = recenter`, default) la sola divisione può uscire da questo range (sezione 11.2)
 
 Il calcolo del percentile restituisce nativamente un valore 0-100: va sempre diviso per 100 prima di entrare in qualunque formula pesata, altrimenti domina numericamente le altre componenti (es. 85 invece di 0.85 renderebbe irrilevante il contributo di Reliability e BonusProfile). Questo vincolo di scala si applica identicamente al calcolo della Performance dei portieri (sezione 13).
 
-**Metodo del percentile**: usare una funzione standardizzata e deterministica (es. `rank(pct=True)` di pandas), documentata esplicitamente nel codice per garantire riproducibilità.
+**Metodo del percentile**: definito in modo vincolante, con formula, nella sezione 10.1 — unico algoritmo richiamato per riferimento da tutti gli altri punti della spec che usano un percentile (sezioni 11.1bis, 13, 20.4.0, 20.4.3, 21.2).
 
 **Gruppo di riferimento — parametro configurabile**: includere nel calcolo del percentile solo i giocatori con `Pv ≥ min_pv_for_percentile` (parametro in config.yaml, valore di partenza: 1). Questo evita che un giocatore con 2 presenze e una Fm anomala (es. 9.50 su un exploit isolato) distorca la distribuzione di riferimento. Non fissare questo valore a priori: testare in fase di validazione (sezione 20) almeno le varianti 1, 3, 5 e scegliere quella che massimizza il potere predittivo del modello, non quella che sembra "più corretta" a intuito. Questo stesso parametro (eventualmente con valore ottimale diverso) si applica anche al calcolo del BonusProfile — vedi sezione 11.1bis.
 
@@ -366,7 +366,31 @@ Il calcolo del percentile restituisce nativamente un valore 0-100: va sempre div
 - **riceve comunque** una `Performance_stagione`, calcolata come sua posizione rispetto alla distribuzione filtrata (interpolazione della sua Fm nella distribuzione di riferimento del suo ruolo in quella stagione);
 - **non contribuisce** alla costruzione di quella distribuzione.
 
-Senza questa distinzione, un `min_pv_for_percentile = 5` renderebbe non calcolabile la Performance per buona parte della popolazione LIMITED_HISTORY — che è invece esattamente la popolazione su cui la Confidence deve poter dire qualcosa. Implementativamente: calcolare i percentili sul gruppo filtrato e poi mappare *tutti* i giocatori su quella scala; **non** applicare `rank(pct=True)` al dataframe filtrato e fare un join che lascia `null` sugli esclusi.
+Senza questa distinzione, un `min_pv_for_percentile = 5` renderebbe non calcolabile la Performance per buona parte della popolazione LIMITED_HISTORY — che è invece esattamente la popolazione su cui la Confidence deve poter dire qualcosa. Implementativamente: calcolare i percentili sul gruppo filtrato e poi mappare *tutti* i giocatori su quella scala, secondo l'algoritmo della sezione 10.1 (che copre esplicitamente sia il caso "dentro il riferimento" sia il caso "fuori dal riferimento").
+
+### 10.1 Definizione del percentile (algoritmo unico, vincolante)
+
+Questa sottosezione sostituisce ogni riferimento generico a "una funzione standardizzata e deterministica" o a `rank(pct=True)`: definisce **un solo** algoritmo di percentile, usato ovunque nella spec un percentile venga calcolato (sezioni 10, 11.1bis, 13, 20.4.0, 20.4.3, 21.2).
+
+**1. Costruzione del riferimento.** Il vettore di riferimento per il ruolo `R` e la stagione `S` è l'insieme ordinato dei valori della metrica (Fm, GoalRate, AssistRate, ecc.) dei soli giocatori di ruolo `R` in stagione `S` che superano il filtro (`Pv >= min_pv_for_percentile`). Valori `null` non entrano nel riferimento e non ricevono percentile (restano `null`, sezione 4.0).
+
+**2. Percentile di un valore appartenente al riferimento**, con pareggi gestiti via **midrank** (media dei ranghi del blocco di pari valore — già il comportamento assunto dal resto della spec, es. sezione 11.2, "percentile di midrank"). Per un valore `x`, con `n` osservazioni di riferimento, `L = #{v < x}` e `E = #{v == x}` (conteggiati sul vettore di riferimento):
+
+```
+percentile(x) = 100 × (L + 0.5 × E) / n
+```
+
+**3. Percentile di un valore NON appartenente al riferimento** (popolazione sotto soglia, sezione 10; `Target_A`/baseline valutate su un insieme diverso, sezione 20.4.0). La formula del punto 2 è già ben definita per un `x` qualsiasi (`E = 0` se `x` non compare nel riferimento): si usa **la stessa formula anche fuori campione**, senza interpolazione lineare fra osservazioni adiacenti. Questa è l'unica variante ammessa; l'interpolazione lineare è esplicitamente vietata come implementazione alternativa, per evitare che due implementazioni indipendenti producano numeri diversi.
+
+**4. Comportamento fuori dal range del riferimento.** `x` inferiore a tutti i valori di riferimento → `percentile(x) = 0`; `x` superiore a tutti → `percentile(x) = 100`. Questi due valori sono raggiungibili, non asintotici.
+
+**5. Caso degenere — tutti i valori di riferimento uguali.** `percentile(x) = 50` per `x` pari a quel valore comune, `0` se `x` è inferiore, `100` se superiore. È l'unico caso in cui la formula del punto 2 restituisce `50` per l'intera popolazione di riferimento: comportamento previsto, non un'anomalia da correggere.
+
+**6. Caso degenere — una sola osservazione di riferimento** (`n = 1`). `percentile(x) = 50` se `x` è pari a quell'unica osservazione, `0` o `100` altrimenti. QC obbligatorio (sezione 22, livello **ERROR**): `n < 5` per una qualunque coppia (ruolo, stagione) usata come riferimento — un percentile calcolato su meno di 5 osservazioni non è una posizione nella distribuzione. Caso realistico sui portieri con `min_pv_for_percentile = 5`.
+
+**7. Divieto esplicito di implementazione.** Non usare `rank(pct=True)` di pandas (o equivalenti) sul gruppo filtrato con successivo join: lascia `null` sui giocatori esclusi dal riferimento, cosa che il punto 3 vieta esplicitamente. Non usare `scipy.stats.percentileofscore` senza fissare il parametro `kind` al valore coerente con la formula del punto 2, perché il suo default non corrisponde a quella formula.
+
+**`zero_handling = split` (sezione 11.2) nello stesso quadro.** Per i giocatori con `rate > 0`, il percentile è quello del punto 2 calcolato **solo** sul sotto-insieme `rate > 0` dello stesso ruolo/stagione, poi rimappato linearmente su `[50, 100]`: `valore_split = 50 + percentile_fra_i_positivi(x) / 2`. Per i giocatori con `rate = 0`, `valore_split` è un valore fisso al centro del blocco a zero: `valore_split = 25` (centro dell'intervallo `[0, 50]` assegnato per convenzione al blocco a zero, che non riceve un midrank sulla distribuzione completa). Questa è la definizione completa richiesta dall'ablation Model 3c (sezione 20.4.4): descriverla in prosa senza questa formula non la rende implementabile in modo riproducibile.
 
 La Mv viene mantenuta come metrica separata (pesata con gli stessi pesi temporali → `Mv_Weighted`), usata esclusivamente per il Modificatore Difesa (sezione 13), mai fusa nel Performance score.
 
@@ -408,7 +432,7 @@ bonus_profile:
 
 Includere nel calcolo del percentile di GoalRate/AssistRate solo i giocatori con `Pv ≥ min_pv_for_percentile` (parametro configurabile, non necessariamente uguale a quello usato per la Performance in sezione 10 — vanno testati e calibrati indipendentemente in validazione). Per questa v1 non sono richieste tecniche più sofisticate (shrinkage bayesiano, winsorization): il filtro sul Pv minimo è sufficiente e più semplice da validare; eventuali raffinamenti sono rimandati a versioni future. Il filtro non risolve però un problema diverso e complementare — la massa di giocatori con `rate = 0` esatto, che sposta la mediana di ruolo — trattato nella sezione 11.2 con `zero_handling`.
 
-Calcolare il percentile di GoalRate e AssistRate **rispetto ai soli giocatori dello stesso ruolo R** (che superano il filtro) in quella stagione (stesso metodo deterministico della sezione 10), poi combinarli con pesi espliciti e configurabili per ruolo:
+Calcolare il percentile di GoalRate e AssistRate **rispetto ai soli giocatori dello stesso ruolo R** (che superano il filtro) in quella stagione (algoritmo della sezione 10.1), poi combinarli con pesi espliciti e configurabili per ruolo:
 
 ```
 BonusProfile_stagione = goal_weight_R × (percentile(GoalRate) - 50)
@@ -419,13 +443,9 @@ con `goal_weight_R + assist_weight_R = 1` per ciascun ruolo R.
 
 ### 11.2 Normalizzazione (obbligatoria)
 
-Il risultato del calcolo precedente ha range teorico -50/+50, mentre Performance e Reliability hanno range 0-1. Prima di entrare nella formula del rating, normalizzare:
+Il risultato del calcolo precedente ha range teorico -50/+50, mentre Performance e Reliability hanno range 0-1. Prima di entrare nella formula del rating, normalizzare dividendo per 50: con `zero_handling = midrank` o `= split` questo basta a garantire il range -1/+1, perché il percentile di partenza è per costruzione in [0, 100] e quindi `percentile - 50 ∈ [-50, 50]`. Con `zero_handling = recenter` (default) la sola divisione **non** basta — vedi sotto la formula completa, che include il clip necessario a garantire il range in ogni caso.
 
-```
-BonusProfile_normalized = BonusProfile_stagione / 50
-```
-
-ottenendo un range **-1/+1**, dove 0 = mediana di ruolo. Valori prossimi a +1 rappresentano la parte alta della distribuzione di ruolo, valori prossimi a -1 la parte bassa — non necessariamente esattamente il massimo/minimo assoluto, dato che il metodo del percentile con pareggi (`rank(pct=True)`) non garantisce di toccare esattamente 0 e 100. Aggregare su più stagioni con gli stessi pesi temporali della sezione 8, ottenendo `BonusProfile` finale nel range -1/+1.
+Valori prossimi a +1 o -1 rappresentano la parte alta o bassa della distribuzione di ruolo. Con centratura e clip, `+1` e `-1` sono valori di **saturazione**, effettivamente raggiungibili — e raggiunti da più giocatori insieme, non un estremo asintotico che il metodo del percentile con pareggi si limita ad avvicinare. Aggregare su più stagioni con gli stessi pesi temporali della sezione 8, ottenendo `BonusProfile` finale nel range -1/+1.
 
 Questa normalizzazione è necessaria per evitare che il BonusProfile domini artificialmente la formula del rating solo per una questione di scala numerica, non di peso voluto.
 
@@ -433,9 +453,11 @@ Questa normalizzazione è necessaria per evitare che il BonusProfile domini arti
 
 Due contromisure obbligatorie:
 
-1. **Controllo QC bloccante** (sezione 22): per ogni ruolo e stagione, riportare la quota di giocatori nel blocco a `rate = 0` e la mediana risultante di `BonusProfile_normalized`. Se la quota a zero supera `bonus_profile.max_zero_share` (default 0.30) **oppure** la mediana si discosta da 0 più di 0.10, il comportamento va corretto prima di usare il ranking.
+1. **Controlli QC** (sezione 22): per ogni ruolo e stagione, riportare la quota di giocatori nel blocco a `rate = 0` e la mediana risultante di `BonusProfile_normalized`.
+   - se la mediana si discosta da 0 più di 0.10 → **ERROR**: è l'unica delle due condizioni che `recenter` garantisce per costruzione, quindi una violazione è un bug reale nell'implementazione della centratura, e il comportamento va corretto prima di usare il ranking;
+   - se la quota a zero supera `bonus_profile.max_zero_share` → **WARNING**, non ERROR. La quota a `rate = 0` è una proprietà del calcio (quanti giocatori non segnano o non assistono mai in una stagione), non un difetto della metrica, e nessuna centratura la modifica: con `min_pv_for_percentile = 1` la frazione di difensori con `Gf = 0` esatto è largamente sopra il 30%, e lo stesso vale per gli assist su più ruoli. Non segnala quindi un comportamento da correggere prima di procedere, ma che la variante `split` va valutata in ablation (sezione 20.4.4, Model 3c), con la quota riportata nel `qc_log` per ruolo e stagione. Il default `bonus_profile.max_zero_share = 0.30` è un **segnaposto non ancora misurato sui dati**, scelto come soglia di allarme prima di aver osservato la distribuzione reale: va ricalibrato sulla quota effettivamente osservata (per ruolo, sulle 10 stagioni) al primo giro di Fase 1, e non va trattato come un valore validato finché non lo è.
 
-2. **Metodo di centratura**, di cui il default `recenter` garantisce il criterio del controllo QC per costruzione:
+2. **Metodo di centratura**, di cui il default `recenter` garantisce **solo** la condizione sulla mediana — non quella sulla quota a zero, che è una proprietà del ruolo, non della centratura:
 
 ```
 zero_handling = recenter (default):
@@ -450,10 +472,26 @@ zero_handling = split:
   percentile calcolato solo sui giocatori con rate > 0, mappato su [50, 100]
   giocatori con rate = 0 → valore fisso al centro del blocco a zero, non midrank
                             sulla distribuzione completa
+  (formula esatta in sezione 10.1, ultimo punto)
 
 zero_handling = midrank:
   comportamento standard (midrank sull'intera distribuzione, zeri inclusi)
 ```
+
+**Normalizzazione finale — clip obbligatorio, parte della definizione della metrica.** Con `recenter`, sottrarre la mediana di ruolo può spostare `centrato` fuori dal range -50/+50 del grezzo di partenza: se la mediana di ruolo è a -20 (il caso tipico dei difensori, sopra), il difensore al vertice della distribuzione ottiene `centrato = 50 - (-20) = 70`, e `70 / 50 = 1.4`, fuori dal range dichiarato `[-1, +1]` (sezione 10). Più il blocco a `rate = 0` è grande — cioè più `recenter` è necessario — più il range sfonda. La normalizzazione che entra nella formula del rating è quindi, per costruzione e in ogni variante di `zero_handling`:
+
+```
+BonusProfile_normalized = clip(x / 50, -1, +1)
+   dove x = centrato   (zero_handling = recenter)
+         x = grezzo    (zero_handling = split o midrank — qui il clip non ha effetto pratico,
+                         perché il percentile di partenza è già in [0, 100] e x/50 ∈ [-1, 1])
+```
+
+Il clip non è un tampone difensivo aggiunto in fase di implementazione: è parte della **definizione** della metrica, al punto che due implementazioni indipendenti devono applicarlo per produrre lo stesso numero.
+
+**Perché il clip e non una riscalatura per ruolo/stagione sul massimo osservato.** Una riscalatura (dividere per il massimo `|centrato|` osservato quel ruolo/quella stagione, invece che per 50 fisso) renderebbe la scala di `BonusProfile` dipendente dall'estremo campionario di quella specifica stagione, quindi non confrontabile fra le stagioni che vengono poi aggregate con i pesi temporali della sezione 8 — introdurrebbe un secondo problema per risolverne uno. Il clip mantiene la scala fissa (`/50`, identica in ogni stagione e ruolo) e rende il costo dell'operazione — quanti giocatori vengono compressi in coda — misurabile e riportato, invece di nasconderlo dentro una scala mobile.
+
+**Controllo QC sul clip** (sezione 22, livello **WARNING**): per ogni ruolo e stagione, riportare la quota di giocatori con `|centrato / 50| > 1` (cioè effettivamente clippati). Se supera `bonus_profile.max_clipped_share` (default `0.05`), il clip non è più un arrotondamento di coda ma sta comprimendo la parte alta della distribuzione, e va valutato `split` come alternativa (già in ablation, Model 3c).
 
 **Perché `recenter` come default.** Risolve direttamente il sintomo misurato dal controllo QC (mediana spostata da 0) con una singola sottrazione, senza introdurre la complessità aggiuntiva di `split` (percentile calcolato su un sotto-campione diverso per stagione) finché quella complessità non è dimostrata necessaria. Non risolve un problema diverso — la concentrazione del blocco a zero in sé, indipendente dalla sua posizione — che resta osservabile tramite la quota a zero riportata dal controllo QC e affrontabile con `split` se il backtest lo richiede. `split` e `midrank` restano parametri configurabili e testati esplicitamente in ablation (sezione 20.4.4, Model 3c e 3d). Come per tutto il resto, la scelta finale la decide la validazione, non l'intuizione.
 
@@ -477,6 +515,8 @@ Tutti i pesi (sia il peso del BonusProfile nel rating, sia goal_weight/assist_we
 | D | 0.60 | 0.15 × 2 = 0.30 |
 | A | 0.60 | 0.15 × 2 = 0.30 |
 | C | 0.60 | 0.15 × 2 = 0.30 |
+
+Lo span `peso × 2` resta corretto **solo grazie al clip** definito in sezione 11.2: senza il clip il range reale di `BonusProfile` dopo la centratura di ruolo può arrivare a `[-2, +2]` (sezione 11.2), e questa tabella sottostimerebbe l'escursione reale del termine — cioè proprio la quantità che è stata scritta per tenere sotto controllo.
 
 Con il default rivisto (0.15), D, C e A hanno ora lo stesso rapporto Performance:BonusProfile (2:1): il BonusProfile resta un contributo significativo ma non più quasi co-primario come con il vecchio default 0.25 (dove lo span era quasi 1:1 con Performance per D/A). Questo era il problema che la nota di calibrazione segnalava nella revisione precedente; il nuovo default lo riduce ma non lo elimina come domanda aperta — il controllo doppio conteggio della sezione 11.4 e l'ablation della sezione 20.4.4 restano le sedi in cui il peso effettivo va confermato o ulteriormente ridimensionato, non la descrizione testuale del componente.
 
@@ -524,6 +564,8 @@ Questo produce valori leggibili (es. 78.4, 72.1, 64.8) mantenendo tutti i calcol
 | C | -15 → 100 |
 | A | -15 → 100 |
 
+Questi valori sono coerenti con `BonusProfile ∈ [-1, +1]` garantito **dal clip** di sezione 11.2 (non dalla sola divisione `/50`): senza il clip, il range di `BonusProfile` dopo centratura può arrivare a `[-2, +2]`, e il range effettivo di `HistoricalRating` per D/C/A scenderebbe fino a circa `-30 → 100`, non `-15 → 100`.
+
 Questa colonna **non va descritta come "scala 0-100"** in nessun punto della documentazione, del CSV o dell'interfaccia: un valore negativo è un output valido e previsto, non un errore di calcolo.
 
 Tutti i pesi sono configurabili in un unico punto del codice (config.yaml), non sparsi/hard-coded nella logica.
@@ -569,7 +611,7 @@ In futuro, quando sarà introdotto un modello predittivo (sezione 25), si aggiun
 
 ## 13. Portieri — dettagli specifici
 
-La Performance del portiere è una combinazione esplicita e pesata di tre componenti percentile (stesso metodo deterministico della sezione 10), espressa direttamente in scala 0-1 (coerente con la sezione 10 e con la formula del rating in sezione 12):
+La Performance del portiere è una combinazione esplicita e pesata di tre componenti percentile (algoritmo della sezione 10.1), espressa direttamente in scala 0-1 (coerente con la sezione 10 e con la formula del rating in sezione 12):
 
 ```
 FmPercentile_norm     = percentile(Fm) / 100
@@ -665,10 +707,31 @@ Il Trend è una variabile informativa aggiuntiva, non modifica `HistoricalRating
 
 ### 18.2 Flag di rischio (informativi, non numerici nel rating)
 
-Da esporre come colonne/note testuali nel dataset finale, per uso conversazionale durante l'asta:
-- **Dipendenza da rigori** (attaccanti/centrocampisti con alto R+/Pv rispetto al totale gol);
-- **Storico volatile** (alta varianza di Fm tra stagioni disponibili);
-- **Poche presenze recenti** (Pv basso nell'ultima stagione anche se lo storico complessivo è PV_SUFFICIENTI).
+Da esporre come colonne nel dataset finale, per uso conversazionale durante l'asta. I tre flag sono **informativi e non entrano in `HistoricalRating`** (come il resto di questa sezione), ma finiscono nel CSV che si legge in asta: formula, tipo di campo e soglia vanno quindi definiti qui, non lasciati all'implementazione. Le soglie di partenza sono **ipotesi da rivedere sui dati reali** (stessa logica già usata per la Confidence, sezione 19), non valori validati, e vivono in `config.yaml` (blocco `risk_flags`, sezione 24).
+
+**1. Dipendenza da rigori.** Definita come rapporto:
+
+```
+RigoriDipendenza = R+_Weighted / Gf_Weighted
+```
+
+dove `R+_Weighted` e `Gf_Weighted` sono le medie pesate (Metodo 1, sezione 21.2) di `R+` e `Gf` sulle stagioni della finestra di train. Se `Gf_Weighted = 0`, `RigoriDipendenza = null` (non `0`: un giocatore che non segna non ha una "quota di gol su rigore", il rapporto non è definito). `RigoriDipendenza` **espone il valore continuo** nel CSV — un campo che a volte è un flag booleano e a volte un valore continuo è inutilizzabile in un foglio di calcolo. L'eventuale etichetta booleana (`RigoriDipendenza_Flag = RigoriDipendenza > risk_flags.penalty_dependency_threshold`) è una **colonna derivata separata**. Applicabile solo a C/A, come già previsto da questa sezione; `null` per P/D.
+
+**2. Storico volatile.** Non reinventa la misura di varianza: riusa `StabilityScore` (sezione 19), già una varianza di `Performance_stagione` normalizzata e con la degenerazione a `seasons_available < 2` già risolta.
+
+```
+StoricoVolatile = StabilityScore < risk_flags.volatility_threshold
+```
+
+`null` se `StabilityScore` è `null` (stessa condizione di sezione 19). Introdurre una seconda misura di varianza calcolata sulla Fm ricadrebbe nel problema del coefficiente di variazione con Fm vicina a zero, già analizzato e scartato in sezione 19: non va fatto.
+
+**3. Poche presenze recenti.** Definita su `Pv_Last_Season` (campo già esposto in sezione 21):
+
+```
+PochePresenzeRecenti = (Categoria = PV_SUFFICIENTI) AND (Pv_Last_Season < risk_flags.low_recent_pv_threshold)
+```
+
+`null` per LIMITED_HISTORY e NEW (la condizione di applicabilità `Categoria = PV_SUFFICIENTI`, già implicita nel testo precedente di questa sezione, è ora parte esplicita della formula). **Caso "ultima stagione disponibile" ≠ "stagione più recente della finestra":** per un giocatore rientrato dall'estero (assente nelle stagioni più recenti della finestra di train, presente in una stagione più vecchia), `Pv_Last_Season` è il Pv della sua ultima stagione **con `Pv >= 1`**, che può non coincidere con l'ultima stagione della finestra — il flag va calcolato su quella stagione, non forzato a `null` o a `0` per l'assenza nelle stagioni più recenti: la sua semantica resta "quante presenze nell'ultima stagione osservata", non "quante presenze nella stagione più recente del calendario".
 
 ## 19. Confidence Score
 
@@ -807,7 +870,7 @@ Esempio: Top 20 previsto → 18 con Pv > 0, 2 con Pv = 0 → Availability Rate =
 ```
 Target_A = percentile della Fm nella stagione target, calcolato dentro il ruolo R
            della stagione target, sui soli giocatori con Pv >= 1 nel target
-           (stesso metodo deterministico della sezione 10, stesso min_pv_for_percentile)
+           (algoritmo della sezione 10.1, stesso min_pv_for_percentile)
            → scala 0-1
 ```
 
@@ -830,7 +893,7 @@ Nota: `Fm × Pv` resta vietato come **feature** in ingresso al modello (sezione 
 
 Il Test C (sezione 20.4.3) va quindi eseguito e riportato **su entrambi i target**, separatamente per ruolo, senza fondere i due risultati in un unico numero.
 
-**Conversione obbligatoria delle baseline.** `Fm_Last_Season` e `Fm_Weighted` sono in unità di Fm e vanno portate nello stesso spazio prima del confronto: percentile per ruolo (calcolato sulle stagioni di train) della metrica di baseline. Una baseline non convertita non è una baseline più semplice, è una baseline in un'altra unità di misura. Le stesse tre baseline (sezione 20.4.3) si confrontano contro **entrambi** i target, senza ridefinirle: contro Target B, `Baseline 2` (`percentile(Pv_Last_Season)`) diventa naturalmente più competitiva, il che è informativo, non un errore da correggere.
+**Conversione obbligatoria delle baseline.** `Fm_Last_Season` e `Fm_Weighted` sono in unità di Fm e vanno portate nello stesso spazio prima del confronto: percentile per ruolo (calcolato sulle stagioni di train, algoritmo della sezione 10.1) della metrica di baseline. Una baseline non convertita non è una baseline più semplice, è una baseline in un'altra unità di misura. Le stesse tre baseline (sezione 20.4.3) si confrontano contro **entrambi** i target, senza ridefinirle: contro Target B, `Baseline 2` (`percentile(Pv_Last_Season)`) diventa naturalmente più competitiva, il che è informativo, non un errore da correggere.
 
 **Tutte le metriche sono per ruolo.** Nessuna metrica di questa sezione va calcolata sull'universo indifferenziato (motivo in sezione 12.0bis). Il report riporta una riga per ruolo (P/D/C/A) e, opzionalmente, la media dei quattro valori come sintesi — mai una metrica calcolata su tutti i giocatori insieme.
 
@@ -842,7 +905,8 @@ Il Test C (sezione 20.4.3) va quindi eseguito e riportato **su entrambi i target
 
 #### 20.4.2 Test B — accuratezza di classifica (per ruolo)
 
-- `precision@N`, con N dimensionato sulla numerosità del ruolo e non identico per tutti: `N ∈ {5, 10, 20}` per i P, `N ∈ {10, 20, 30}` per D/C/A. Un `precision@30` sui portieri sarebbe calcolato su una popolazione di poche decine di giocatori e non misurerebbe nulla di utile.
+- `precision@N`, con N dimensionato sulla numerosità del ruolo e non identico per tutti: `N ∈ {5, 10}` per i P, `N ∈ {10, 20, 30}` per D/C/A. Un `precision@30` sui portieri sarebbe calcolato su una popolazione di poche decine di giocatori e non misurerebbe nulla di utile — **`precision@20` non va calcolata per il ruolo P, per la stessa ragione**: il performance outcome dei portieri (sezione 20.3a, i P con `Pv >= 1` nella stagione target) è dell'ordine di poche decine, e `precision@20` su una popolazione di ~30 significa meccanicamente "quanti dei 20 in cima stanno fra i 20 migliori di 30" — alto per qualunque modello e qualunque baseline, con un intervallo di variazione compresso che non discrimina.
+- Riportare nel report la **numerosità del performance outcome per ruolo e per fold**, così che la scelta di `N` sia verificabile sui dati e non assunta.
 - Da affiancare sempre alla Top-N Availability Rate (sezione 20.3b) per lo stesso N e lo stesso ruolo, così da distinguere "ho sbagliato la valutazione" da "il giocatore scelto non ha semplicemente giocato".
 
 #### 20.4.3 Test C — baseline obbligatorie (bloccante)
@@ -864,9 +928,23 @@ Baseline 4: percentile(FVM_target)        — valore di mercato Fantacalcio.it (
 
 **`Qt.I` e `FVM` si leggono da `Tutti ∪ Ceduti` (sezione 2.3bis), mai dal solo `Tutti`.** L'universo di test è `stats = Tutti ⊎ Ceduti` (sezione 20.1): leggere la baseline dal solo `Tutti` la calcolerebbe su una popolazione ripulita di chi è uscito dalla Serie A in corsa — proprio il survivorship bias che la sezione 20.1 è stata riscritta per eliminare, reintrodotto dalla baseline. Il buco è evitabile del tutto: le righe `Ceduti` hanno `Qt.I` popolato al 100% su tutte le 10 stagioni. Il report per fold deve quindi riportare, accanto alle metriche, la **coverage della baseline** (quota dell'universo di test con `Qt.I`/`FVM` disponibile), e vale sempre la regola che **modello e baseline si confrontano sullo stesso sottoinsieme di Id** — mai su universi diversi.
 
-**Criterio di superamento (bloccante, su Target A)**: il modello completo (Performance + Reliability + BonusProfile) deve battere `Fm_Weighted` su **Spearman e precision@20, in almeno 3 ruoli su 4**, misurato su **Target A** (sezione 20.4.0), **su ciascuno dei 6 fold di selezione** (sezione 20.2). Il criterio è per ruolo e non aggregato perché un modello che funziona bene su D e C e male su P e A non è un modello valido: in asta i ruoli si comprano tutti. Se il criterio non è soddisfatto su ciascuno dei fold di selezione, tutta la complessità aggiuntiva (percentili per ruolo, Reliability, BonusProfile) non sta dimostrando valore reale e va rivista — indipendentemente da quanto sia concettualmente ben giustificata. (Formulazione unificata su "ciascuno dei 6 fold di selezione", coerente con §20.7 e con la Fase 4 di §25 — non "la maggioranza": trattandosi del test che decide se il progetto ha senso così com'è, un'ambiguità sul denominatore non è tollerabile.) Il confronto con `Qt.I` (Baseline 3) è diagnostico e riportato nella stessa tabella, ma non sostituisce il gate su `Fm_Weighted`: sono domande diverse ("il modello batte una baseline interna più semplice" vs "il modello batte il mercato"). Il fold di lock-box (2025/26) **non entra in questo criterio**: ha il proprio criterio di fallimento indipendente, fissato prima di aprirlo (sezione 20.5, B10). Questo test decide se il progetto ha senso così com'è, non è un dettaglio opzionale.
+**Criterio di superamento (bloccante, su Target A) — metrica primaria + guardrail.** La versione precedente di questo criterio era una congiunzione su 6 fold × 2 metriche (Spearman **e** precision@20, in almeno 3 ruoli su 4, su ciascuno dei 6 fold di selezione): un modello genuinamente migliore ma con un margine modesto ha una probabilità non trascurabile di inciampare su almeno un fold per rumore campionario, e la spec imponeva in quel caso di concludere che "tutta la complessità aggiuntiva non sta dimostrando valore reale" — un criterio più severo di quello usato altrove in questa stessa spec per decisioni meno importanti (la regola di accettazione della sezione 20.5 chiede l'accordo in ≥ 4 fold su 6). Il criterio è quindi riformulato come primaria + guardrail, sulla stessa struttura già usata in sezione 20.5:
+
+1. **Primaria:** il modello completo (Performance + Reliability + BonusProfile) deve battere `Fm_Weighted` su **Spearman**, in almeno 3 ruoli su 4, in **almeno 5 dei 6 fold di selezione** (sezione 20.2).
+2. **Guardrail (non promozione, solo non-degradazione):** `precision@20` (D/C/A) / `precision@10` (P, sezione 20.4.2) non deve peggiorare rispetto a `Fm_Weighted` di più di `validation.precision_degradation_tolerance` (default `0.05` in valore assoluto di precision), in nessun ruolo, su più di 1 dei 6 fold di selezione.
+3. **Diagnostiche (riportate, non nel pass/fail):** MAE, Median AE, calibrazione per bucket (sezione 20.4.5), Availability Rate (sezione 20.3b), Test F — informazione incrementale rispetto a `Qt.I` (sezione 20.4.6).
+
+Il criterio è per ruolo e non aggregato perché un modello che funziona bene su D e C e male su P e A non è un modello valido: in asta i ruoli si comprano tutti. Se il criterio primario o il guardrail non sono soddisfatti, tutta la complessità aggiuntiva (percentili per ruolo, Reliability, BonusProfile) non sta dimostrando valore reale e va rivista — indipendentemente da quanto sia concettualmente ben giustificata. Il confronto con `Qt.I` (Baseline 3) resta diagnostico (Test F, sezione 20.4.6) e non sostituisce il gate su `Fm_Weighted`: sono domande diverse ("il modello batte una baseline interna più semplice" vs "il modello sa qualcosa che il prezzo non sa già"). Il fold di lock-box (2025/26) **non entra in questo criterio**: ha il proprio criterio di fallimento indipendente, fissato prima di aprirlo (sezione 20.5, B10). Questo test decide se il progetto ha senso così com'è, non è un dettaglio opzionale.
+
+**Vincolo sulla legittimità della riformulazione.** Questa riformulazione è legittima **solo perché avviene prima di aver visto qualunque risultato di backtest**: un criterio di accettazione si può cambiare a risultati non visti, mai dopo averli visti. Se il codice di validazione è già stato eseguito su qualche fold al momento di applicare questa spec, la riformulazione **non va applicata** e va segnalato esplicitamente all'utente invece di procedere.
 
 **Stesso test, ripetuto su Target B (obbligatorio, non bloccante).** Eseguire lo stesso confronto contro le stesse baseline misurando su **Target B** (produzione totale, intero universo Serie A della stagione target, sezione 20.4.0), e riportarlo nella stessa tabella di sintesi, senza fonderlo con l'esito su Target A. Questo secondo risultato non sostituisce né allenta il criterio bloccante sopra — resta l'unico gate che decide se il progetto procede — ma cambia la lettura di un eventuale fallimento: **se il modello non supera il criterio su Target A ma lo supera nettamente su Target B**, e l'ablation (sezione 20.4.4, Model 2 vs Model 1) mostra che è proprio l'aggiunta di Reliability a peggiorare il punteggio su Target A, la conclusione corretta non è "il modello non funziona" ma "Reliability pesa più di quanto la sua capacità predittiva sulla Fm condizionata giustifichi, e va ridotta" — una revisione del peso, non un rigetto dell'impianto (sezione 7 e 20.6bis restano comunque il test diretto della Reliability). Se invece il modello fallisce su **entrambi** i target, il problema è nel modello, non nella scelta del bersaglio.
+
+**Regola a tre esiti (fissata in anticipo, prima di vedere i numeri).** Il gate bloccante è su Target A, ma il modello completo include `Reliability` al 25% di peso su tutti i ruoli (sezione 12), mentre Target A è costruito sui soli `Pv >= 1` — cioè rimuove per costruzione ciò che `Reliability` predice. Senza una regola fissata in anticipo, il paragrafo sopra rischia di diventare una spiegazione pronta per qualunque fallimento: un gate che contiene già l'interpretazione del proprio fallimento non è più un gate. La regola, a tre esiti:
+
+1. **Il modello passa il gate su Target A** → si procede, nessuna riconsiderazione.
+2. **Il modello falla su Target A, passa su Target B, e l'ablation (Model 2 vs Model 1, sezione 20.4.4) mostra che è l'aggiunta di `Reliability` a peggiorare Target A** → esito pre-classificato come **revisione del peso, non fallimento**. Conseguenza operativa obbligatoria, non facoltativa: `bonus_weight` resta invariato e la coppia Performance/Reliability viene ri-calibrata al punto 6 dell'ordine di sezione 20.5, dopodiché il gate su Target A viene **ri-eseguito una sola volta** sulla nuova configurazione. Se falla ancora, si applica l'esito 3. Questa clausola è ammessa **una volta sola nell'intero ciclo di calibrazione** e va registrata nel `validation_report.md` con la configurazione prima e dopo: è l'unica differenza fra una revisione legittima del peso e un aggiustamento post-hoc mascherato.
+3. **Il modello falla su entrambi i target, oppure falla su A per ragioni non attribuibili a `Reliability` dall'ablation** → fallimento strutturale, si torna alla sezione 12 come già previsto.
 
 #### 20.4.4 Test D — ablation test (obbligatorio prima di considerare il modello definitivo)
 
@@ -891,7 +969,9 @@ Model 3d: bonus_profile.zero_handling = midrank per tutti i ruoli  (sezione 11.2
 
 La griglia `bonus_weight ∈ {0, 0.10, 0.15, 0.25, 0.35}` per D/A (sezione 11.3, B12) è testata a parte, nell'ordine di calibrazione fisso della sezione 20.5, e non come ulteriore variante di questa tabella: a differenza di 3a-3d (una scelta binaria/discreta), è un parametro continuo con un default pre-registrato (0.15) da confermare o correggere, non un semplice on/off.
 
-**Tabella di sintesi attesa** (una tabella **per ruolo, per ciascun target (A e B), per fold** — sezione 20.5 vieta di mediare fra fold, report finale sezione 20.7 — 8 tabelle per fold con 4 ruoli × 2 target, 56 in tutto su 7 fold, non una tabella con doppie colonne o mediata: mescolare le due unità di misura in una sola tabella reintrodurrebbe l'errore di scala che il Target A è stato introdotto per evitare, e mediare fra fold nasconderebbe la varianza che il criterio di accettazione di B10 deve poter vedere):
+**Tabella di sintesi attesa** (una tabella **per ruolo, per ciascun target (A e B), per fold** — sezione 20.5 vieta di mediare fra fold, report finale sezione 20.7 — 8 tabelle per fold con 4 ruoli × 2 target, 56 in tutto su 7 fold, non una tabella con doppie colonne o mediata: mescolare le due unità di misura in una sola tabella reintrodurrebbe l'errore di scala che il Target A è stato introdotto per evitare, e mediare fra fold nasconderebbe la varianza che il criterio di accettazione di B10 deve poter vedere). **Le colonne `Prec@N` non sono le stesse per ogni ruolo** (sezione 20.4.2): dichiarare esplicitamente quali colonne sono non applicabili per quale ruolo, invece di lasciarle vuote come se fossero calcolabili ma mancanti.
+
+Tabella per **D/C/A**:
 
 | Model | Pearson | Spearman | MAE | Median AE | Prec@10 | Prec@20 | Prec@30 | Avail@20 |
 |---|---|---|---|---|---|---|---|---|
@@ -908,6 +988,12 @@ La griglia `bonus_weight ∈ {0, 0.10, 0.15, 0.25, 0.35}` per D/A (sezione 11.3,
 | Model 3c: zero_handling = split | | | | | | | | |
 | Model 3d: zero_handling = midrank | | | | | | | | |
 
+Tabella per **P** — colonne `Prec@30` **e** `Prec@20` non applicabili (sezione 20.4.2), sostituite da `Prec@5`/`Prec@10`; `Avail@10` sostituisce `Avail@20` per coerenza con l'N usato:
+
+| Model | Pearson | Spearman | MAE | Median AE | Prec@5 | Prec@10 | Avail@10 |
+|---|---|---|---|---|---|---|---|
+| Baseline 0-4, Model 1-3d (stesse righe della tabella D/C/A) | | | | | | | |
+
 #### 20.4.5 Test E — calibrazione per fascia (bucket)
 
 Spearman e precision@N misurano l'ordinamento, non se il numero stesso è calibrato: un rating al 90° percentile dovrebbe corrispondere, in media, a un giocatore che realmente performa vicino al 90° percentile nel target, non solo "più in alto di uno all'80°". Da riportare, per ruolo e per target (A e B):
@@ -922,13 +1008,45 @@ Bucket predetto (HistoricalRatingRaw, in percentile di ruolo)  →  Target medio
 
 **Interpretazione — attenzione alla compressione fisiologica.** È normale osservare regressione verso la media (il bucket 90-100 mostra un target medio osservato inferiore a 90, es. ~75): con un solo anno di dati storici e stagioni successive rumorose, nessun modello onesto raggiunge una calibrazione 1:1. Non è di per sé un difetto da correggere. Ciò che segnala un problema reale è **la non-monotonicità**: se il target medio osservato in un bucket è inferiore a quello di un bucket sottostante (es. il bucket 70-80 supera l'80-90), il modello sta invertendo l'ordine tra fasce di rating in modo sistematico — un'informazione che Spearman aggregato può nascondere se l'inversione è localizzata in una fascia stretta.
 
+#### 20.4.6 Test F — informazione incrementale rispetto al mercato (Qt.I)
+
+`Qt.I` è presente come `Baseline 3` (sezione 20.4.3), diagnostica e non bloccante: risponde a "il modello batte una baseline interna più semplice", non a "il modello sa qualcosa che il prezzo non sa già". In un'asta il valore si estrae **solo** dove il modello e il prezzo divergono: un modello che batte `Fm_Weighted` ma correla altissimo con `percentile(Qt.I)` in ogni ruolo non produce alcun vantaggio al tavolo, e senza una misura dedicata questo esito sarebbe indistinguibile da un successo pieno. Questo test aggiunge la misura mancante, **obbligatoria e non bloccante**, per ruolo, per fold e su entrambi i target (A e B), coerentemente con il vincolo "mai sull'universo indifferenziato" della sezione 12.0bis.
+
+**1. Ridondanza col prezzo (descrittiva).**
+
+```
+Spearman(HistoricalRatingRaw, percentile(Qt.I_target))    per ruolo, per fold
+```
+
+Dice quanta parte dell'ordinamento del modello il mercato aveva già espresso. Un valore molto alto (es. `> 0.90`) non è un errore del modello, ma significa che il suo contributo pratico in asta è marginale anche se supera il gate del Test C — va detto nel report invece di essere scoperto al tavolo.
+
+**2. Ordinamento dentro fascia di prezzo (la misura più direttamente utile).**
+
+```
+Suddividere l'universo di test in fasce (quantili) di Qt.I_target dentro ciascun ruolo,
+poi calcolare per ciascuna fascia:
+    Spearman(HistoricalRatingRaw, target)
+    Spearman(percentile(Qt.I_target), target)     — confronto
+```
+
+È letteralmente la decisione d'asta ("fra questi giocatori che costano lo stesso, quale prendo"). Il numero di fasce è un parametro, `validation.qti_bands` (default `4` — quartili di prezzo dentro il ruolo). Riportare sempre la numerosità di ciascuna fascia accanto alla metrica: sui portieri, con quartili dentro ruolo, alcune fasce saranno troppo piccole perché Spearman significhi qualcosa, e va reso visibile invece che mediato via.
+
+**3. Disaccordi estremi.** Riportare, per ruolo e per fold, i giocatori nel decile più alto di scarto fra `percentile(HistoricalRatingRaw)` e `percentile(Qt.I_target)` — nelle due direzioni — con il target realizzato. Non è una metrica aggregata: è la tabella che permette di capire *di che tipo* sono i disaccordi (giovani in ascesa, reduci da infortunio, rigoristi, cambi squadra) e se il modello sbaglia in modo sistematico o casuale dove si discosta dal prezzo.
+
+**`Qt.I` resta non bloccante — da non riaprire.** `Qt.I` è un prezzo che incorpora informazione strutturalmente non disponibile al modello (trasferimenti estivi, ruolo atteso nella nuova squadra, gerarchie annunciate, aspettative sul minutaggio): non batterlo non dimostra che il modello sia inutile, dimostra che non è un oracolo autonomo. Ciò che mancava non era un gate, era la misura — questo test aggiunge la misura e lascia il gate dov'è (sezione 20.4.3, su `Fm_Weighted`).
+
 ### 20.5 Regola di selezione — lock-box, ordine di calibrazione, criterio di accettazione (B10)
 
 Con 10 stagioni disponibili e 7 fold (6 di selezione + 1 lock-box, sezione 20.2) la potenza per calibrare è molto maggiore di quella disponibile con N=3, ma resta finita. Il vincolo della versione precedente di questa spec ("solo `time_decay.base` e `reference_pv` sono candidati a modifica") era la risposta corretta a 2 fold; con 6 va **rilassato, non rimosso**.
 
 **Lock-box su 2025/26.** La selezione dei parametri usa esclusivamente i 6 fold con target 2019/20 → 2024/25 (sezione 20.2). Il fold con target 2025/26 **non viene mai guardato durante la calibrazione** — non nei test C/D, non nella sensitivity analysis — e si apre una sola volta, a configurazione congelata, come passo finale.
 
-**Criterio di fallimento del lock-box (da fissare ora, prima di aprirlo).** Copia esatta del gate bloccante di §20.4.3, applicato al fold di conferma: se sul fold 2025/26 il modello configurato (Performance + Reliability + BonusProfile) non batte **Baseline 1 (`Fm_Weighted`)** su **Spearman e precision@20**, misurato su **Target A**, in almeno 3 ruoli su 4, la risposta **non è ritoccare un parametro**: è tornare alla struttura del modello (sezione 12 e oltre). Baseline 3 (`Qt.I`) resta **diagnostica e non bloccante** anche qui, per coerenza con §20.4.3 e con la sua natura di baseline esterna (sezione 20.4.3, R9 del documento di verifica) — il suo esito va comunque riportato nella sezione lock-box del report (sezione 20.7), ma non fa parte del criterio pass/fail. Fissarlo adesso, prima di vedere il risultato, è ciò che rende il lock-box qualcosa di diverso da un settimo fold di selezione qualunque.
+**Criterio di fallimento del lock-box (da fissare ora, prima di aprirlo).** Copia esatta del gate bloccante di §20.4.3 nella sua forma primaria + guardrail, applicato al fold di conferma — ma **su un solo fold e senza clausole di maggioranza**, mantenendo la natura di pass/fail unico e irripetibile del lock-box:
+
+1. **Primaria:** sul fold 2025/26 il modello configurato (Performance + Reliability + BonusProfile) deve battere **Baseline 1 (`Fm_Weighted`)** su **Spearman**, misurato su **Target A**, in almeno 3 ruoli su 4.
+2. **Guardrail:** `precision@20` (D/C/A) / `precision@10` (P, sezione 20.4.2) non deve peggiorare rispetto a `Fm_Weighted` di più di `validation.precision_degradation_tolerance` (default `0.05`), in nessun ruolo.
+
+Se la primaria o il guardrail falliscono, la risposta **non è ritoccare un parametro**: è tornare alla struttura del modello (sezione 12 e oltre) — salvo il caso previsto dalla regola a tre esiti della sezione 20.4.3, applicabile anche qui. Baseline 3 (`Qt.I`) resta **diagnostica e non bloccante** anche qui, tramite il Test F (sezione 20.4.6), per coerenza con §20.4.3 e con la sua natura di baseline esterna (sezione 20.4.3, R9 del documento di verifica) — il suo esito va comunque riportato nella sezione lock-box del report (sezione 20.7), ma non fa parte del criterio pass/fail. Fissarlo adesso, prima di vedere il risultato, è ciò che rende il lock-box qualcosa di diverso da un settimo fold di selezione qualunque.
 
 **Regola di accettazione per un cambio di default.** Un default (di questa sezione o della 20.4.4) si cambia solo se il miglioramento è **concorde in segno in almeno 4 dei 6 fold di selezione** **e** vale in **almeno 3 dei 4 ruoli**. Le 24 combinazioni ruolo×fold di selezione sono trattate come quasi-repliche (non indipendenti, ma un controllo più severo di un singolo numero aggregato).
 
@@ -948,7 +1066,7 @@ Con 10 stagioni disponibili e 7 fold (6 di selezione + 1 lock-box, sezione 20.2)
 3. `bonus_weight` (griglia B12, sezione 11.3: `{0, 0.10, 0.15, 0.25, 0.35}` per D e A, tenendo fisso il rapporto Performance:Reliability, sezione 20.5a);
 4. `min_pv_for_percentile` (performance e bonus_profile, indipendenti, sezione 20.5c);
 5. `penalty_save_weight` (goalkeeping, sezione 20.5c);
-6. pesi della formula di rating (redistribuzione fine Performance/Reliability/BonusProfile per ruolo, sezione 20.5a).
+6. pesi della formula di rating (redistribuzione fine Performance/Reliability/BonusProfile per ruolo, sezione 20.5a). **Rientro previsto dall'esito 2 della sezione 20.4.3**: se il gate su Target A fallisce per effetto di `Reliability` (ablation Model 2 vs Model 1), si ri-entra in questo punto 6 per ri-calibrare la coppia Performance/Reliability (a `bonus_weight` invariato) prima di ri-eseguire il gate una sola volta — è l'unico caso in cui un passo già fissato viene ritoccato, ed è ammesso una volta sola nell'intero ciclo (sezione 20.4.3).
 
 #### 20.5a Pesi della formula di rating
 
@@ -979,7 +1097,7 @@ goalkeeping.penalty_save_weight:      0.00, 0.05, 0.10
 ```
 
 Per ciascuna variazione, calcolare:
-- Spearman e precision@20 rispetto al target, per fold e per ruolo (per capire se la variazione migliora o peggiora, sezione 20.5 sopra);
+- Spearman e precision@N (`precision@20` per D/C/A, `precision@10` per P, sezione 20.4.2) rispetto al target, per fold e per ruolo (per capire se la variazione migliora o peggiora, sezione 20.5 sopra);
 - **rank correlation tra la configurazione base e la configurazione variata** (`Spearman(Rank_base, Rank_variazione)`) — più intuitiva delle sole metriche predittive per capire quanto il ranking finale "si muove" al variare dei pesi. Un valore alto (es. 0.95+) indica un modello robusto; un valore basso indica che il ranking è instabile e sensibile a scelte arbitrarie dei pesi, cosa da segnalare esplicitamente prima di usarlo per un'asta reale.
 
 Questa fase è importante ma non bloccante quanto i test C/D: va eseguita dopo aver verificato che il modello base supera le baseline sui fold di selezione, non prima.
@@ -1009,7 +1127,7 @@ Questo test è anche la verifica quantitativa della correzione della sezione 9.1
 
 ### 20.7 Output della validazione
 
-Un report (`validation_report.md`, con eventuale export CSV delle tabelle) contenente tutte le metriche delle sezioni 20.1 e 20.3-20.6bis, per ciascuno dei 7 fold eseguiti (6 di selezione + 1 lock-box, sezione 20.2), **riportato per fold separatamente (mai mediato tra fold, sezione 20.5)** e **con una tabella per ruolo per ciascun target A e B** (sezione 20.4.0), da consultare prima di considerare definitivi i parametri di config.yaml. Il report deve aprirsi con: coverage per ruolo (sezione 20.1), esito del Test C bloccante ruolo per ruolo su Target A su ciascuno dei 6 fold di selezione **e** l'esito informativo su Target B affiancato, e in caso di mancato superamento del criterio bloccante su un fold una riga esplicita che lo dichiari — un report che seppellisce un fallimento del Test C dentro una tabella è inutile. Segue, separata e ben visibile, la sezione dedicata al **lock-box**: la configurazione congelata usata, l'esito pass/fail rispetto al criterio fissato in anticipo (sezione 20.5), e — solo in caso di fail — la conclusione che ne segue (rivedere la struttura, non ritoccare un parametro). Il report chiude con il paragrafo sull'ordine di calibrazione e i parametri effettivamente calibrati vs. lasciati al default pre-registrato (sezione 20.5). Questa fase serve anche a calibrare empiricamente i pesi delle sezioni 8, 9, 10, 11, 12, 13, 19 — che partono come ipotesi dichiarate, non verità.
+Un report (`validation_report.md`, con eventuale export CSV delle tabelle) contenente tutte le metriche delle sezioni 20.1 e 20.3-20.6bis, **incluso il Test F** (sezione 20.4.6), per ciascuno dei 7 fold eseguiti (6 di selezione + 1 lock-box, sezione 20.2), **riportato per fold separatamente (mai mediato tra fold, sezione 20.5)** e **con una tabella per ruolo per ciascun target A e B** (sezione 20.4.0), da consultare prima di considerare definitivi i parametri di config.yaml. Il report deve aprirsi con: coverage per ruolo (sezione 20.1), esito del Test C bloccante ruolo per ruolo su Target A — primaria (Spearman, ≥3 ruoli su 4, ≥5 dei 6 fold) e guardrail (non-degradazione di precision) separati — su ciascuno dei 6 fold di selezione **e** l'esito informativo su Target B e sul Test F affiancati, e in caso di mancato superamento del criterio bloccante su un fold una riga esplicita che lo dichiari — un report che seppellisce un fallimento del Test C dentro una tabella è inutile. Se scatta la regola a tre esiti della sezione 20.4.3, il report dichiara esplicitamente **quale dei tre esiti** si è verificato, con la configurazione prima e dopo l'eventuale ri-calibrazione dell'esito 2. Segue, separata e ben visibile, la sezione dedicata al **lock-box**: la configurazione congelata usata, l'esito pass/fail rispetto al criterio fissato in anticipo (sezione 20.5), e — solo in caso di fail — la conclusione che ne segue (rivedere la struttura, non ritoccare un parametro). Il report chiude con il paragrafo sull'ordine di calibrazione e i parametri effettivamente calibrati vs. lasciati al default pre-registrato (sezione 20.5). Questa fase serve anche a calibrare empiricamente i pesi delle sezioni 8, 9, 10, 11, 12, 13, 19 — che partono come ipotesi dichiarate, non verità.
 
 ## 21. Output finale
 
@@ -1052,7 +1170,10 @@ Colonne minime richieste:
 | Gf_Rate | Gol per presenza, rigori inclusi; media pesata dei rate stagionali (vedi nota 21.2 sul metodo) |
 | NonPenaltyGf_Rate | Gol su azione per presenza, `(Gf - R+) / Pv`; media pesata (sezione 11.1) |
 | Ass_Rate | Assist per presenza, media pesata dei rate stagionali (vedi nota 21.2) |
-| RigoriDipendenza | Flag/valore su dipendenza da rigori (attaccanti/centrocampisti) |
+| RigoriDipendenza | Valore continuo `R+_Weighted / Gf_Weighted` (sezione 18.2); `null` se `Gf_Weighted = 0` o ruolo P/D |
+| RigoriDipendenza_Flag | Booleano derivato: `RigoriDipendenza > risk_flags.penalty_dependency_threshold` (sezione 18.2, colonna separata dal valore continuo) |
+| StoricoVolatile | Booleano: `StabilityScore < risk_flags.volatility_threshold` (sezione 18.2/19); `null` se `StabilityScore` è `null` |
+| PochePresenzeRecenti | Booleano: `Pv_Last_Season < risk_flags.low_recent_pv_threshold`, solo per `Categoria = PV_SUFFICIENTI` (sezione 18.2); `null` altrimenti |
 | RoleMedianRating | Mediana di HistoricalRating del proprio ruolo, su tutti i giocatori con rating. Popolata per tutti, NEW inclusi; **non è un rating personale** (sezione 21.3) |
 | Qt.I_2026_27 | Prezzo iniziale dalla quotazione 2026/27 (sezione 2.3), per riferimento in asta — non entra in nessun calcolo del rating |
 | Squadra storiche (una colonna per stagione della finestra di train) | Storico squadre, per riferimento |
@@ -1151,9 +1272,13 @@ Prima di considerare valido il dataset, eseguire:
 - cambio di `R` da o verso `P` (WARNING `role_change_gk`, da elencare per controllo manuale) — insieme verificato **vuoto** su tutte e 10 le stagioni (sezione 4.1): una riga non vuota segnala più probabilmente un errore nei dati sorgente che un caso reale;
 - `R` della lista 2026/27 diverso da `R` dell'ultima stagione disponibile (INFO: frequente e legittimo, ma utile da sapere in asta).
 
-**Distribuzioni delle feature (bloccanti)**
-- per ogni ruolo e stagione: quota di giocatori nel blocco a `rate = 0` e mediana di `BonusProfile_normalized`. Se la quota supera `bonus_profile.max_zero_share` o la mediana si discosta da 0 più di 0.10 → ERROR: il modulatore non è centrato (sezione 11.2);
-- `Performance ∈ [0, 1]`, `Reliability ∈ [0, 1]`, `BonusProfile ∈ [-1, +1]`, `ConfidenceScore ∈ [0, 1]` su ogni riga (ERROR se fuori range: tipicamente una divisione per 100 dimenticata, sezione 10 — o, per `ConfidenceScore`, un caso limite non gestito in sezione 19);
+**Distribuzioni delle feature (bloccanti e non — severità differenziata, sezione 11.2)**
+- per ogni ruolo e stagione: mediana di `BonusProfile_normalized`. Se si discosta da 0 più di 0.10 → **ERROR**: `recenter` la garantisce per costruzione, quindi una violazione è un bug reale nella centratura, e il modulatore non è centrato (sezione 11.2);
+- per ogni ruolo e stagione: quota di giocatori nel blocco a `rate = 0`. Se supera `bonus_profile.max_zero_share` (default `0.30`, segnaposto non ancora misurato — sezione 11.2) → **WARNING**, non ERROR: è una proprietà del ruolo, non un difetto da correggere; segnala di valutare `split` in ablation (Model 3c) e va riportata per ruolo e stagione;
+- per ogni ruolo e stagione: quota di giocatori effettivamente clippati (`|centrato / 50| > 1`, solo con `zero_handling = recenter`). Se supera `bonus_profile.max_clipped_share` (default `0.05`) → **WARNING**: il clip sta comprimendo la parte alta della distribuzione, valutare `split` come alternativa (Model 3c);
+- `Performance ∈ [0, 1]`, `Reliability ∈ [0, 1]`, `ConfidenceScore ∈ [0, 1]` su ogni riga (ERROR se fuori range: tipicamente una divisione per 100 dimenticata, sezione 10 — o, per `ConfidenceScore`, un caso limite non gestito in sezione 19);
+- `BonusProfile ∈ [-1, +1]` su ogni riga (**ERROR** se fuori range). Con il clip di sezione 11.2 questo non può più scattare per effetto della normalizzazione stessa: resta valido **solo** come asserzione che il clip sia stato effettivamente applicato nel codice — una violazione qui significa che l'implementazione ha saltato il clip, non che la metrica abbia prodotto un valore fuori scala per costruzione;
+- `n < 5` osservazioni di riferimento per una qualunque coppia (ruolo, stagione) usata per un percentile (sezione 10.1, punto 6) → **ERROR**;
 - nessun giocatore con `Seasons_Available = 1` e `Confidence = Alta` (ERROR, sezione 19);
 - nessun giocatore con `Seasons_Available = 1` e `Trend_Label` diverso da `N/D` (ERROR, sezione 18.1);
 - quota di giocatori con almeno una stagione a `Reliability_stagione = 0` (righe `IN_SQUAD_NO_PLAY` con `left_mid_season = false`, sezione 9.1bis) (INFO, con elenco da verificare a campione).
@@ -1251,7 +1376,10 @@ performance:
 bonus_profile:
   min_pv_for_percentile: 1         # indipendente da performance.min_pv_for_percentile (sez. 11.1bis)
   goal_rate_metric: GoalRate       # oppure NonPenaltyGoalRate (sez. 11.1)
-  max_zero_share: 0.30             # soglia del controllo QC bloccante (sez. 11.2 / 22)
+  max_zero_share: 0.30             # segnaposto NON misurato sui dati (sez. 11.2/22); violazione = WARNING,
+                                    # non ERROR — la quota a rate=0 è una proprietà del ruolo, non un bug;
+                                    # da ricalibrare sulla distribuzione osservata al primo giro di Fase 1
+  max_clipped_share: 0.05          # soglia WARNING sulla quota di giocatori clippati dopo recenter (sez. 11.2/22)
   zero_handling:                   # sez. 11.2 — default recenter per tutti i ruoli;
     D: recenter                    # split (Model 3c) e midrank (Model 3d) testati in ablation
     C: recenter
@@ -1320,10 +1448,18 @@ validation:
   external_baselines: [qt_i, fvm]    # sez. 20.4.3, B9 — fvm valido solo su fold con target >= 2022/23
   lockbox_target: "2025/26"          # sez. 20.2/20.5, B10 — mai usato in calibrazione
   precision_n:
-    P: [5, 10, 20]
+    P: [5, 10]                       # precision@20 non calcolata sui P: popolazione troppo piccola (sez. 20.4.2)
     D: [10, 20, 30]
     C: [10, 20, 30]
     A: [10, 20, 30]
+  precision_degradation_tolerance: 0.05   # guardrail del Test C/lock-box, sez. 20.4.3/20.5
+  qti_bands: 4                       # Test F, sez. 20.4.6 — quartili di Qt.I dentro ruolo
+
+risk_flags:                          # sez. 18.2/22 — soglie di partenza, ipotesi da rivedere sui dati reali
+  penalty_dependency_threshold: 0.40 # quota di R+_Weighted/Gf_Weighted oltre cui il flag scatta (solo C/A)
+  volatility_threshold: 0.40         # StabilityScore (sez. 19) sotto cui il flag "storico volatile" scatta
+  low_recent_pv_threshold: 10        # Pv_Last_Season sotto cui il flag "poche presenze recenti" scatta
+                                      # (solo per Categoria = PV_SUFFICIENTI)
 ```
 
 ## 25. Roadmap di implementazione
@@ -1344,7 +1480,7 @@ validation:
 - [ ] Calcolare Performance come percentile Fm per ruolo/stagione, mappando **anche** i giocatori sotto `min_pv` sulla distribuzione filtrata (sezione 10).
 - [ ] Calcolare GoalRate, NonPenaltyGoalRate, AssistRate e BonusProfile per ruolo, con il trattamento dei blocchi a zero (sezioni 11.1, 11.2).
 - [ ] Verificare la centratura di BonusProfile per ruolo — controllo bloccante (sezioni 11.2, 22).
-- [ ] Calcolare Trend come pendenza OLS con la regola dei casi non calcolabili (sezione 18.1) e i flag di rischio (sezione 18.2).
+- [ ] Calcolare Trend come pendenza OLS con la regola dei casi non calcolabili (sezione 18.1) e i flag di rischio, formule/soglie/tipo di campo definiti in sezione 18.2 e parametri in `config.yaml` (blocco `risk_flags`, sezione 24).
 
 **Fase 3 — Rating**
 - [ ] Applicare le formule per ruolo usando `R` della lista corrente per i pesi (sezioni 12, 4.1), con `bonus_weight` di default 0.15 per D/A (sezione 11.3, B12).
@@ -1363,14 +1499,15 @@ validation:
 - [ ] Separare performance outcome (Pv≥1 nel target) da availability outcome (intero universo Serie A del target, inclusi Pv=0) — sezione 20.3.
 - [ ] Calcolare Pearson, Spearman, MAE, Median AE **per ruolo e per fold** nello spazio percentile (sezione 20.4.1, Test A).
 - [ ] Calcolare precision@N con N dimensionato sul ruolo e la Top-N Availability Rate corrispondente (sezione 20.4.2, Test B).
-- [ ] Calcolare le baseline 0/1/2/3/4 (incluse `Qt.I` su tutti i fold e `FVM` sui fold con target dal 2022/23, B9) su Target A e verificare che il modello batta `Fm_Weighted` in almeno 3 ruoli su 4 su ciascuno dei 6 fold di selezione (sezione 20.4.3, Test C — bloccante); ripetere lo stesso confronto su Target B, obbligatorio ma non bloccante.
+- [ ] Calcolare le baseline 0/1/2/3/4 (incluse `Qt.I` su tutti i fold e `FVM` sui fold con target dal 2022/23, B9) su Target A e verificare che il modello batta `Fm_Weighted` su Spearman in almeno 3 ruoli su 4 in almeno 5 dei 6 fold di selezione (primaria), e che `precision@20`/`precision@10` (P) non peggiori di più di `validation.precision_degradation_tolerance` in nessun ruolo su più di 1 dei 6 fold (guardrail) (sezione 20.4.3, Test C — bloccante, riformulazione applicabile solo se nessun fold è già stato eseguito); ripetere lo stesso confronto su Target B, obbligatorio ma non bloccante.
 - [ ] Eseguire l'ablation Model 1/2/3 e le varianti 3a (ora `exclude_left_mid_season`)/3b/3c/3d (sezione 20.4.4, Test D) su entrambi i target, e il controllo doppio conteggio del BonusProfile: `Rating_senza_BonusProfile` vs `con_BonusProfile` e `corr(Performance, BonusProfile)` per ruolo (sezione 11.4, sezione 20.6).
+- [ ] Calcolare il Test F — informazione incrementale rispetto a `Qt.I` (sezione 20.4.6): ridondanza col prezzo, ordinamento dentro fascia di prezzo (`validation.qti_bands`), disaggregazione dei disaccordi estremi, per ruolo e per fold.
 - [ ] Eseguire il test diretto della Reliability contro `Pv_target` e contro la baseline `Pv_Last_Season` (sezione 20.6bis), incluso il confronto tra `reliability.function = sqrt` e `linear`, e fra `exclude_left_mid_season = true/false`.
 - [ ] Calcolare la calibrazione per fascia (bucket) per ruolo e per target, segnalando eventuali inversioni di monotonicità (sezione 20.4.5, Test E).
 - [ ] Calibrare nell'ordine fisso della sezione 20.5 (B10), sui 6 fold di selezione: `train_window × time_decay.base` (griglia 2/3/4/5 × 1.3/1.5/2.0/2.5, sui target comuni, B8) → `reliability.function × reference_pv` (via 20.6bis) → `bonus_weight` (griglia B12) → `min_pv_for_percentile` (performance e bonus_profile, indipendenti) → `penalty_save_weight` (0.00/0.05/0.10) → pesi della formula. Un parametro si fissa e non si ritocca dopo aver visto i successivi.
 - [ ] Accettare un cambio di default solo se concorde in segno in ≥4 dei 6 fold di selezione **e** in ≥3 dei 4 ruoli (sezione 20.5).
 - [ ] Produrre `validation_report.md`: coverage e Test C per ruolo/fold in apertura, tabelle sempre per fold (mai mediate) con mediana + dispersione quando riportata in sintesi, sezione dedicata al lock-box (esito pass/fail rispetto al criterio fissato in anticipo), paragrafo di chiusura sull'ordine di calibrazione e sui parametri lasciati al default (sezione 20.7).
-- [ ] **Aprire il lock-box (target 2025/26) una sola volta**, a configurazione congelata: se il criterio di fallimento scatta (non batte le baseline in ≥3 ruoli su 4), tornare alla struttura del modello, non ritoccare un parametro (sezione 20.5, B10).
+- [ ] **Aprire il lock-box (target 2025/26) una sola volta**, a configurazione congelata: se la primaria (Spearman vs `Fm_Weighted`, ≥3 ruoli su 4) o il guardrail (non-degradazione di precision) falliscono, tornare alla struttura del modello, non ritoccare un parametro — salvo il caso della regola a tre esiti (sezione 20.4.3), applicabile anche al lock-box (sezione 20.5, B10).
 
 **Fase 5 — futuro (fuori scope ora)**
 - [ ] Aggiungere ruoli Mantra.
@@ -1492,7 +1629,7 @@ Modifiche rispetto alla versione precedente (sezione 27), a seguito di una secon
 
 **Punti volutamente non modificati**
 
-- Il range di `BonusProfile` resta `[-1, +1]` (normalizzazione `/50`, sezione 11.2): la correzione scelta per il problema di span (#5 sopra) è documentare e testare il peso effettivo in validazione, non alterare la scala della metrica, per non introdurre un secondo cambiamento coincidente e rendere l'attribuzione dell'effetto ambigua nell'ablation.
+- Il range di `BonusProfile` resta `[-1, +1]` (normalizzazione `/50`, sezione 11.2): la correzione scelta per il problema di span (#5 sopra) è documentare e testare il peso effettivo in validazione, non alterare la scala della metrica, per non introdurre un secondo cambiamento coincidente e rendere l'attribuzione dell'effetto ambigua nell'ablation. **Corretto nella sezione 30**: la sola divisione `/50` non garantiva il range dopo la centratura di ruolo (`zero_handling = recenter`) — serve un clip esplicito, aggiunto in sezione 11.2.
 - I criteri di superamento del Test C restano bloccanti solo su Target A: Target B è deliberatamente diagnostico, non un secondo gate, per evitare di rendere il criterio bloccante più facile da soddisfare per costruzione.
 
 ## 29. Changelog della revisione corrente — finestra storica a 10 stagioni
@@ -1547,3 +1684,28 @@ Modifiche rispetto alla versione precedente (sezioni 27-28), a seguito dell'arri
 - Il divieto di `Fm × Pv` come feature (sezione 7) resta; `Fm × Pv` continua a comparire solo come Target B di validazione (sezione 20.4.0), un ruolo diverso già stabilito nella revisione precedente.
 - Il ranking di produzione 2026/27 non userà tutte le 10 stagioni disponibili: userà la finestra `train_window` indicata dal backtest come migliore (plausibilmente 3-5), perché le 10 stagioni servono a **calibrare**, non a massimizzare lo storico usato in produzione (sezione 1, sezione 4 del piano di revisione).
 - Le quotazioni pre-stagione autentiche (agosto) delle stagioni storiche restano irrecuperabili: non si tenta di ricostruirle, si dichiara il limite (sezione 2.3).
+
+## 30. Changelog della revisione corrente — correzioni post-review
+
+Modifiche rispetto alla versione precedente (sezioni 27-29), a seguito della verifica riga per riga di una review esterna (GPT 5.6), documentata in `specs/gpt_review.md`. Di 13 item proposti dalla review, 3 sono risultati validi e sono applicati sotto, 6 erano già presenti nella spec (spesso in forma più completa), 1 era cosmetico, 1 è correttamente rimandato a v2, e 2 sono stati riformulati perché la review aveva individuato il sintomo ma sbagliato il bersaglio. La verifica ha inoltre trovato 5 problemi non visti dalla review, inclusi sotto.
+
+| # | Problema | Intervento |
+|---|---|---|
+| 1 | `BonusProfile_normalized` usciva dal range dichiarato `[-1, +1]` con `zero_handling = recenter` (default): centrare sulla mediana di ruolo può portare `centrato` fuori da `[-50, +50]`, quindi `centrato/50` fuori da `[-1, +1]` — proprio nel caso (difensori, mediana di ruolo spostata) per cui `recenter` esiste. Collegato: il controllo QC bloccante su `max_zero_share` (sezione 11.2) scattava come **ERROR** su dati corretti, perché la quota a `rate = 0` è una proprietà del ruolo (spesso >30%), non un difetto che `recenter` possa correggere — l'unico problema in grado di bloccare la pipeline alla prima esecuzione | Sezione 11.2: normalizzazione ridefinita come `clip(x / 50, -1, +1)`, dichiarata parte della definizione della metrica; nuovo QC WARNING su `bonus_profile.max_clipped_share` (default 0.05); la condizione sulla mediana resta ERROR, la condizione sulla quota a zero diventa WARNING con `max_zero_share = 0.30` dichiarato segnaposto non misurato, da ricalibrare in Fase 1. Propagato a sezioni 10, 11.3, 12, 22, 24, 28 |
+| 2 | Il metodo del percentile era autocontraddittorio: la spec prescriveva `rank(pct=True)` ma richiedeva anche di valutare giocatori esterni al gruppo di riferimento (sezione 10), operazione che `rank(pct=True)` non sa fare. Nessuna formula definiva l'interpolazione fuori campione, né il caso `n < 5`, né la variante `zero_handling = split` (descritta ma mai formalizzata) | Nuova sezione 10.1: algoritmo unico e vincolante con formula (`percentile(x) = 100 × (L + 0.5×E) / n`, midrank, stessa formula dentro e fuori campione), casi degeneri (`n=1`, riferimento costante), nuovo QC ERROR su `n < 5`, divieto esplicito di `rank(pct=True)` con join e di `percentileofscore` senza `kind` fissato, e formula completa di `split` (`50 + percentile_fra_i_positivi/2` per `rate > 0`, valore fisso `25` per `rate = 0`). Propagato a sezioni 10, 11.1bis, 11.2, 13, 20.4.0, 20.4.3 |
+| 3 | Mancava qualunque analisi di informazione incrementale rispetto al prezzo di mercato (`Qt.I`): nessuna misura di quanto il rating fosse ridondante col prezzo, nessuna analisi dei disaccordi — la domanda che conta davvero in un'asta ("il modello sa qualcosa che il prezzo non sa già") non aveva un test dedicato | Nuova sezione 20.4.6 (Test F): ridondanza (`Spearman(HistoricalRatingRaw, percentile(Qt.I))`), ordinamento dentro fascia di prezzo (`validation.qti_bands`, default 4), tabella dei disaccordi estremi. Obbligatorio e non bloccante — `Qt.I` resta diagnostica (non promossa a gate), con la motivazione esplicita nel testo. Propagato a sezioni 20.4.3, 20.5, 20.7, 24, 25 |
+| 4 | `precision@20` sui portieri è quasi degenere (popolazione di sole poche decine) ma è metà del criterio bloccante del Test C e del lock-box — la spec vietava già `precision@30` sui P con lo stesso argomento, senza applicarlo a `precision@20` | Sezione 20.4.2: `N` per i P ridotto a `{5, 10}`, `precision@20` non calcolata per P; numerosità del performance outcome riportata per ruolo/fold. Sezioni 20.4.3/20.5: criterio dipendente dal ruolo (`precision@20` D/C/A, `precision@10` P). Propagato a 20.4.4 (tabelle separate per P e per D/C/A) |
+| 5 | Il criterio di superamento del Test C (sezione 20.4.3) — Spearman **e** precision@20 in ≥3 ruoli su 4 su **ciascuno** dei 6 fold di selezione — era una congiunzione troppo severa: un modello genuinamente migliore poteva fallire per rumore su un solo fold, mentre la spec applicava altrove (sezione 20.5) un criterio a maggioranza (≥4 fold su 6). La review aveva individuato il sintomo ma proposto di allentare il lock-box, che invece deve restare severo per costruzione | Sezione 20.4.3: criterio riformulato come primaria (Spearman, ≥3 ruoli su 4, ≥5 dei 6 fold) + guardrail (non-degradazione di precision oltre `validation.precision_degradation_tolerance`, default 0.05, su non più di 1 fold). Riformulazione dichiarata applicabile solo prima di aver visto risultati di backtest. Il lock-box (sezione 20.5) resta copia dello stesso schema ma su un solo fold, senza clausole di maggioranza |
+| 6 | Il gate bloccante su Target A conteneva già, in anticipo, l'interpretazione del proprio eventuale fallimento ("Reliability pesa più di quanto..."), rendendo qualunque esito compatibile con la prosecuzione del progetto — un gate con la propria scusa pre-scritta non è più un gate. (La review chiedeva di "definire l'obiettivo" di `HistoricalRating`, già definito in sezioni 1/7/20.4.0: non applicato come proposto) | Sezione 20.4.3: regola esplicita a tre esiti, fissata prima di vedere i numeri — pass su A (procedi), fail su A ma pass su B attribuibile a Reliability dall'ablation (ri-calibrazione di Performance/Reliability, una sola ri-esecuzione del gate, ammessa una sola volta nel ciclo, tracciata nel report), fail strutturale altrimenti. Propagato a 20.5 (punto 6 dell'ordine di calibrazione) e 20.7 |
+| 7 | I tre flag di rischio della sezione 18.2 (dipendenza da rigori, storico volatile, poche presenze recenti) erano descritti in prosa senza soglia numerica, formula né voce di config; `RigoriDipendenza` era una colonna obbligatoria del CSV di tipo non deciso (flag o valore?) | Sezione 18.2: formula, tipo di campo e soglia per ciascun flag — `RigoriDipendenza = R+_Weighted / Gf_Weighted` (valore continuo, `null` se `Gf_Weighted=0`, colonna booleana derivata separata), `StoricoVolatile` da `StabilityScore` (riuso, non una seconda misura di varianza), `PochePresenzeRecenti` da `Pv_Last_Season` con la condizione `Categoria = PV_SUFFICIENTI` esplicita e il caso "ultima stagione ≠ più recente" (rientro dall'estero) definito. Nuovo blocco `risk_flags` in config.yaml, soglie dichiarate come ipotesi da rivedere sui dati. Propagato a sezioni 21, 24, 25 |
+
+**Punti volutamente non modificati** (dalla review esterna — sezione 2 di `specs/gpt_review.md`, vincolante quanto la tabella sopra):
+
+- *Chiarire che Target B è una proxy di produzione stagionale* — già in sezione 20.4.0, in forma più completa di quanto la review chiedesse (sovrastima/sottostima simmetriche già dichiarate).
+- *Chiarire la semantica di `Reliability` / rinominarla `ParticipationScore`* — già in sezione 7 (nota terminologica); nessuna rinomina, zero impatto sui risultati a fronte di decine di punti da cambiare.
+- *Testare se `BonusProfile` debba esistere* — già in ablation, in forma più forte (griglia `bonus_weight` che include `0`, Model 1/2/3, controllo doppio conteggio, `corr(Performance, BonusProfile)`).
+- *Trattamento a due parti (hurdle/split) per le statistiche zero-inflate* — già presente come `zero_handling = split`, già in ablation (Model 3c); mancava solo la definizione precisa, chiusa dall'item 2 sopra.
+- *Documentare il limite del backtest storico (universo d'asta non ricostruibile)* — già in sezione 20.1, in forma più forte (limite dichiarato non misurabile su nessuno dei 7 fold, non solo "documentato").
+- *Rinominare `ConfidenceScore` in `EvidenceScore`* — cosmetico, nessun impatto sui risultati; non applicato.
+- *Rendere `Qt.I` un benchmark centrale/bloccante* — applicato solo in parte (item 3: aggiunta la misura incrementale, Test F), il gate resta su `Fm_Weighted` perché `Qt.I` incorpora informazione non disponibile al modello.
+- *`Reliability` aggiustata per esposizione (frazione di stagione disponibile)* — rimandato a v2 come proposto dalla review stessa: il dato necessario (finestra temporale dell'uscita) non è disponibile con `Ceduti`, che dice *se* non *quando*.
