@@ -1,0 +1,33 @@
+severity,check,Id,season,value,expected,message
+INFO,in_squad_no_play_count,,2016/17,107,,Rows in stats with Pv = 0
+INFO,left_mid_season_share,,2016/17,0.6728971962616822,0.55-0.75,Share of Pv=0 rows found in Ceduti
+INFO,in_squad_no_play_count,,2017/18,117,,Rows in stats with Pv = 0
+INFO,left_mid_season_share,,2017/18,0.6239316239316239,0.55-0.75,Share of Pv=0 rows found in Ceduti
+INFO,in_squad_no_play_count,,2018/19,131,,Rows in stats with Pv = 0
+INFO,left_mid_season_share,,2018/19,0.6106870229007634,0.55-0.75,Share of Pv=0 rows found in Ceduti
+INFO,in_squad_no_play_count,,2019/20,153,,Rows in stats with Pv = 0
+INFO,left_mid_season_share,,2019/20,0.7450980392156863,0.55-0.75,Share of Pv=0 rows found in Ceduti
+INFO,in_squad_no_play_count,,2020/21,120,,Rows in stats with Pv = 0
+INFO,left_mid_season_share,,2020/21,0.6083333333333333,0.55-0.75,Share of Pv=0 rows found in Ceduti
+INFO,in_squad_no_play_count,,2021/22,113,,Rows in stats with Pv = 0
+INFO,left_mid_season_share,,2021/22,0.6548672566371682,0.55-0.75,Share of Pv=0 rows found in Ceduti
+INFO,in_squad_no_play_count,,2022/23,125,,Rows in stats with Pv = 0
+INFO,left_mid_season_share,,2022/23,0.688,0.55-0.75,Share of Pv=0 rows found in Ceduti
+INFO,in_squad_no_play_count,,2023/24,120,,Rows in stats with Pv = 0
+INFO,left_mid_season_share,,2023/24,0.7,0.55-0.75,Share of Pv=0 rows found in Ceduti
+WARNING,non_gk_goals_conceded,6664,2024/25,2,,Gs populated for non-goalkeeper
+INFO,in_squad_no_play_count,,2024/25,118,,Rows in stats with Pv = 0
+INFO,left_mid_season_share,,2024/25,0.559322033898305,0.55-0.75,Share of Pv=0 rows found in Ceduti
+INFO,in_squad_no_play_count,,2025/26,116,,Rows in stats with Pv = 0
+INFO,left_mid_season_share,,2025/26,0.6982758620689655,0.55-0.75,Share of Pv=0 rows found in Ceduti
+WARNING,role_change,6821,,C/D,D,Historical role differs across seasons
+WARNING,role_change,5800,,C/A/C,C,Historical role differs across seasons
+WARNING,role_change,6398,,A/A/C,C,Historical role differs across seasons
+WARNING,role_change,2765,,A/A/C,C,Historical role differs across seasons
+WARNING,role_change,6549,,A/A/C,C,Historical role differs across seasons
+WARNING,role_change,5995,,C/A/A,A,Historical role differs across seasons
+WARNING,role_change,6967,,C/A,A,Historical role differs across seasons
+INFO,new_player_share,A,2026/27,0.19767441860465115,,Share of current role classified NEW
+INFO,new_player_share,C,2026/27,0.1793478260869565,,Share of current role classified NEW
+INFO,new_player_share,D,2026/27,0.23369565217391305,,Share of current role classified NEW
+INFO,new_player_share,P,2026/27,0.43548387096774194,,Share of current role classified NEW
