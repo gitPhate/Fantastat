@@ -5,6 +5,8 @@ Versione più recente nota (regolamento pubblicato da Chiodo il 26/08/2025 per l
 ## Formato
 
 - **Classic** (non Mantra).
+- Rosa per squadra: **3 portieri, 8 difensori, 8 centrocampisti e 6 attaccanti**.
+- Il numero di partecipanti varia per stagione tra **8 e 10**; per il **2026/27** sono **8**. Il numero va verificato e aggiornato a ogni stagione perché determina la scarsità per ruolo.
 - Doppia competizione parallela:
   - **Campionato**: girone unico, classifica a punti.
   - **Coppa Italia**: 2 gironi da 5 squadre, quarti andata/ritorno, semifinale andata/ritorno, finale secca. Esiste anche una "coppa riparazione" (ripescaggio) per chi viene eliminato dai gironi.
