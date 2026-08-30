@@ -44,3 +44,22 @@ validation:
   precision_degradation_tolerance: 0.05
   qti_bands: 4
 risk_flags: {penalty_dependency_threshold: 0.40, volatility_threshold: 0.40, low_recent_pv_threshold: 10}
+projection:
+  # This configuration is the pre-registered v2 candidate grid.  Selection
+  # uses only these target seasons; 2025/26 remains available for the final
+  # fit, never for selecting a candidate.
+  selection_targets: ["2019/20", "2020/21", "2021/22", "2022/23", "2023/24", "2024/25"]
+  feature_window: 5
+  time_decay: 1.5
+  ridge_alpha_grid: [0.1, 1.0, 10.0, 100.0]
+  feature_sets:
+    core: [Pv_Last, Fm_Last, Mv_Last, Pv_Weighted, Fm_Weighted, Mv_Weighted,
+           Seasons_Played, Seasons_In_Squad, Pv_Total, Availability_Rate]
+    extended: [Pv_Last, Fm_Last, Mv_Last, Pv_Weighted, Fm_Weighted, Mv_Weighted,
+               Performance_Weighted, Seasons_Played, Seasons_In_Squad, Pv_Total,
+               Availability_Rate, Pv_Trend, Fm_Trend, Fm_Stability,
+               Performance_Trend, Left_Mid_Season_Count, Role_Change_Flag]
+  fm_limits: [-30.0, 30.0]
+  calibration_buckets: 5
+  precision_n: {P: 5, D: 10, C: 10, A: 10}
+  replacement_ranks: {P: 24, D: 64, C: 64, A: 48}
