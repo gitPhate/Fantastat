@@ -1,0 +1,6 @@
+ranking:
+  history_window: 5
+  recency_weights: [5, 4, 3, 2, 1]
+  validation_folds: 5
+  min_valid_folds: 3
+  min_comparable_players: 10
