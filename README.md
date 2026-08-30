@@ -26,3 +26,19 @@ Reliability), but the frozen 2025/26 lock-box failed its primary test: the full
 model beat weighted Fm in only two of four roles. Therefore the current ranking
 is exploratory and must not be treated as validated auction guidance; the next
 work is a structural model review, not further parameter tuning.
+
+## Projected auction model (v2)
+
+Build the separate pre-auction projection with:
+
+```powershell
+python src/run_projection.py
+```
+
+It creates `output/projected_auction_dataset.csv` and
+`output/projected_validation_report.md`. The model predicts appearances and
+conditional FantaMedia independently for each current Classic role, then uses
+their product only as projected seasonal points. `Qt.I_2026_27` is retained as
+auction context and is never a model feature. The dataset is intentionally not
+overwritten on subsequent runs: preserve it as the pre-2026/27 artifact for
+the eventual final test.
