@@ -1,1 +1,0 @@
-"""Historical Fantacalcio ranking pipeline."""
