@@ -27,6 +27,19 @@ class RankingConfig:
     validation_folds: int
     min_valid_folds: int
     min_comparable_players: int
+    recency_weights_by_role: dict[str, tuple[int, ...]]
+
+    def weights_for_role(self, role: str) -> tuple[int, ...]:
+        return self.recency_weights_by_role.get(role, self.recency_weights)
+
+
+def _parse_weights(raw: str) -> tuple[int, ...]:
+    return tuple(int(value.strip()) for value in raw.strip("[]").split(","))
+
+
+def _validate_weights(weights: tuple[int, ...], history_window: int) -> bool:
+    return (len(weights) == history_window and all(weight > 0 for weight in weights)
+            and all(a > b for a, b in zip(weights, weights[1:])))
 
 
 def load_config(path: Path) -> RankingConfig:
@@ -39,28 +52,55 @@ def load_config(path: Path) -> RankingConfig:
     except StopIteration as exc:
         raise RankingError(f"Configurazione non valida in {path}: sezione ranking mancante") from exc
     values: dict[str, str] = {}
-    for line in lines[start + 1 :]:
+    nested: dict[str, dict[str, str]] = {}
+    i = start + 1
+    while i < len(lines):
+        line = lines[i]
         if line and not line[0].isspace():
             break
         match = re.match(r"^\s+([A-Za-z_]+):\s*(.*?)\s*$", line)
         if match:
-            values[match.group(1)] = match.group(2)
+            key, value = match.group(1), match.group(2)
+            if value == "":
+                base_indent = len(line) - len(line.lstrip())
+                sub: dict[str, str] = {}
+                j = i + 1
+                while j < len(lines):
+                    sub_line = lines[j]
+                    if not sub_line.strip():
+                        j += 1
+                        continue
+                    sub_indent = len(sub_line) - len(sub_line.lstrip())
+                    if sub_indent <= base_indent:
+                        break
+                    sub_match = re.match(r"^\s+([A-Za-z_]+):\s*(.*?)\s*$", sub_line)
+                    if sub_match:
+                        sub[sub_match.group(1)] = sub_match.group(2)
+                    j += 1
+                nested[key] = sub
+                i = j
+                continue
+            values[key] = value
+        i += 1
     required = ("history_window", "recency_weights", "validation_folds", "min_valid_folds", "min_comparable_players")
     if any(key not in values for key in required):
         raise RankingError(f"Configurazione non valida in {path}: chiavi ranking mancanti")
+    role_overrides_raw = nested.get("recency_weights_by_role", {})
+    if any(role not in ROLES for role in role_overrides_raw):
+        raise RankingError(f"Configurazione non valida in {path}: ruolo sconosciuto in recency_weights_by_role")
     try:
-        weights = tuple(int(value.strip()) for value in values["recency_weights"].strip("[]").split(","))
+        weights = _parse_weights(values["recency_weights"])
+        role_weights = {role: _parse_weights(raw) for role, raw in role_overrides_raw.items()}
         config = RankingConfig(
             int(values["history_window"]), weights, int(values["validation_folds"]),
-            int(values["min_valid_folds"]), int(values["min_comparable_players"]),
+            int(values["min_valid_folds"]), int(values["min_comparable_players"]), role_weights,
         )
     except ValueError as exc:
         raise RankingError(f"Configurazione non valida in {path}: valori non numerici") from exc
     if (config.history_window <= 0 or config.validation_folds <= 0 or config.min_valid_folds <= 0
-            or config.min_comparable_players <= 0 or len(weights) != config.history_window
-            or config.min_valid_folds > config.validation_folds
-            or any(weight <= 0 for weight in weights)
-            or any(a <= b for a, b in zip(weights, weights[1:]))):
+            or config.min_comparable_players <= 0 or config.min_valid_folds > config.validation_folds
+            or not _validate_weights(weights, config.history_window)
+            or any(not _validate_weights(w, config.history_window) for w in role_weights.values())):
         raise RankingError(f"Configurazione non valida in {path}: pesi o soglie non validi")
     return config
 
@@ -197,11 +237,11 @@ def validate(root: Path, target_start: int, config: RankingConfig) -> tuple[dict
             raise RankingError(f"Giocatore del listone assente dalle statistiche in {stats_path(root, target)} (stagione {target})")
         history = [season_name(year) for year in range(fold_start - config.history_window, fold_start)]
         history_stats = {season: read_stats(root, season) for season in history}
-        model = predict(target_players["Id"], history, history_stats, config.recency_weights)
         previous = history_stats[history[-1]].set_index("Id")
         actual = target_stats.set_index("Id")
         for role in ROLES:
             ids = target_players.loc[target_players["R"] == role, "Id"]
+            model = predict(ids, history, history_stats, config.weights_for_role(role))
             model_points: list[float] = []
             baseline_points: list[float] = []
             actual_points: list[float] = []
@@ -251,7 +291,11 @@ def run(root: Path, season: str) -> tuple[Path, Path]:
     history = [season_name(year) for year in range(start - config.history_window, start)]
     statistics = {year: read_stats(root, year) for year in history}
     validation_status, validation = validate(root, start, config)
-    ranking = rank_players(players, predict(players["Id"], history, statistics, config.recency_weights), validation_status)
+    forecasts: dict[object, tuple[float, float, float] | None] = {}
+    for role in ROLES:
+        role_ids = players.loc[players["R"] == role, "Id"]
+        forecasts.update(predict(role_ids, history, statistics, config.weights_for_role(role)))
+    ranking = rank_players(players, forecasts, validation_status)
     output = root / "output"
     output.mkdir(exist_ok=True)
     ranking_path = output / f"ranking_{season}.csv"
