@@ -64,7 +64,7 @@ L'implementazione deve aggiungere a `config.yaml` una sezione minima:
 ```yaml
 ranking:
   history_window: 5
-  recency_weights: [5, 4, 3, 2, 1]
+  recency_weights: [10, 5, 3, 2, 1]
   validation_folds: 5
   min_valid_folds: 3
   min_comparable_players: 10
@@ -75,8 +75,8 @@ lunghezza deve coincidere con `history_window`, devono essere positivi e
 strettamente decrescenti. Una configurazione non valida deve interrompere
 l'esecuzione.
 
-Questi parametri sono predefiniti dal progetto. Non devono essere ottimizzati a
-posteriori sui risultati del backtest.
+Questi parametri sono predefiniti dal progetto. Non devono essere scelti tramite
+ottimizzazione iterativa sui risultati del backtest.
 
 ## 6. Input
 
@@ -135,14 +135,18 @@ Per il ranking 2026/27 usare le stagioni da 2021/22 a 2025/26 con questi pesi:
 
 | Stagione | Peso |
 |---|---:|
-| 2025/26 | 5 |
-| 2024/25 | 4 |
+| 2025/26 | 10 |
+| 2024/25 | 5 |
 | 2023/24 | 3 |
 | 2022/23 | 2 |
 | 2021/22 | 1 |
 
 Nelle stagioni successive la finestra deve avanzare automaticamente conservando
 lo stesso schema di pesi.
+
+Il decadimento accentuato e' applicato a tutti i ruoli: la forma e la
+continuita' di impiego piu' recenti devono prevalere sullo storico piu' lontano,
+senza introdurre regole specifiche per singoli calciatori.
 
 ### 8.2 Stagioni utilizzabili per un calciatore
 
@@ -183,18 +187,24 @@ FantamediaPrevistaRaw_i =
 Una stagione da poche presenze non deve avere la stessa influenza di una
 stagione completa. I termini con `Pv = 0` hanno peso nullo in questa formula.
 
-### 8.5 Punti attesi
+### 8.5 Presenze efficaci e punti attesi
 
 Arrotondare prima i due componenti:
 
 ```text
 PresenzePreviste_i   = round(PresenzePrevisteRaw_i, 2)
 FantamediaPrevista_i = round(FantamediaPrevistaRaw_i, 2)
-PuntiAttesi_i        = round(PresenzePreviste_i * FantamediaPrevista_i, 2)
+PresenzeEfficaci_i =
+    PresenzePreviste_i,                                      se <= 30
+    30 + 0.25 * (PresenzePreviste_i - 30),                    se > 30
+
+PuntiAttesi_i = round(PresenzeEfficaci_i * FantamediaPrevista_i, 2)
 ```
 
-`PuntiAttesi` rappresenta la produzione fantacalcistica stagionale stimata e
-deve essere l'unico punteggio usato per ordinare i giocatori.
+`PresenzeEfficaci` modella l'affidabilita' di impiego: fino a 30 presenze il
+contributo resta lineare, mentre le presenze ulteriori danno solo un beneficio
+marginale. `PuntiAttesi` rappresenta la produzione fantacalcistica stagionale
+stimata e deve essere l'unico punteggio usato per ordinare i giocatori.
 
 ### 8.6 Storico non utilizzabile
 
@@ -205,7 +215,7 @@ Un giocatore e' `SENZA_STORICO` quando:
   la Fantamedia.
 
 Il giocatore deve restare nell'output, ma `PresenzePreviste`,
-`FantamediaPrevista`, `PuntiAttesi` e `Rank` devono essere vuoti. La sua colonna
+`FantamediaPrevista`, `PresenzeEfficaci`, `PuntiAttesi` e `Rank` devono essere vuoti. La sua colonna
 `Validazione` deve contenere `SENZA_STORICO`.
 
 ## 9. Costruzione del ranking
@@ -255,7 +265,7 @@ La baseline usa soltanto la stagione immediatamente precedente al target:
 ```text
 PresenzeBaseline_i   = Pv_i,t-1
 FantamediaBaseline_i = Fm_i,t-1
-PuntiBaseline_i      = round(Pv_i,t-1 * Fm_i,t-1, 2)
+PuntiBaseline_i      = round(PresenzeEfficaci(Pv_i,t-1) * Fm_i,t-1, 2)
 ```
 
 Non applicare medie, regressioni o correzioni alla baseline.
@@ -271,8 +281,10 @@ calciatore e' confrontabile se:
   precedente ha `Pv > 0` e `Fm` disponibile;
 - esiste la riga statistica della stagione target.
 
-I punti reali della stagione target sono `round(Pv * Fm, 2)`. Se `Pv = 0`, i
-punti reali sono zero anche quando `Fm` e' vuota.
+I punti reali della stagione target sono calcolati come
+`round(PresenzeEfficaci(Pv) * Fm, 2)`. Se `Pv = 0`, i punti reali sono zero
+anche quando `Fm` e' vuota. Modello, baseline e reali usano quindi la stessa
+trasformazione delle presenze.
 
 Un fold e' valido per un ruolo soltanto con almeno
 `min_comparable_players = 10` calciatori e con entrambe le metriche definite.
@@ -329,7 +341,8 @@ ordine:
 | `Rank` | Posizione densa all'interno del ruolo; vuota senza storico |
 | `PresenzePreviste` | Media pesata, due decimali |
 | `FantamediaPrevista` | Media pesata, due decimali |
-| `PuntiAttesi` | Prodotto delle due previsioni, due decimali |
+| `PresenzeEfficaci` | Presenze trasformate dalla curva di affidabilita', due decimali |
+| `PuntiAttesi` | Prodotto di `PresenzeEfficaci` e `FantamediaPrevista`, due decimali |
 | `Validazione` | Stato del ruolo oppure `SENZA_STORICO` |
 
 ### 11.2 Validazione
@@ -371,13 +384,13 @@ astrazioni che non servono al calcolo descritto.
 
 L'implementazione deve verificare almeno:
 
-1. associazione dei pesi `5, 4, 3, 2, 1` alle stagioni corrette;
+1. associazione dei pesi `10, 5, 3, 2, 1` alle stagioni corrette;
 2. esclusione dal denominatore di una stagione in cui l'ID non era nelle
    statistiche;
 3. inclusione di `Pv = 0` quando l'ID era nelle statistiche;
 4. Fantamedia pesata per `peso * Pv`, non soltanto per stagione;
 5. utilizzo dello storico anche dopo un cambio di ruolo;
-6. calcolo e arrotondamento riproducibile di `PuntiAttesi`;
+6. calcolo della curva di `PresenzeEfficaci` e arrotondamento riproducibile di `PuntiAttesi`;
 7. reset del rank per ruolo, rank denso e pari merito;
 8. giocatori `SENZA_STORICO` presenti ma non classificati;
 9. esclusione del foglio `Ceduti` e delle colonne Mantra/quotazione;
@@ -385,7 +398,9 @@ L'implementazione deve verificare almeno:
 11. assegnazione dei tre stati di validazione di ruolo;
 12. errore esplicito per file, colonne, duplicati e valori obbligatori non
     validi;
-13. derivazione corretta degli input e output per una stagione futura.
+13. derivazione corretta degli input e output per una stagione futura;
+14. maggiore priorita' del rendimento recente anche quando due calciatori hanno
+    uno storico di lunghezza diversa.
 
 ## 14. Criteri di accettazione
 
@@ -398,7 +413,7 @@ L'implementazione e' conforme quando:
 - `Rank` riparte da 1 per ogni ruolo ed e' determinato esclusivamente da
   `PuntiAttesi`;
 - per ogni riga classificata vale, dopo gli arrotondamenti specificati,
-  `PuntiAttesi = PresenzePreviste * FantamediaPrevista`;
+  `PuntiAttesi = PresenzeEfficaci * FantamediaPrevista`;
 - nessuna colonna esclusa nella sezione 3 influenza il risultato;
 - tutti i test automatici passano;
 - una seconda esecuzione con gli stessi input produce file equivalenti;

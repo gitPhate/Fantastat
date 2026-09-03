@@ -127,6 +127,11 @@ def round_product(left: float, right: float, digits: int = 2) -> float:
     return float((Decimal(str(left)) * Decimal(str(right))).quantize(quantum, rounding=ROUND_HALF_UP))
 
 
+def effective_appearances(appearances: float) -> float:
+    """Saturate availability above 30 appearances while retaining a small benefit."""
+    return appearances if appearances <= 30 else 30 + 0.25 * (appearances - 30)
+
+
 def player_list_path(root: Path, season: str) -> Path:
     return root / "data" / "player_lists" / f"Quotazioni_Fantacalcio_Stagione_{season}.xlsx"
 
@@ -174,15 +179,15 @@ def read_stats(root: Path, season: str) -> pd.DataFrame:
     return data
 
 
-def predict(ids: Iterable[object], seasons: list[str], statistics: dict[str, pd.DataFrame], weights_recent_first: tuple[int, ...]) -> dict[object, tuple[float, float, float] | None]:
-    """Return rounded (appearances, fantasy average, expected points) by ID."""
+def predict(ids: Iterable[object], seasons: list[str], statistics: dict[str, pd.DataFrame], weights_recent_first: tuple[int, ...]) -> dict[object, tuple[float, float, float, float] | None]:
+    """Return rounded (appearances, fantasy average, effective appearances, points)."""
     weights = dict(zip(reversed(seasons), weights_recent_first))
     rows = pd.concat(
         [statistics[season].assign(_weight=weights[season]) for season in seasons],
         ignore_index=True,
     )
     by_id = {key: group for key, group in rows.groupby("Id", sort=False)}
-    result: dict[object, tuple[float, float, float] | None] = {}
+    result: dict[object, tuple[float, float, float, float] | None] = {}
     for player_id in ids:
         group = by_id.get(player_id)
         if group is None:
@@ -195,14 +200,15 @@ def predict(ids: Iterable[object], seasons: list[str], statistics: dict[str, pd.
         appearance_denominator = float(group["_weight"].sum())
         appearances = round_value(weighted_pv / appearance_denominator)
         fantasy_average = round_value(float((group["_weight"] * group["Pv"] * group["Fm"].fillna(0)).sum()) / weighted_pv)
-        result[player_id] = (appearances, fantasy_average, round_product(appearances, fantasy_average))
+        effective = round_value(effective_appearances(appearances))
+        result[player_id] = (appearances, fantasy_average, effective, round_product(effective, fantasy_average))
     return result
 
 
-def rank_players(players: pd.DataFrame, forecasts: dict[object, tuple[float, float, float] | None], validation: dict[str, str]) -> pd.DataFrame:
+def rank_players(players: pd.DataFrame, forecasts: dict[object, tuple[float, float, float, float] | None], validation: dict[str, str]) -> pd.DataFrame:
     output = players.rename(columns={"R": "Ruolo"}).copy()
     values = output["Id"].map(forecasts)
-    output[["PresenzePreviste", "FantamediaPrevista", "PuntiAttesi"]] = pd.DataFrame(values.tolist(), index=output.index)
+    output[["PresenzePreviste", "FantamediaPrevista", "PresenzeEfficaci", "PuntiAttesi"]] = pd.DataFrame(values.tolist(), index=output.index)
     output["Rank"] = pd.NA
     output["Validazione"] = output["Ruolo"].map(validation)
     output.loc[values.isna(), "Validazione"] = "SENZA_STORICO"
@@ -215,7 +221,7 @@ def rank_players(players: pd.DataFrame, forecasts: dict[object, tuple[float, flo
         chunks.extend([usable, group[group["PuntiAttesi"].isna()].sort_values("_name", kind="mergesort")])
     result = pd.concat(chunks, ignore_index=True)
     result["Rank"] = result["Rank"].astype("Int64")
-    return result[["Id", "Nome", "Squadra", "Ruolo", "Rank", "PresenzePreviste", "FantamediaPrevista", "PuntiAttesi", "Validazione"]]
+    return result[["Id", "Nome", "Squadra", "Ruolo", "Rank", "PresenzePreviste", "FantamediaPrevista", "PresenzeEfficaci", "PuntiAttesi", "Validazione"]]
 
 
 def spearman(left: list[float], right: list[float]) -> float | None:
@@ -253,9 +259,11 @@ def validate(root: Path, target_start: int, config: RankingConfig) -> tuple[dict
                 if baseline["Pv"] <= 0 or pd.isna(baseline["Fm"]):
                     continue
                 real = actual.loc[player_id]
-                model_points.append(forecast[2])
-                baseline_points.append(round_product(float(baseline["Pv"]), float(baseline["Fm"])))
-                actual_points.append(round_product(float(real["Pv"]), 0 if pd.isna(real["Fm"]) else float(real["Fm"])))
+                model_points.append(forecast[3])
+                baseline_appearances = effective_appearances(float(baseline["Pv"]))
+                actual_appearances = effective_appearances(float(real["Pv"]))
+                baseline_points.append(round_product(baseline_appearances, float(baseline["Fm"])))
+                actual_points.append(round_product(actual_appearances, 0 if pd.isna(real["Fm"]) else float(real["Fm"])))
             if len(actual_points) < config.min_comparable_players:
                 continue
             model_spearman = spearman(model_points, actual_points)
@@ -291,7 +299,7 @@ def run(root: Path, season: str) -> tuple[Path, Path]:
     history = [season_name(year) for year in range(start - config.history_window, start)]
     statistics = {year: read_stats(root, year) for year in history}
     validation_status, validation = validate(root, start, config)
-    forecasts: dict[object, tuple[float, float, float] | None] = {}
+    forecasts: dict[object, tuple[float, float, float, float] | None] = {}
     for role in ROLES:
         role_ids = players.loc[players["R"] == role, "Id"]
         forecasts.update(predict(role_ids, history, statistics, config.weights_for_role(role)))
