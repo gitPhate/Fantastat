@@ -31,7 +31,7 @@ Piano principale, coerente con un 4-3-3 orientato al modificatore:
 | Portieri | 35-45 | Valutare il costo del pacchetto, non del solo titolare. |
 | Difensori | 70-85 | Un premium o esterno da bonus + 3-4 voti affidabili + rotazioni. |
 | Centrocampisti | 100-115 | Un top, due/tre portatori di bonus, poi voto e titolarità. |
-| Atta (Fiorentina)ccanti | 305-335 | 255-285 liberi + fino a 50 vincolati; un top oppure due semi-top. |
+| Attaccanti | 305-335 | 255-285 liberi + fino a 50 vincolati; un top oppure due semi-top. |
 
 La traccia documentale è 40/75/105/330 su 550 per il 4-3-3 con modificatore; SOS Fanta propone per una lega a 10 con modificatore 8%/19%/24%/49% su 500. I range sopra sono un adattamento, non un obbligo: scegliere valori che **sommati restino entro 550** (e non combinare fra loro tutti gli estremi superiori), poi ricalibrarli dopo le prime 10-15 aggiudicazioni. [ASTA, righe 31-41; BUD, righe 37-49]
 
@@ -108,15 +108,15 @@ Tra le possibili inefficienze del tavolo: Thorstvedt (Sassuolo) per titolarità 
 
 | Giocatore | Listato come | Conflitto |
 |---|---|---|
-| De Ketelaere (Atalanta) | Atta (Fiorentina)ccante per SOS, Goal e ilNapolista | Fantamaster lo mette tra i **semitop di centrocampo**; è anche primo sulle punizioni dell'Atalanta per Fantamaster. |
-| Diao (Como) | Atta (Fiorentina)ccante per SOS | Fantamaster lo elenca tra i **centrocampisti** di 3ª-4ª fascia. |
+| De Ketelaere (Atalanta) | Attaccante per SOS, Goal e ilNapolista | Fantamaster lo mette tra i **semitop di centrocampo**; è anche primo sulle punizioni dell'Atalanta per Fantamaster. |
+| Diao (Como) | Attaccante per SOS | Fantamaster lo elenca tra i **centrocampisti** di 3ª-4ª fascia. |
 | Gudmundsson (Lazio) | Centrocampista per SOS | Fantamaster lo elenca tra gli **attaccanti** di 3ª-4ª fascia e come terzo rigorista della Lazio. |
 
 [SOS, righe 52 e 93; FMC, righe 15 e 23; FMA, riga 28; FMT, riga 6; FMR, riga 36]
 
 **Ultimo arrivo da integrare:** El Shaarawy (Genoa) passa al Genoa ed è riportato come centrocampista di terzo-quarto slot. Nel 3-5-2 può giocare esterno o seconda punta e dovrebbe trovare più minuti, ma non parte ancora come titolare fisso: appetibile solo a prezzo da fascia media, senza pagare in anticipo il nuovo ruolo offensivo. Fantamaster lo inserisce già tra i tiratori di punizioni e corner del Genoa, terzo dietro Baldanzi e Messias: un piccolo argomento in più a parità di prezzo. [ARR, righe 10-16; FMT, righe 30-31]
 
-## 6. Atta (Fiorentina)ccanti
+## 6. Attaccanti
 
 ### Piano A e piano B
 
