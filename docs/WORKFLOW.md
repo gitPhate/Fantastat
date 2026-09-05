@@ -13,11 +13,13 @@ directory name under `output/`.
 4. Aggregate the research into `output/<season>/guida_unificata_asta.md`.
 5. Extract the unified guide into the standard player CSV.
 6. Generate the statistical ranking for the new season.
-7. Build the SQLite snapshot used by the auction UI.
-8. Start the offline UI and verify the results.
+7. Read the Fantacalcio injury list, create the season Markdown note, and extract the ID-bound `infortuni_fantacalcio.csv`.
+8. Build the SQLite snapshot used by the auction UI.
+9. Start the offline UI and verify the results.
 
 The order matters: the player list and guide CSV must exist before the snapshot
-is built, and the historical statistics must exist before ranking generation.
+is built, the injury CSV must be available before the snapshot build, and the
+historical statistics must exist before ranking generation.
 
 ## 1. Download and convert the Fantacalcio.it workbooks
 
@@ -168,7 +170,32 @@ Check the validation output, role ordering, schema, and reproducibility. The
 ranking is a quantitative signal, not a replacement for the current-season
 research in the unified guide.
 
-## 7. Build the SQLite snapshot
+## 7. Add the current injury snapshot
+
+Open the current [Fantacalcio.it Serie A injury list](https://www.fantacalcio.it/infortunati-serie-a)
+and record every listed player in a season Markdown note:
+
+```text
+data/seasons/<season>/infortuni_fantacalcio_<season>.md
+```
+
+Include each player's club and the return date or estimated return period when
+the source provides one. Preserve the retrieval date and source URL in the
+note. Then extract the same list into:
+
+```text
+output/<season>/infortuni_fantacalcio.csv
+```
+
+Bind each player to the `Id` in the current season's quotation CSV
+(`data/player_lists/Quotazioni_Fantacalcio_Stagione_<season>.csv`). Do not use
+fuzzy name matching or invent IDs. The CSV must contain `Id`, `Player`,
+`Club`, `Role`, and `ExpectedReturn`; use `To be assessed` when no return
+estimate is available. During the snapshot build, `build_snapshot.py` imports
+`ExpectedReturn` into the database's existing `guides.injuries` field, making
+the information visible in the player catalogue and detail panel.
+
+## 8. Build the SQLite snapshot
 
 The script is `src/build_snapshot.py`. It discovers all valid season folders
 under `output/`, validates their quotation, ranking, guide, and historical
@@ -183,7 +210,7 @@ CSV artifacts and is not the source of truth. If the build fails, correct the
 reported season/file/schema problem and rerun it; the previous snapshot is
 preserved until a complete build succeeds.
 
-## 8. Run and verify the auction UI
+## 9. Run and verify the auction UI
 
 Start the read-only local UI:
 

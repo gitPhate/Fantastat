@@ -22,6 +22,7 @@ ARTIFACT_SEASON_RE = re.compile(r"^(\d{4})-(\d{2})$")
 QUOTE_COLUMNS = ("Id", "R", "Nome", "Squadra", "Qt.A", "FVM")
 RANKING_COLUMNS = ("Id", "Rank", "PresenzePreviste", "FantamediaPrevista", "PuntiAttesi", "Validazione")
 GUIDE_COLUMNS = ("id", "fascia", "funzione", "note", "infortuni", "status_rischi", "rigori_piazzati", "gerarchia_pacchetto")
+INJURY_COLUMNS = ("Id", "Player", "Club", "Role", "ExpectedReturn")
 STATS_COLUMNS = ("Id", "R", "Nome", "Squadra", "Pv", "Fm")
 
 
@@ -71,7 +72,7 @@ def _optional_read(path: Path, season: str, columns: tuple[str, ...], kind: str)
 
 
 def _value(value: Any) -> Any:
-    return None if value is None or (isinstance(value, float) and math.isnan(value)) else value
+    return None if value is None or value is pd.NA or (isinstance(value, float) and math.isnan(value)) else value
 
 
 def _insert_frame(connection: sqlite3.Connection, table: str, columns: tuple[str, ...], frame: pd.DataFrame) -> None:
@@ -80,6 +81,40 @@ def _insert_frame(connection: sqlite3.Connection, table: str, columns: tuple[str
         f"INSERT INTO {table} ({', '.join(columns)}) VALUES ({', '.join('?' for _ in columns)})",
         values,
     )
+
+
+def _merge_injuries(
+    guide: pd.DataFrame | None,
+    injuries: pd.DataFrame | None,
+    player_ids: pd.Series,
+    injury_path: Path,
+    season: str,
+) -> pd.DataFrame | None:
+    """Add current injury information to the guide-shaped enrichment frame."""
+    if injuries is None:
+        return guide
+
+    unknown_ids = injuries.loc[~injuries["Id"].isin(set(player_ids)), "Id"]
+    if not unknown_ids.empty:
+        ids = ", ".join(str(value) for value in unknown_ids.tolist())
+        raise SnapshotError(f"Stagione {season}: Id infortunato non presente nel listone {injury_path}: {ids}")
+
+    injury_values = injuries.set_index("Id")["ExpectedReturn"]
+    if guide is None:
+        guide = pd.DataFrame(columns=GUIDE_COLUMNS)
+
+    guide = guide.copy()
+    guide["infortuni"] = guide["infortuni"].where(
+        ~guide["id"].isin(injury_values.index),
+        guide["id"].map(injury_values),
+    )
+    missing = injuries.loc[~injuries["Id"].isin(set(guide["id"])), ["Id", "ExpectedReturn"]].copy()
+    if not missing.empty:
+        additions = pd.DataFrame({column: pd.NA for column in GUIDE_COLUMNS}, index=missing.index)
+        additions["id"] = missing["Id"]
+        additions["infortuni"] = missing["ExpectedReturn"]
+        guide = pd.concat([guide, additions], ignore_index=True)
+    return guide.loc[:, GUIDE_COLUMNS]
 
 
 def _create_schema(connection: sqlite3.Connection) -> None:
@@ -157,6 +192,8 @@ def build_snapshot(root: Path = ROOT, database: Path | None = None) -> Path:
                     ranking.insert(0, "season_start", start)
                     _insert_frame(connection, "rankings", ("season_start", "player_id", "rank", "predicted_appearances", "predicted_fantasy_average", "expected_points", "validation_status"), ranking)
 
+                injury_path = artifact / "infortuni_fantacalcio.csv"
+                injuries = _optional_read(injury_path, season, INJURY_COLUMNS, "infortuni")
                 guide = _optional_read(artifact / "giocatori_guida_unificata_asta.csv", season, GUIDE_COLUMNS, "guida")
                 if guide is not None:
                     # Unmatched guide references have no authoritative player ID and
@@ -164,6 +201,8 @@ def build_snapshot(root: Path = ROOT, database: Path | None = None) -> Path:
                     guide = guide[guide["id"].notna()].copy()
                     if guide["id"].duplicated().any():
                         raise SnapshotError(f"Stagione {season}: Id duplicato nella guida: {artifact / 'giocatori_guida_unificata_asta.csv'}")
+                guide = _merge_injuries(guide, injuries, quotes["Id"], injury_path, season)
+                if guide is not None:
                     guide = guide.rename(columns={"id": "player_id", "fascia": "tier", "funzione": "function", "note": "notes", "infortuni": "injuries", "status_rischi": "risks", "rigori_piazzati": "set_pieces", "gerarchia_pacchetto": "hierarchy"})
                     guide.insert(0, "season_start", start)
                     _insert_frame(connection, "guides", ("season_start", "player_id", "tier", "function", "notes", "injuries", "risks", "set_pieces", "hierarchy"), guide)
