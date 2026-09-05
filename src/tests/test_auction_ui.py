@@ -7,7 +7,7 @@ import unittest
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from auction_ui import auction_guide, catalogue, choose_season, player_detail, preferred_season_start  # noqa: E402
+from auction_ui import auction_guide, catalogue, choose_season, document, documentation, player_detail, preferred_season_start  # noqa: E402
 from build_snapshot import build_snapshot, discover_seasons  # noqa: E402
 
 
@@ -60,6 +60,22 @@ class SnapshotAndUiTests(unittest.TestCase):
             contents = "# Guida\n\nTesto con accenti: titolare.\n"
             guide.write_text(contents, encoding="utf-8")
             self.assertEqual(contents, auction_guide(root, 2026))
+
+    def test_documentation_lists_and_reads_docs_files(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            docs = root / "docs"
+            docs.mkdir()
+            (docs / "RULES.md").write_text("# Rules", encoding="utf-8")
+            self.assertEqual([{"path": "RULES.md", "name": "RULES.md"}], documentation(root))
+            self.assertEqual("# Rules", document(root, "RULES.md")["content"])
+
+    def test_documentation_rejects_paths_outside_docs(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "docs").mkdir()
+            with self.assertRaises(ValueError):
+                document(root, "../secret.txt")
 
 
 if __name__ == "__main__":
