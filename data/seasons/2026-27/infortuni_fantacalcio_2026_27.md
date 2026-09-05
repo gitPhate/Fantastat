@@ -1,55 +1,55 @@
-# Serie A injured players
+# Giocatori infortunati di Serie A
 
 Source: [Fantacalcio.it – Infortunati Serie A](https://www.fantacalcio.it/infortunati-serie-a)
 
 Retrieved: 2026-09-05
 
-The following list reproduces the players shown on the source page and the expected return information published there. Dates are approximate where the source uses periods such as “mid-September”. “To be assessed” means that no return date was available.
+Il seguente elenco riproduce i giocatori mostrati nella pagina fonte e le informazioni sul rientro pubblicate. Le date sono approssimative quando la fonte indica periodi come “metà settembre”. “Da valutare” significa che non era disponibile una data di rientro.
 
-| Club | Player | Expected return |
+| Squadra | Giocatore | Rientro previsto |
 |---|---|---|
-| Atalanta | Sulemana K. | Beginning of October |
-| Atalanta | Hien | Beginning of October |
-| Bologna | Orsolini | End of September |
-| Bologna | El Azzouzi O. | Second half of September |
-| Cagliari | Idrissi R. | End of October |
-| Cagliari | Trepy | To be assessed; absent next match |
-| Como | Addai | Second half of September |
-| Fiorentina | Parisi | November |
-| Genoa | Venturino | End of October |
-| Genoa | Havel | 4th matchday |
-| Juventus | Yildiz | End of November |
-| Juventus | Ekhator | Possibly end of October |
-| Juventus | Thuram K. | January |
-| Juventus | Cabal | Second half of September |
-| Lazio | Patric | To be assessed |
-| Lazio | Marusic | Beginning of October |
-| Lazio | Cataldi | Mid-September |
-| Lazio | Rovella | First half of October |
-| Lazio | Dele-Bashiru | Mid-September |
-| Lecce | Geubbels | To be assessed |
-| Milan | Gabbia | To be assessed |
-| Monza | Ciurria | To be assessed |
-| Monza | Pessina | Beginning of November |
-| Monza | Varela G. | Beginning of October |
-| Napoli | Giovane | Beginning of October |
-| Napoli | McTominay | Beginning of October |
-| Napoli | Buongiorno | Mid-November |
-| Napoli | Marianucci | To be assessed; at least two months out |
-| Parma | Nicolussi Caviglia | November |
-| Parma | Diallo O. | To be assessed before 4th matchday |
-| Sassuolo | Walukiewicz | Mid-September |
-| Sassuolo | Candè | Mid-September |
-| Sassuolo | Pieragnolo | October |
-| Sassuolo | Boloca | End of September |
-| Sassuolo | Konè I. | December |
-| Torino | Casadei | To be assessed before 4th matchday |
-| Udinese | Palma | Mid-September |
-| Udinese | Zanoli | October |
-| Udinese | Chakvetadze | First half of September |
-| Udinese | Zaniolo | Second half of September |
-| Venezia | Sverko | End of October |
-| Venezia | Franjic | To be assessed |
-| Venezia | Adorante | October |
+| Atalanta | Sulemana K. | Inizio ottobre |
+| Atalanta | Hien | Inizio ottobre |
+| Bologna | Orsolini | Fine settembre |
+| Bologna | El Azzouzi O. | Seconda metà di settembre |
+| Cagliari | Idrissi R. | Fine ottobre |
+| Cagliari | Trepy | Da valutare; assente nella prossima partita |
+| Como | Addai | Seconda metà di settembre |
+| Fiorentina | Parisi | Novembre |
+| Genoa | Venturino | Fine ottobre |
+| Genoa | Havel | 4ª giornata |
+| Juventus | Yildiz | Fine novembre |
+| Juventus | Ekhator | Probabilmente fine ottobre |
+| Juventus | Thuram K. | Gennaio |
+| Juventus | Cabal | Seconda metà di settembre |
+| Lazio | Patric | Da valutare |
+| Lazio | Marusic | Inizio ottobre |
+| Lazio | Cataldi | Metà settembre |
+| Lazio | Rovella | Prima metà di ottobre |
+| Lazio | Dele-Bashiru | Metà settembre |
+| Lecce | Geubbels | Da valutare |
+| Milan | Gabbia | Da valutare |
+| Monza | Ciurria | Da valutare |
+| Monza | Pessina | Inizio novembre |
+| Monza | Varela G. | Inizio ottobre |
+| Napoli | Giovane | Inizio ottobre |
+| Napoli | McTominay | Inizio ottobre |
+| Napoli | Buongiorno | Metà novembre |
+| Napoli | Marianucci | Da valutare; fuori almeno due mesi |
+| Parma | Nicolussi Caviglia | Novembre |
+| Parma | Diallo O. | Da valutare prima della 4ª giornata |
+| Sassuolo | Walukiewicz | Metà settembre |
+| Sassuolo | Candè | Metà settembre |
+| Sassuolo | Pieragnolo | Ottobre |
+| Sassuolo | Boloca | Fine settembre |
+| Sassuolo | Konè I. | Dicembre |
+| Torino | Casadei | Da valutare prima della 4ª giornata |
+| Udinese | Palma | Metà settembre |
+| Udinese | Zanoli | Ottobre |
+| Udinese | Chakvetadze | Prima metà di settembre |
+| Udinese | Zaniolo | Seconda metà di settembre |
+| Venezia | Sverko | Fine ottobre |
+| Venezia | Franjic | Da valutare |
+| Venezia | Adorante | Ottobre |
 
-The source page listed no injured players for Frosinone, Inter, or Roma at the time of retrieval.
+Al momento del reperimento, la pagina fonte non riportava giocatori infortunati per Frosinone, Inter o Roma.
