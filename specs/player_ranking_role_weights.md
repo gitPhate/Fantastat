@@ -2,7 +2,7 @@
 
 Questo documento registra tentativi non adottati di pesi specifici per ruolo.
 Non sovrascrive `player_ranking.md`: la configurazione globale corrente e'
-definita in `config.yaml`.
+definita in `src/config.yaml`.
 
 ## 1. Contesto
 
@@ -82,7 +82,7 @@ entrambe le metriche, pur con un miglioramento rispetto ai pesi di default.
 Per la regola della sezione 3 (nessun ripescaggio), i candidati sono stati
 scartati definitivamente. Successivamente il progetto ha adottato, per scelta
 di prodotto applicata a tutti i ruoli, i pesi globali `[10, 5, 3, 2, 1]`; vedi
-`player_ranking.md` e `config.yaml`.
+`player_ranking.md` e `src/config.yaml`.
 
 - **P**: candidato `[16, 8, 4, 2, 1]` scartato. MAE modello 42.0412 (baseline
   36.5344), Spearman modello 0.6760 (baseline 0.7217). Migliora rispetto ai

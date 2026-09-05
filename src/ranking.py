@@ -294,7 +294,7 @@ def validate(root: Path, target_start: int, config: RankingConfig) -> tuple[dict
 
 def run(root: Path, season: str) -> tuple[Path, Path]:
     start = season_start(season)
-    config = load_config(root / "config.yaml")
+    config = load_config(root / "src" / "config.yaml")
     players = read_player_list(root, season, descriptive=True)
     history = [season_name(year) for year in range(start - config.history_window, start)]
     statistics = {year: read_stats(root, year) for year in history}

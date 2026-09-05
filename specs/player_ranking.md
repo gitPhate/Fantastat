@@ -59,7 +59,7 @@ l'esecuzione con un messaggio di errore chiaro e un exit code diverso da zero.
 
 ## 5. Configurazione
 
-L'implementazione deve aggiungere a `config.yaml` una sezione minima:
+L'implementazione deve aggiungere a `src/config.yaml` una sezione minima:
 
 ```yaml
 ranking:
