@@ -27,3 +27,23 @@ async function loadSeason() { state.selected=null; state.sort="expected_points";
 async function start() { try { const boot=await request("/api/bootstrap"); $("season").innerHTML=boot.seasons.map(s=>`<option value="${s.season_start}">${s.label}</option>`).join(""); $("season").value=boot.selected_season; await loadSeason(); } catch(e) { document.body.innerHTML=`<main><aside><h1>Snapshot non disponibile</h1><p>${escaped(e.message)}</p></aside></main>`; } }
 ["search","role","club","fascia"].forEach(id=>$(id).addEventListener("input",render)); $("role").addEventListener("change",()=>{ const role=$("role").value; const valid=state.players.filter(p=>!role||p.role===role).map(p=>p.tier).filter(Boolean); options("fascia", [...new Set(valid)].sort(), "Tutte le fasce"); render(); }); $("season").addEventListener("change",loadSeason); document.querySelectorAll("th[data-key]").forEach(th=>th.onclick=()=>{ const key=th.dataset.key; state.descending=state.sort===key?!state.descending:key!=="name"; state.sort=key; render(); });
 start();
+const columnTooltip = document.createElement("div");
+columnTooltip.className = "column-tooltip";
+columnTooltip.style.display = "none";
+document.body.appendChild(columnTooltip);
+function showColumnTooltip(header) {
+  const bounds = header.getBoundingClientRect();
+  columnTooltip.textContent = header.dataset.tooltip;
+  columnTooltip.style.left = `${bounds.left + bounds.width / 2}px`;
+  const above = bounds.top > 48;
+  columnTooltip.style.top = `${above ? bounds.top - 4 : bounds.bottom + 4}px`;
+  columnTooltip.style.transform = above ? "translate(-50%, -100%)" : "translateX(-50%)";
+  columnTooltip.style.display = "block";
+}
+function hideColumnTooltip() { columnTooltip.style.display = "none"; }
+document.querySelectorAll("th[data-tooltip]").forEach(header => {
+  header.addEventListener("mouseenter", () => showColumnTooltip(header));
+  header.addEventListener("mouseleave", hideColumnTooltip);
+  header.addEventListener("focus", () => showColumnTooltip(header));
+  header.addEventListener("blur", hideColumnTooltip);
+});
