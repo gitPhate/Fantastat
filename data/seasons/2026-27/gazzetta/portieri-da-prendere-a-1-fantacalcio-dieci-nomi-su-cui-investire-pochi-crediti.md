@@ -1,0 +1,10 @@
+# Portieri da prendere a 1 al fantacalcio: ecco dieci nomi su cui investire pochi crediti
+
+Fonte: [Portieri da prendere a 1 al fantacalcio: ecco dieci nomi su cui investire pochi crediti](https://www.gazzetta.it/calcio/fantanews/consigli-fantacalcio/portieri-consigliati/11-08-2026/portieri-da-prendere-a-1-fantacalcio-dieci-nomi-su-cui-investire-pochi-crediti.shtml)
+
+*Alcuni garantiscono la titolarità, altri proveranno a insidiare i titolari nel corso della stagione: i dieci giocatori da acquistare per completare il reparto portieri*
+
+Il reparto dei portieri è da sempre il più complicato da completare in fase d'asta. Avere una certezza tra i pali può fare la differenza al fantacalcio , soprattutto se l’affare è low-cost . Sbagliare la scelta invece può compromettere l'intera stagione. Ecco alcuni profili da prendere a 1 (o poco più) nelle aste private al fantacalcio 2026-27 ( qui la scheda su titolari, secondi e terzi portieri ). Tra le neopromosse va tenuto d’occhio Filip Stankovic : dopo essere stato il portiere meno battuto della Serie B con il Venezia ( qui la fanta-scheda della squadra ), punta a ritagliarsi un ruolo da protagonista anche in A. Muric del Sassuolo ( qui la fanta-scheda dei neroverdi ) è un altro titolare a basso costo da considerare.
+
+Vicario è il portiere titolare della Juventus ( qui la fanta-scheda dei bianconeri ), ma il nuovo acquisto  Grabara  è un’ottima alternativa a 1. Nell’Inter ( qui la fanta-scheda dei nerazzurri ) anche Provedel parte dietro nelle gerarchie di Chivu, con Martinez promosso titolare. Ma non è escluso che l’ex Lazio riesca a guadagnare spazio nel corso del campionato: 27 gol subiti in 27 gare, con una fantamedia di 6,3. Nella Lazio ( qui la fanta-scheda dei biancocelesti ) è Mandas ad aver raccolto l’eredità di Provedel, ma il giovane Edoardo Motta  resta una scommessa intrigante dopo l'ottimo finale della scorsa stagione. Nel Frosinone neopromosso ( q ui la fanta-scheda del club gialloblù ), Palmisani ha difeso i pali della squadra in B (34 reti subite in 38 gare) e sarà confermato titolare. Occhio però a Desplanches , arrivato dal Palermo, che potrebbe insidiarlo.
+
