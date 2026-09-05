@@ -1,5 +1,11 @@
 const content = document.getElementById("guide-content");
 const escapeHtml = value => String(value).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const back = document.getElementById("back");
+
+back.addEventListener("click", () => {
+  if (window.history.length > 1) window.history.back();
+  else window.location.href = back.dataset.fallback || "/index.html";
+});
 
 marked.use({
   walkTokens(token) {
@@ -17,7 +23,7 @@ async function start() {
       const response = await fetch("/api/docs");
       if (!response.ok) throw new Error("I documenti non sono disponibili.");
       const documents = await response.json();
-      content.innerHTML = `<ul class="document-list">${documents.map(doc => `<li><a href="/document.html?path=${encodeURIComponent(doc.path)}" target="_blank" rel="noopener">${escapeHtml(doc.name)}</a></li>`).join("")}</ul>`;
+      content.innerHTML = `<ul class="document-list">${documents.map(doc => `<li><a href="/document.html?path=${encodeURIComponent(doc.path)}">${escapeHtml(doc.name)}</a></li>`).join("")}</ul>`;
       return;
     }
     const response = await fetch(`/api/doc?path=${encodeURIComponent(path)}`);

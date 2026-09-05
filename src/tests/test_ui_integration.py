@@ -366,20 +366,19 @@ class OfflineAuctionUiTests(unittest.TestCase):
         self.assertIn("Test Rossi", self._names())
         self.assertIn("Seleziona un giocatore", self.page.locator("#detail").inner_text())
 
-    def test_documents_open_in_index_then_each_document_in_a_new_tab(self) -> None:
+    def test_documents_open_in_index_and_back_button_navigates_in_one_tab(self) -> None:
         self.page.locator("#guide").click()
         self.page.wait_for_url("**/guide.html*")
         self.page.wait_for_selector(".document-list a")
         self.assertIn("GUIDA_ASTA.md", self.page.locator(".document-list").inner_text())
         link = self.page.locator('.document-list a[href*="GUIDA_ASTA.md"]')
-        with self.context.expect_page() as page_info:
-            link.click()
-        document_page = page_info.value
-        document_page.wait_for_selector("#guide-content h1")
-        self.assertIn("Guida all'asta", document_page.locator("#guide-content").inner_text())
-        document_page.locator("text=Torna alla tabella").click()
-        document_page.wait_for_url("**/index.html")
-        document_page.close()
+        link.click()
+        self.page.wait_for_selector("#guide-content h1")
+        self.assertIn("Guida all'asta", self.page.locator("#guide-content").inner_text())
+        self.page.locator("#back").click()
+        self.page.wait_for_url("**/guide.html*")
+        self.page.locator("#back").click()
+        self.page.wait_for_url(f"{self.base_url}/")
 
     def test_documents_do_not_require_a_season(self) -> None:
         self.page.goto(f"{self.base_url}/guide.html")
