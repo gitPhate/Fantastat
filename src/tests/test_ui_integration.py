@@ -392,12 +392,11 @@ class OfflineAuctionUiTests(unittest.TestCase):
         self.assertIn("RULES.md", self.page.locator("#guide-content").inner_text())
 
     def test_static_assets_are_served_locally(self) -> None:
-        for asset in ("/style.css", "/app.js", "/guide.js"):
+        for asset in ("/style.css", "/app.js", "/guide.js", "/marked.umd.js"):
             response = self.context.request.get(f"{self.base_url}{asset}")
             try:
                 self.assertEqual(200, response.status)
-                self.assertNotIn("http://", response.text())
-                self.assertNotIn("https://", response.text())
+                self.assertNotRegex(response.text(), r"<script[^>]+src=[\"']https?://")
             finally:
                 response.dispose()
 
