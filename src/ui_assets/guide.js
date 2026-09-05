@@ -1,11 +1,14 @@
 const content = document.getElementById("guide-content");
-const season = new URLSearchParams(window.location.search).get("season");
 const escapeHtml = value => String(value).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 
 function inlineMarkdown(value) {
   let html = escapeHtml(value);
   html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
-  html = html.replace(/\[([^\]]+)\]\(([^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+  html = html.replace(/\[([^\]]+)\]\(([^\s)]+)\)/g, (_, label, href) => {
+    const local = !/^[a-z][a-z0-9+.-]*:/i.test(href) && href.toLowerCase().endsWith(".md");
+    const target = local ? `/document.html?path=${encodeURIComponent(href)}` : href;
+    return `<a href="${target}" target="_blank" rel="noopener">${label}</a>`;
+  });
   html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
   html = html.replace(/__([^_]+)__/g, "<strong>$1</strong>");
   html = html.replace(/\*([^*]+)\*/g, "<em>$1</em>");
@@ -15,9 +18,7 @@ function inlineMarkdown(value) {
 function renderMarkdown(markdown) {
   const lines = markdown.replace(/\r\n?/g, "\n").split("\n");
   const output = [];
-  let paragraph = [];
-  let list = [];
-  let table = [];
+  let paragraph = [], list = [], table = [];
   const flushParagraph = () => { if (paragraph.length) { output.push(`<p>${inlineMarkdown(paragraph.join(" "))}</p>`); paragraph = []; } };
   const flushList = () => { if (list.length) { output.push(`<ul>${list.map(item => `<li>${inlineMarkdown(item)}</li>`).join("")}</ul>`); list = []; } };
   const flushTable = () => {
@@ -45,13 +46,21 @@ function renderMarkdown(markdown) {
 }
 
 async function start() {
-  if (!season) { content.innerHTML = "<p class=\"unavailable\">Stagione non specificata.</p>"; return; }
-  const rawUrl = `/api/guide?season=${encodeURIComponent(season)}`;
-  document.getElementById("raw-guide").href = rawUrl;
+  const path = new URLSearchParams(window.location.search).get("path");
   try {
-    const response = await fetch(rawUrl);
-    if (!response.ok) throw new Error("Guida d'asta non disponibile per questa stagione.");
-    content.innerHTML = renderMarkdown(await response.text());
+    if (!path) {
+      const response = await fetch("/api/docs");
+      if (!response.ok) throw new Error("I documenti non sono disponibili.");
+      const documents = await response.json();
+      content.innerHTML = `<ul class="document-list">${documents.map(doc => `<li><a href="/document.html?path=${encodeURIComponent(doc.path)}" target="_blank" rel="noopener">${escapeHtml(doc.name)}</a></li>`).join("")}</ul>`;
+      return;
+    }
+    const response = await fetch(`/api/doc?path=${encodeURIComponent(path)}`);
+    if (!response.ok) throw new Error("Documento non disponibile.");
+    const doc = await response.json();
+    document.title = `Fantastat — ${doc.name}`;
+    document.getElementById("document-title").textContent = doc.name;
+    content.innerHTML = doc.name.toLowerCase().endsWith(".md") ? renderMarkdown(doc.content) : `<pre>${escapeHtml(doc.content)}</pre>`;
   } catch (error) { content.innerHTML = `<p class="unavailable">${escapeHtml(error.message)}</p>`; }
 }
 start();

@@ -92,6 +92,34 @@ def auction_guide(root: Path, season_start: int) -> str:
         raise SnapshotUnavailable(f"Guida d'asta non disponibile per la stagione {season}.") from exc
 
 
+def documentation(root: Path) -> list[dict[str, str]]:
+    """Return the files available in the repository documentation directory."""
+    directory = root / "docs"
+    if not directory.is_dir():
+        raise SnapshotUnavailable("La directory docs non è disponibile.")
+    return [
+        {"path": path.relative_to(directory).as_posix(), "name": path.name}
+        for path in sorted(directory.rglob("*"))
+        if path.is_file()
+    ]
+
+
+def document(root: Path, relative_path: str) -> dict[str, str]:
+    """Read one documentation file, rejecting paths outside docs/."""
+    directory = (root / "docs").resolve()
+    path = (directory / Path(relative_path)).resolve()
+    try:
+        path.relative_to(directory)
+    except ValueError as exc:
+        raise SnapshotUnavailable("Documento non valido.") from exc
+    if not path.is_file():
+        raise SnapshotUnavailable("Documento non trovato.")
+    try:
+        return {"name": path.name, "path": path.relative_to(directory).as_posix(), "content": path.read_text(encoding="utf-8")}
+    except (OSError, UnicodeError) as exc:
+        raise SnapshotUnavailable("Il documento non può essere letto.") from exc
+
+
 def player_detail(database: Path, season_start: int, player_id: int) -> dict[str, object]:
     connection = _connect(database)
     try:
@@ -166,6 +194,10 @@ class AuctionHandler(SimpleHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(data)
                 return
+            elif route.path == "/api/docs":
+                payload = documentation(ROOT)
+            elif route.path == "/api/doc":
+                payload = document(ROOT, query["path"][0])
             else:
                 self._json({"error": "Endpoint non trovato."}, HTTPStatus.NOT_FOUND)
                 return
