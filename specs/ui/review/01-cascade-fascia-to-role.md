@@ -4,10 +4,10 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** implemented
 
-- [ ] With no role selected, the fascia control follows the agreed all-role behavior and does not hide valid fascia values.
-- [ ] Selecting a role restricts the fascia options to fascia values belonging to that role.
-- [ ] Changing or clearing the role clears or safely adjusts a fascia selection that is no longer valid.
-- [ ] The table results and empty-state behavior remain correct when role and fascia are combined.
-- [ ] Automated tests cover initial state, role changes, clearing the parent, and invalid child selections.
+- [x] With no role selected, the fascia control follows the agreed all-role behavior and does not hide valid fascia values.
+- [x] Selecting a role restricts the fascia options to fascia values belonging to that role.
+- [x] Changing or clearing the role clears or safely adjusts a fascia selection that is no longer valid.
+- [x] The table results and empty-state behavior remain correct when role and fascia are combined.
+- [x] Automated tests cover initial state, role changes, clearing the parent, and invalid child selections.

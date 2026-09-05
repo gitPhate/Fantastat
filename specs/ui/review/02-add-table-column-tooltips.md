@@ -4,10 +4,10 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** implemented
 
-- [ ] Every displayed table column has explanatory text available on hover and keyboard focus.
-- [ ] Abbreviations are expanded in plain language, including `R` as “Ruolo” and `Pres.` as “Presenze previste”.
-- [ ] Tooltip content accurately describes the column’s data and missing-value behavior where relevant.
-- [ ] Tooltips do not obscure the table’s primary controls or prevent sorting.
-- [ ] Automated or inspectable UI verification covers every displayed column and keyboard accessibility.
+- [x] Every displayed table column has explanatory text available on hover and keyboard focus.
+- [x] Abbreviations are expanded in plain language, including `R` as “Ruolo” and `Pres.` as “Presenze previste”.
+- [x] Tooltip content accurately describes the column’s data and missing-value behavior where relevant.
+- [x] Tooltips do not obscure the table’s primary controls or prevent sorting.
+- [x] Automated or inspectable UI verification covers every displayed column and keyboard accessibility.

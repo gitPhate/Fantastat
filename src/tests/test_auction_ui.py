@@ -7,7 +7,7 @@ import unittest
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from auction_ui import catalogue, choose_season, player_detail, preferred_season_start  # noqa: E402
+from auction_ui import auction_guide, catalogue, choose_season, player_detail, preferred_season_start  # noqa: E402
 from build_snapshot import build_snapshot, discover_seasons  # noqa: E402
 
 
@@ -39,6 +39,27 @@ class SnapshotAndUiTests(unittest.TestCase):
             self.assertEqual("Rossi", detail["player"]["name"])
             self.assertEqual(0.0, detail["history"][0]["appearances"])
             self.assertEqual("2025/26", detail["history"][0]["label"])
+
+    def test_catalogue_includes_injury_information(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            quotes = root / "data" / "player_lists"
+            artifact = root / "output" / "2026-27"
+            quotes.mkdir(parents=True)
+            artifact.mkdir(parents=True)
+            pd.DataFrame({"Id": [1], "R": ["A"], "Nome": ["Rossi"], "Squadra": ["Roma"], "Qt.A": [10], "FVM": [20]}).to_csv(quotes / "Quotazioni_Fantacalcio_Stagione_2026_27.csv", index=False)
+            pd.DataFrame({"id": [1], "fascia": ["Top"], "funzione": ["Titolare"], "note": ["nota"], "infortuni": ["Caviglia"], "status_rischi": [""], "rigori_piazzati": [""], "gerarchia_pacchetto": [""]}).to_csv(artifact / "giocatori_guida_unificata_asta.csv", index=False)
+            database = build_snapshot(root, root / "output" / "snapshot.sqlite3")
+            self.assertEqual("Caviglia", catalogue(database, 2026)[0]["injuries"])
+
+    def test_auction_guide_is_read_verbatim(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            guide = root / "output" / "2026-27" / "guida_unificata_asta.md"
+            guide.parent.mkdir(parents=True)
+            contents = "# Guida\n\nTesto con accenti: titolare.\n"
+            guide.write_text(contents, encoding="utf-8")
+            self.assertEqual(contents, auction_guide(root, 2026))
 
 
 if __name__ == "__main__":

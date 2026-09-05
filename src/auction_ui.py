@@ -72,7 +72,7 @@ def catalogue(database: Path, season_start: int) -> list[dict[str, object]]:
         return _rows(connection, """
             SELECT p.player_id AS id, p.name, p.role, p.club, p.quotation, p.fvm,
                    r.rank, r.predicted_appearances, r.predicted_fantasy_average,
-                   r.expected_points, r.validation_status, g.tier
+                   r.expected_points, r.validation_status, g.tier, g.injuries
             FROM players p
             LEFT JOIN rankings r ON r.season_start = p.season_start AND r.player_id = p.player_id
             LEFT JOIN guides g ON g.season_start = p.season_start AND g.player_id = p.player_id
@@ -80,6 +80,16 @@ def catalogue(database: Path, season_start: int) -> list[dict[str, object]]:
         """, (season_start,))
     finally:
         connection.close()
+
+
+def auction_guide(root: Path, season_start: int) -> str:
+    """Read the generated guide verbatim for a selected season."""
+    season = f"{season_start}-{(season_start + 1) % 100:02d}"
+    path = root / "output" / season / "guida_unificata_asta.md"
+    try:
+        return path.read_text(encoding="utf-8")
+    except (OSError, UnicodeError) as exc:
+        raise SnapshotUnavailable(f"Guida d'asta non disponibile per la stagione {season}.") from exc
 
 
 def player_detail(database: Path, season_start: int, player_id: int) -> dict[str, object]:
@@ -146,6 +156,16 @@ class AuctionHandler(SimpleHTTPRequestHandler):
                 payload = catalogue(self.database, int(query["season"][0]))
             elif route.path == "/api/player":
                 payload = player_detail(self.database, int(query["season"][0]), int(query["id"][0]))
+            elif route.path == "/api/guide":
+                guide = auction_guide(ROOT, int(query["season"][0]))
+                data = guide.encode("utf-8")
+                self.send_response(HTTPStatus.OK)
+                self.send_header("Content-Type", "text/markdown; charset=utf-8")
+                self.send_header("Content-Disposition", "inline")
+                self.send_header("Content-Length", str(len(data)))
+                self.end_headers()
+                self.wfile.write(data)
+                return
             else:
                 self._json({"error": "Endpoint non trovato."}, HTTPStatus.NOT_FOUND)
                 return

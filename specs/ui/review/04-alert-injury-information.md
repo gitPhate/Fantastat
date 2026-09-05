@@ -4,10 +4,10 @@
 
 **Blocked by:** None (can start immediately)
 
-**Status:** ready-for-agent
+**Status:** implemented
 
-- [ ] A player with non-empty `infortuni` data is visibly marked in the table.
-- [ ] A player without `infortuni` data is not marked as injured or at risk by default.
-- [ ] The indication uses accessible text or an equivalent non-color-only signal and explains that injury information is available.
-- [ ] The indication remains correct across season changes, filtering, sorting, and row selection.
-- [ ] Automated tests cover populated, empty, and missing `infortuni` values.
+- [x] A player with non-empty `infortuni` data is visibly marked next to the player’s name in the table.
+- [x] A player without `infortuni` data is not marked as injured or at risk by default.
+- [x] The indication uses accessible text or an equivalent non-color-only signal and explains that injury information is available.
+- [x] The indication remains correct across season changes, filtering, sorting, and row selection.
+- [x] Automated tests cover populated, empty, and missing `infortuni` values.

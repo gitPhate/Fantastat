@@ -7,15 +7,15 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <header><h1>Fantastat</h1><label>Stagione <select id="season"></select></label></header>
+  <header><h1>Fantastat</h1><div class="season-controls"><label>Stagione <select id="season"></select></label><a id="guide" class="button" href="#" target="_blank" rel="noopener">Guida asta</a></div></header>
   <main>
     <section class="catalogue"><div class="filters">
       <input id="search" placeholder="Cerca un giocatore" autocomplete="off">
       <select id="role"><option value="">Tutti i ruoli</option><option>P</option><option>D</option><option>C</option><option>A</option></select>
       <select id="club"><option value="">Tutte le squadre</option></select>
-      <select id="tier"><option value="">Tutte le fasce</option><option value="__missing__">Senza guida</option></select>
+      <select id="fascia"><option value="">Tutte le fasce</option><option value="__missing__">Senza guida</option></select>
     </div><p id="count"></p><div class="table-wrap"><table><thead><tr>
-      <th data-key="name">Nome</th><th data-key="role">R</th><th data-key="club">Squadra</th><th data-key="quotation">Qt.</th><th data-key="fvm">FVM</th><th data-key="rank">Rank</th><th data-key="predicted_appearances">Pres.</th><th data-key="predicted_fantasy_average">FM</th><th data-key="expected_points">Pt.</th><th data-key="tier">Fascia</th>
+      <th data-key="name" title="Nome del giocatore">Nome</th><th data-key="role" title="Ruolo del giocatore">R</th><th data-key="club" title="Squadra di appartenenza">Squadra</th><th data-key="quotation" title="Quotazione attuale">Qt.</th><th data-key="fvm" title="Fantavalore medio">FVM</th><th data-key="rank" title="Posizione nella classifica">Rank</th><th data-key="predicted_appearances" title="Presenze previste">Pres.</th><th data-key="predicted_fantasy_average" title="Fantamedia prevista">FM</th><th data-key="expected_points" title="Punti attesi">Pt.</th><th data-key="tier" title="Fascia nella guida d'asta unificata">Fascia</th>
     </tr></thead><tbody id="players"></tbody></table></div></section>
     <aside id="detail"><p>Seleziona un giocatore per vedere le evidenze dell'asta.</p></aside>
   </main><script src="/app.js"></script>
