@@ -314,8 +314,11 @@ class OfflineAuctionUiTests(unittest.TestCase):
 
     def test_injury_information_has_a_visible_alert(self) -> None:
         row = self.page.locator('tr[data-id="2167"]')
-        self.assertEqual(1, row.locator(".injury-alert").count())
-        self.assertIn("infortuni", row.locator(".injury-alert").get_attribute("title"))
+        icon = row.locator(".injury-alert")
+        self.assertEqual(1, icon.count())
+        self.assertEqual("Infortunato", icon.get_attribute("data-tooltip"))
+        icon.hover()
+        self.assertEqual("Infortunato", self.page.locator(".column-tooltip").inner_text())
 
     def test_partial_history_keeps_each_source_visible(self) -> None:
         self.page.locator("#season").select_option("2025")
