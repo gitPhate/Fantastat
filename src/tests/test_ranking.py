@@ -5,7 +5,7 @@ import unittest
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from ranking import effective_appearances, predict, rank_players, season_name, season_start  # noqa: E402
+from ranking import artifact_directory, effective_appearances, predict, rank_players, season_name, season_start  # noqa: E402
 
 
 class RankingCalculationTests(unittest.TestCase):
@@ -57,6 +57,11 @@ class RankingCalculationTests(unittest.TestCase):
     def test_future_season_is_derived_without_hard_coding(self):
         self.assertEqual(2027, season_start("2027_28"))
         self.assertEqual("2027_28", season_name(2027))
+
+    def test_artifacts_are_scoped_by_hyphenated_season_directory(self):
+        self.assertEqual(Path("output/2027-28"), artifact_directory(Path("."), "2027_28"))
+        with self.assertRaisesRegex(ValueError, "Stagione non valida"):
+            artifact_directory(Path("."), "2027-28")
 
 
 if __name__ == "__main__":

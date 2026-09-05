@@ -4,7 +4,7 @@
 
 **Blocked by:** 03: Add automatic season selection and the season picker; 04: Add auction-time player search, filters, and sorting; 05: Show current player evidence in a right-hand detail panel; 06: Add season-by-season player history and trend charts.
 
-**Status:** ready-for-agent
+**Status:** implemented
 
 - [ ] Separate documented commands build or replace the SQLite snapshot and launch the local UI.
 - [ ] Starting or using the UI never rebuilds the snapshot and never writes to the database.
@@ -15,4 +15,3 @@
 - [ ] Missing snapshots, incompatible database schemas, and snapshots without seasons produce clear recovery instructions rather than partial operation.
 - [ ] End-to-end verification covers snapshot creation, application startup, catalogue lookup, player detail, history, and season switching using representative local data.
 - [ ] Existing ranking behavior and its full automated test suite remain unchanged except for the approved season-scoped artifact layout.
-

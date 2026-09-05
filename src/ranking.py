@@ -116,6 +116,12 @@ def season_name(start: int) -> str:
     return f"{start}_{(start + 1) % 100:02d}"
 
 
+def artifact_directory(root: Path, season: str) -> Path:
+    """Return the stable, human-readable directory for auction artifacts."""
+    start = season_start(season)
+    return root / "output" / f"{start}-{(start + 1) % 100:02d}"
+
+
 def round_value(value: float, digits: int = 2) -> float:
     """Use decimal rounding so CSV results do not depend on binary float ties."""
     quantum = Decimal("1").scaleb(-digits)
@@ -304,10 +310,10 @@ def run(root: Path, season: str) -> tuple[Path, Path]:
         role_ids = players.loc[players["R"] == role, "Id"]
         forecasts.update(predict(role_ids, history, statistics, config.weights_for_role(role)))
     ranking = rank_players(players, forecasts, validation_status)
-    output = root / "output"
-    output.mkdir(exist_ok=True)
-    ranking_path = output / f"ranking_{season}.csv"
-    validation_path = output / f"validation_{season}.csv"
+    output = artifact_directory(root, season)
+    output.mkdir(parents=True, exist_ok=True)
+    ranking_path = output / "ranking.csv"
+    validation_path = output / "validation.csv"
     ranking.to_csv(ranking_path, index=False, encoding="utf-8", float_format="%.2f", na_rep="")
     validation.to_csv(validation_path, index=False, encoding="utf-8", float_format="%.4f", na_rep="")
     return ranking_path, validation_path

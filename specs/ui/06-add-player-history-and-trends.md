@@ -4,7 +4,7 @@
 
 **Blocked by:** 05: Show current player evidence in a right-hand detail panel.
 
-**Status:** ready-for-agent
+**Status:** implemented
 
 - [ ] The detail panel shows one chronologically ordered row per historical season available for the selected player ID.
 - [ ] Each row combines that season's raw statistics and historical ranking fields when both are available.
@@ -14,4 +14,3 @@
 - [ ] Zero appearances are distinguished from a season in which the player ID has no statistics row.
 - [ ] Players with no historical evidence receive a clear empty state while retaining their current-season detail.
 - [ ] Automated tests cover multi-season joins, partial history, changed descriptive attributes, zero appearances, chart data, and no-history players.
-

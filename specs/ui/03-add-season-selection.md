@@ -4,7 +4,7 @@
 
 **Blocked by:** 02: Build the SQLite snapshot and initial player catalogue.
 
-**Status:** ready-for-agent
+**Status:** implemented
 
 - [ ] The picker contains only auction seasons recorded in the SQLite snapshot.
 - [ ] Picker labels use `YYYY/YY`, while season identity remains based on the four-digit starting year.
@@ -14,4 +14,3 @@
 - [ ] Switching seasons updates the player universe, summary enrichment, selection state, and subsequent detail queries consistently.
 - [ ] The application handles a snapshot containing no selectable seasons with a clear, actionable error.
 - [ ] Automated tests cover the month boundary, July behavior, unavailable preferred seasons, picker labels, and season switching.
-

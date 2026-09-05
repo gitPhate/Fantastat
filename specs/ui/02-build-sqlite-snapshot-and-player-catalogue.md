@@ -4,7 +4,7 @@
 
 **Blocked by:** 01: Organize generated artifacts by auction season.
 
-**Status:** ready-for-agent
+**Status:** implemented
 
 - [ ] The snapshot builder discovers auction seasons from the season-scoped generated-artifact directories and records their starting year and display label.
 - [ ] Each season's player universe and displayed identity fields come exclusively from its Fantacalcio quotation CSV.
@@ -17,4 +17,3 @@
 - [ ] The generated SQLite snapshot is excluded from version control.
 - [ ] The local application starts from the snapshot without reading or regenerating source CSV files and can render the full catalogue for an available season.
 - [ ] Automated tests cover discovery, joins, validation failures, nullable enrichment, atomic replacement, and the initial catalogue response.
-

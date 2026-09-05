@@ -1,0 +1,146 @@
+﻿id,nome_guida,nome_listone,ruolo,squadra,squadra_guida,fascia,funzione,note,infortuni,status_rischi,rigori_piazzati,gerarchia_pacchetto,source_sections,match_status
+4431,Carnesecchi,Carnesecchi,P,Atalanta,Atalanta,Top,,Carnesecchi (Atalanta) per voto,,,,,§3 Portieri,matched
+4360,Caprile,Caprile,P,Cagliari,Cagliari,Low cost / alternanza,,Soltanto con titolarità confermata e un secondo titolare complementare.,,,,,§3 Portieri,matched
+6966,Butez,Butez,P,Como,Como,Top,,coprire Martinez (Inter) con Provedel (Inter) e Butez (Como) con Sanchez (Como).,,,,Butez-Sanchez: ballottaggio aperto; valutare come coppia.,§3 Portieri,matched
+2521,De Gea,De Gea,P,Fiorentina,Fiorentina,Fascia media,,,,,,,§3 Portieri,matched
+7332,Bijlow,Bijlow,P,Genoa,Genoa,Low cost / alternanza,,Soltanto con titolarità confermata e un secondo titolare complementare.,,,,,§3 Portieri,matched
+5116,Josep Martinez,Martinez Jo.,P,Inter,Inter,Top,,,,,,Josep Martinez-Provedel: valutare come coppia.,§3 Portieri,matched
+4964,Vicario,Vicario,P,Juventus,Juventus,Top,,,,,,,§3 Portieri,matched
+6482,Mandas,Mandas,P,Lazio,Lazio,Fascia media,,Meret (Napoli) è il miglior rapporto qualità-prezzo del ruolo: titolare confermato del Napoli a una frazione del costo dei top. Mandas (Lazio) va comprato in pacchetto con Motta (Lazio).,,,,Mandas-Motta: valutare come coppia.,§3 Portieri,matched
+2134,Falcone,Falcone,P,Lecce,Lecce,Fascia media,,,,,,,§3 Portieri,matched
+4312,Maignan,Maignan,P,Milan,Milan,Top,,,,,,,§3 Portieri,matched
+572,Meret,Meret,P,Napoli,Napoli,Fascia media,,Meret (Napoli) è il miglior rapporto qualità-prezzo del ruolo: titolare confermato del Napoli a una frazione del costo dei top. Mandas (Lazio) va comprato in pacchetto con Motta (Lazio).,,,,,§3 Portieri,matched
+6662,Corvi,Corvi,P,Parma,Parma,Low cost / alternanza,,Soltanto con titolarità confermata e un secondo titolare complementare.,,,,,§3 Portieri,matched
+5841,Svilar,Svilar,P,Roma,Roma,Super-top,,Prima scelta condivisa; accettare il prezzo premium solo entro il tetto del pacchetto.,,,,,§3 Portieri,matched
+4236,Muric,Muric,P,Sassuolo,Sassuolo,Low cost / alternanza,,Soltanto con titolarità confermata e un secondo titolare complementare.,,,,,§3 Portieri,matched
+6534,Perri,Perri,P,Torino,Torino,Low cost / alternanza,,Soltanto con titolarità confermata e un secondo titolare complementare.,,,,,§3 Portieri,matched
+6462,Okoye,Okoye,P,Udinese,Udinese,Fascia media,,,,,,,§3 Portieri,matched
+6248,Stankovic,Stankovic F.,P,Venezia,Venezia,Low cost / alternanza,,Soltanto con titolarità confermata e un secondo titolare complementare.,,,,,§3 Portieri,matched
+6485,Kristensen,Kristensen T.,D,Atalanta,Atalanta,Fascia media,Centrali da modificatore,Preferibili ai puri riempitivi se il prezzo resta medio-basso.,,,,,§4 Difensori,matched
+554,Zappacosta,Zappacosta,D,Atalanta,Atalanta,Fascia alta,Esterni da bonus,"Controllare modulo, concorrenza e coppe.",,,,,§4 Difensori,matched
+4734,Miranda,Miranda J.,D,Bologna,Bologna,Fascia media,Esterni da bonus,"Controllare modulo, concorrenza e coppe.",,,,,§4 Difensori,matched
+4210,Mina,Mina,D,Cagliari,Cagliari,Sopra ai low cost,Centrali da modificatore,Preferibili ai puri riempitivi se il prezzo resta medio-basso.,,,,,§4 Difensori,matched
+5641,Chalobah,Chalobah T.,D,Como,Como,Possibile sorpresa,Centrali da modificatore,Preferibili ai puri riempitivi se il prezzo resta medio-basso.,,,,,§4 Difensori,matched
+7414,Kaiki,Kaiki,D,Como,Como,Scommessa,Sorprese / low cost,Al massimo uno o due profili incerti nello stesso reparto.,,,,,§4 Difensori,matched
+6869,Ramon,Ramon,D,Como,Como,Sotto ai Semitop,Centrali da bonus + voto,"Centrali che segnano: uniscono voto da modificatore e minaccia sui piazzati. Non sono riempitivi. Ramon (Como) porta però molti malus, Ostigard (Genoa) cartellini.",,,,,§4 Difensori,matched
+6727,Yan Couto,Couto,D,Como,Como,Possibile sorpresa,Esterni da bonus,"Controllare modulo, concorrenza e coppe.",,,,,§4 Difensori,matched
+6531,Jimenez,Jimenez A.,D,Fiorentina,Fiorentina,Scommessa,Sorprese / low cost,Al massimo uno o due profili incerti nello stesso reparto.,,,,,§4 Difensori,matched
+7294,Valdepeñas,Valdepenas,D,Fiorentina,Como,Scommessa,Sorprese / low cost,Al massimo uno o due profili incerti nello stesso reparto.,,,,,§4 Difensori,matched
+5742,Drameh,Drameh,D,Genoa,Genoa,Sorpresa,Sorprese / low cost,Al massimo uno o due profili incerti nello stesso reparto.,,,,,§4 Difensori,matched
+7537,Mitaj,Mitaj,D,Genoa,Genoa,Scommessa,Sorprese / low cost,Al massimo uno o due profili incerti nello stesso reparto.,,,punizioni/corner indicati.,,§4 Difensori | §7 Rigoristi e piazzati,matched
+5750,Ostigard,Ostigard,D,Genoa,Genoa,Top,Centrali da bonus + voto,"Centrali che segnano: uniscono voto da modificatore e minaccia sui piazzati. Non sono riempitivi. Ramon (Como) porta però molti malus, Ostigard (Genoa) cartellini.",,,,,§4 Difensori,matched
+4159,Akanji,Akanji,D,Inter,Inter,Semitop,Top equilibrati,"Buon compromesso tra voto, titolarità e piazzati.",,,,,§4 Difensori,matched
+2120,Bastoni,Bastoni,D,Inter,Inter,Top,Top equilibrati,"Buon compromesso tra voto, titolarità e piazzati.",,,,,§4 Difensori,matched
+6217,Bisseck,Bisseck,D,Inter,Inter,Sotto ai Semitop,Centrali da bonus + voto,,,,,,§4 Difensori,matched
+254,Dimarco,Dimarco,D,Inter,Inter,Super Top,Premium bonus + voto,Dimarco (Inter) è il consenso assoluto,,,punizioni/corner indicati.,,§4 Difensori | §7 Rigoristi e piazzati,matched
+2788,Bremer,Bremer,D,Juventus,Juventus,Top,Premium bonus + voto,Bremer (Juventus) è forte per il modificatore ma va scontato per il rischio fisico.,,,,,§4 Difensori,matched
+5520,Cambiaso,Cambiaso,D,Juventus,Juventus,Jolly 1ª fascia,Esterni da bonus,"Controllare modulo, concorrenza e coppe.",,,Tiratore di piazzati; gerarchia aperta o discordante.,,§4 Difensori | §7 Rigoristi e piazzati,matched
+4657,Celik,Celik,D,Juventus,Juventus,Fascia alta,Esterni da bonus,"Controllare modulo, concorrenza e coppe.",,,,,§4 Difensori,matched
+4976,Kalulu,Kalulu,D,Juventus,Juventus,Semitop,Top equilibrati,"Buon compromesso tra voto, titolarità e piazzati.",,,,,§4 Difensori,matched
+6042,Lucumì,Lucumì,D,Juventus,Juventus,Fascia alta,Centrali da modificatore,Preferibili ai puri riempitivi se il prezzo resta medio-basso.,,,,,§4 Difensori,matched
+4817,Pedraza,Pedraza,D,Lazio,Lazio,Low cost,Sorprese / low cost,Al massimo uno o due profili incerti nello stesso reparto.,,,,,§4 Difensori,matched
+6989,Tiago Gabriel,Tiago Gabriel,D,Lecce,Lecce,Sopra ai low cost,Centrali da modificatore,Preferibili ai puri riempitivi se il prezzo resta medio-basso.,,,,,§4 Difensori,matched
+5833,Gila,Gila,D,Milan,Milan,Semitop,Centrali da modificatore,Preferibili ai puri riempitivi se il prezzo resta medio-basso.,,,,,§4 Difensori,matched
+5022,Pavlovic,Pavlovic,D,Milan,Milan,Top,Top equilibrati,"Buon compromesso tra voto, titolarità e piazzati.",,,,,§4 Difensori,matched
+2816,Di Lorenzo,Di Lorenzo,D,Napoli,Napoli,Semitop,Top equilibrati,"Buon compromesso tra voto, titolarità e piazzati.",,,,,§4 Difensori,matched
+4409,Rrahmani,Rrahmani,D,Napoli,Napoli,Semitop,Centrali da modificatore,Preferibili ai puri riempitivi se il prezzo resta medio-basso.,,,,,§4 Difensori,matched
+1852,Spinazzola,Spinazzola,D,Napoli,Napoli,Fascia alta,Esterni da bonus,"Controllare modulo, concorrenza e coppe.",,,,,§4 Difensori,matched
+7529,Koulierakis,Koulierakis,D,Roma,Roma,Possibile sorpresa,Sorprese / low cost,Al massimo uno o due profili incerti nello stesso reparto.,,,,,§4 Difensori,matched
+7599,Lulli,Lulli,D,Roma,Roma,Scommessa,Sorprese / low cost,Al massimo uno o due profili incerti nello stesso reparto.,,,,,§4 Difensori,matched
+2296,Mancini,Mancini,D,Roma,Roma,Semitop,Top equilibrati,"Buon compromesso tra voto, titolarità e piazzati.",,,,,§4 Difensori,matched
+4998,Molina,Molina N.,D,Roma,Roma,Top,Esterni da bonus,"Controllare modulo, concorrenza e coppe.",,,,,§4 Difensori,matched
+4317,Ndicka,N'Dicka,D,Roma,Roma,Sotto ai Semitop,Top equilibrati,"Buon compromesso tra voto, titolarità e piazzati.",,,,,§4 Difensori,matched
+6986,Rensch,Rensch,D,Roma,Roma,Scommessa,Sorprese / low cost,Al massimo uno o due profili incerti nello stesso reparto.,,,,,§4 Difensori,matched
+7181,Wesley,Wesley,D,Roma,Roma,Top,Premium bonus + voto,,,,,,§4 Difensori,matched
+6672,Idzes,Idzes,D,Sassuolo,Sassuolo,Non specificata,Centrali da modificatore,Preferibili ai puri riempitivi se il prezzo resta medio-basso.,,,,,§4 Difensori,matched
+7220,Belghali,Belghali,D,Torino,Torino,Fascia media,Esterni da bonus,"Controllare modulo, concorrenza e coppe.",,,,,§4 Difensori,matched
+6956,Solet,Solet,D,Udinese,Udinese,Top,Top equilibrati,"Buon compromesso tra voto, titolarità e piazzati.",,,Rigorista indicato.,,§4 Difensori | §7 Rigoristi e piazzati,matched
+4994,Vojvoda,Vojvoda,D,Udinese,Udinese,Possibile sorpresa,Sorprese / low cost,Al massimo uno o due profili incerti nello stesso reparto.,,,punizioni/corner indicati.,,§4 Difensori | §7 Rigoristi e piazzati,matched
+5792,Ederson,Ederson D.S.,C,Atalanta,Atalanta,Rapporto qualità-prezzo,,,,,,,§5 Centrocampisti,matched
+1850,Kessié,Kessiè,C,Atalanta,Atalanta,Semi-top,,Molti hanno rigori/piazzati o giocano avanzati; più variabilità dei top.,,,,,§5 Centrocampisti,matched
+6844,Rowe,Rowe,C,Atalanta,Atalanta,Upside / assist,,Da prendere solo se ruolo e minuti sono confermati.,,,,,§5 Centrocampisti,matched
+5119,Samardzic,Samardzic,C,Atalanta,Atalanta,Upside / assist,,Da prendere solo se ruolo e minuti sono confermati.,,,Candidato ai rigori; Tiratore di piazzati; gerarchia aperta o discordante.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
+184,Bernardeschi,Bernardeschi,C,Bologna,Bologna,Rapporto qualità-prezzo,,,,,Rigorista indicato; punizioni/corner indicati.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
+5858,Ferguson,Ferguson,C,Bologna,Bologna,Low cost da voto,,Servono a non dipendere da otto profili offensivi incerti.,,,,,§5 Centrocampisti,matched
+2167,Orsolini,Orsolini,C,Bologna,Bologna,Top,,Potenziale da doppia cifra o ruolo molto offensivo; scontare infortuni e minutaggio.,Stop/condizione con rientri più brevi,Piccolo sconto e controllo finale.,Rigorista indicato; punizioni/corner indicati.,,§5 Centrocampisti | §7 Rigoristi e piazzati | §8 Infortuni e altri rischi,matched
+6815,Fadera,Fadera,C,Cagliari,Cagliari,Scommesse finali,,"Uno o due nomi, con almeno cinque/sei voti affidabili già in rosa.",,,,,§5 Centrocampisti,matched
+6010,Fazzini,Fazzini,C,Cagliari,Cagliari,Low cost da voto,,Servono a non dipendere da otto profili offensivi incerti.,,,punizioni/corner indicati.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
+7311,Romano,Romano,C,Cagliari,Cagliari,Scommesse finali,,"Uno o due nomi, con almeno cinque/sei voti affidabili già in rosa.",,,,,§5 Centrocampisti,matched
+7126,Baturina,Baturina,C,Como,Como,Top,,Potenziale da doppia cifra o ruolo molto offensivo; scontare infortuni e minutaggio.,,,Tiratore di piazzati; gerarchia aperta o discordante.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
+5559,Da Cunha,Da Cunha,C,Como,Como,Rapporto qualità-prezzo,,,,,Tiratore di piazzati; gerarchia aperta o discordante.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
+6678,Liberali,Liberali,C,Como,Como,Scommesse finali,,"Uno o due nomi, con almeno cinque/sei voti affidabili già in rosa.",,,,,§5 Centrocampisti,matched
+6875,Nico Paz,Paz N.,C,Como,Como,Super-top,,Rigori e piazzati per il primo; bonus e punizioni per il secondo.,,,Tiratore di piazzati; gerarchia aperta o discordante.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
+6151,Perrone,Perrone,C,Como,Como,Rapporto qualità-prezzo,,,,,,,§5 Centrocampisti,matched
+6908,Atta,Atta,C,Fiorentina,Fiorentina,Semi-top,,Molti hanno rigori/piazzati o giocano avanzati; più variabilità dei top.,,,,,§5 Centrocampisti,matched
+7078,Mastantuono,Mastantuono,C,Fiorentina,Fiorentina,Semi-top,,Molti hanno rigori/piazzati o giocano avanzati; più variabilità dei top.,,,Candidato ai rigori; gerarchia aperta o discordante.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
+7464,Oulai,Oulai,C,Fiorentina,Fiorentina,Scommesse finali,,"Uno o due nomi, con almeno cinque/sei voti affidabili già in rosa.",,,,,§5 Centrocampisti,matched
+5791,Frendrup,Frendrup,C,Genoa,Genoa,Low cost da voto,,Servono a non dipendere da otto profili offensivi incerti.,,,,,§5 Centrocampisti,matched
+7409,Meichtry,Meichtry,C,Genoa,Genoa,Scommesse finali,,"Uno o due nomi, con almeno cinque/sei voti affidabili già in rosa.",,,,,§5 Centrocampisti,matched
+1870,Barella,Barella,C,Inter,Inter,Rapporto qualità-prezzo,,,,,,,§5 Centrocampisti,matched
+2194,Calhanoglu,Calhanoglu,C,Inter,Inter,Super-top,,Rigori e piazzati per il primo; bonus e punizioni per il secondo.,,,Rigorista indicato; punizioni/corner indicati.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
+7070,Sucic,Sucic P.,C,Inter,Inter,Upside / assist,,Da prendere solo se ruolo e minuti sono confermati.,,,,,§5 Centrocampisti,matched
+152,Zielinski,Zielinski,C,Inter,Inter,Semi-top,,Molti hanno rigori/piazzati o giocano avanzati; più variabilità dei top.,,,punizioni/corner indicati.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
+6884,Conceição,Conceicao,C,Juventus,Juventus,Upside / assist,,Da prendere solo se ruolo e minuti sono confermati.,,,,,§5 Centrocampisti,matched
+4911,Douglas Luiz,Douglas Luiz,C,Juventus,Juventus,Upside / assist,,Da prendere solo se ruolo e minuti sono confermati.,,,Tiratore di piazzati; gerarchia aperta o discordante.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
+827,Locatelli,Locatelli,C,Juventus,Juventus,Low cost da voto,,Servono a non dipendere da otto profili offensivi incerti.,,,Tiratore di piazzati; gerarchia aperta o discordante.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
+4973,McKennie,McKennie,C,Juventus,Juventus,Semi-top,,Molti hanno rigori/piazzati o giocano avanzati; più variabilità dei top.,,,,,§5 Centrocampisti,matched
+2848,Frattesi,Frattesi,C,Lazio,Lazio,Top,,Potenziale da doppia cifra o ruolo molto offensivo; scontare infortuni e minutaggio.,,,,,§5 Centrocampisti,matched
+632,Zaccagni,Zaccagni,C,Lazio,Lazio,Semi-top,,Molti hanno rigori/piazzati o giocano avanzati; più variabilità dei top.,,,Tiratore di piazzati; gerarchia aperta o discordante.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
+6618,Cissé,Cissè A.,C,Milan,Verona,Scommesse finali,,"Uno o due nomi, con almeno cinque/sei voti affidabili già in rosa.",,,,,§5 Centrocampisti,matched
+2606,Modric,Modric,C,Milan,Milan,Rapporto qualità-prezzo,,utili come secondo-terzo slot. Modric (Milan) non è un low cost: SOS lo colloca in fascia alta e guida punizioni e corner del Milan.,,,Tiratore di piazzati; gerarchia aperta o discordante.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
+6372,Moreira,Moreira,C,Milan,Milan,Upside / assist,,Da prendere solo se ruolo e minuti sono confermati.,,,,,§5 Centrocampisti,matched
+2423,Pulisic,Pulisic,C,Milan,Milan,Top,,Potenziale da doppia cifra o ruolo molto offensivo; scontare infortuni e minutaggio.,,,,,§5 Centrocampisti,matched
+2379,Rabiot,Rabiot,C,Milan,Milan,Top,,Potenziale da doppia cifra o ruolo molto offensivo; scontare infortuni e minutaggio.,,,,,§5 Centrocampisti,matched
+4892,Saelemaekers,Saelemaekers,C,Milan,Milan,Upside / assist,,Da prendere solo se ruolo e minuti sono confermati.,,,,,§5 Centrocampisti,matched
+2517,De Bruyne,De Bruyne,C,Napoli,Napoli,Top,,Potenziale da doppia cifra o ruolo molto offensivo; scontare infortuni e minutaggio.,,,,,§5 Centrocampisti,matched
+4287,Lobotka,Lobotka,C,Napoli,Napoli,Low cost da voto,,Servono a non dipendere da otto profili offensivi incerti.,,,,,§5 Centrocampisti,matched
+4777,McTominay,McTominay,C,Napoli,Napoli,Top,,Potenziale da doppia cifra o ruolo molto offensivo; scontare infortuni e minutaggio.,Rientro previsto alla 6ª,Top soltanto a prezzo scontato.,,,§5 Centrocampisti | §8 Infortuni e altri rischi,matched
+536,Politano,Politano,C,Napoli,Napoli,Rapporto qualità-prezzo,,,,,,,§5 Centrocampisti,matched
+779,Cristante,Cristante,C,Roma,Roma,Low cost da voto,,Servono a non dipendere da otto profili offensivi incerti.,,,,,§5 Centrocampisti,matched
+7556,Mora,Mora,C,Roma,Roma,Semi-top,,Molti hanno rigori/piazzati o giocano avanzati; più variabilità dei top.,,,,,§5 Centrocampisti,matched
+7036,Bakola,Bakola,C,Sassuolo,Sassuolo,Scommesse finali,,"Uno o due nomi, con almeno cinque/sei voti affidabili già in rosa.",,,,,§5 Centrocampisti,matched
+5844,Thorstvedt,Thorstvedt,C,Sassuolo,Sassuolo,Rapporto qualità-prezzo,,,,,,,§5 Centrocampisti,matched
+1933,Mandragora,Mandragora,C,Torino,Torino,Rapporto qualità-prezzo,,,,,Rigorista indicato; punizioni/corner indicati.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
+5687,Vlasic,Vlasic,C,Torino,Torino,Semi-top,,Molti hanno rigori/piazzati o giocano avanzati; più variabilità dei top.,,,Rigorista indicato; punizioni/corner indicati.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
+6680,Karlstrom,Karlstrom,C,Udinese,Udinese,Low cost da voto,,Servono a non dipendere da otto profili offensivi incerti.,,,,,§5 Centrocampisti,matched
+6783,Unai Gómez,Unai Gomez,C,Udinese,Udinese,Scommesse finali,,"Uno o due nomi, con almeno cinque/sei voti affidabili già in rosa.",,,,,§5 Centrocampisti,matched
+2766,Zaniolo,Zaniolo,C,Udinese,Udinese,Semi-top,,Molti hanno rigori/piazzati o giocano avanzati; più variabilità dei top.,Stop/condizione con rientri più brevi,Piccolo sconto e controllo finale.,punizioni/corner indicati.,,§5 Centrocampisti | §7 Rigoristi e piazzati | §8 Infortuni e altri rischi,matched
+5507,Busio,Busio,C,Venezia,Venezia,Low cost da voto,,Servono a non dipendere da otto profili offensivi incerti.,,,Rigorista indicato; punizioni/corner indicati.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
+5995,De Ketelaere,De Ketelaere,A,Atalanta,Atalanta,Fascia media titolare,,,,,Candidato ai rigori; Tiratore di piazzati; gerarchia aperta o discordante.,,§6 Attaccanti | §7 Rigoristi e piazzati,matched
+6435,Krstovic,Krstovic,A,Atalanta,Atalanta,Rotazioni di qualità,,Minuti e gerarchie da verificare; alcune coppie hanno costo complessivo rischioso.,,,,,§6 Attaccanti,matched
+4371,Raspadori,Raspadori,A,Atalanta,Atalanta,Fascia media titolare,,,,,,,§6 Attaccanti,matched
+2137,Scamacca,Scamacca,A,Atalanta,Atalanta,Semi-top,,,,,,,§6 Attaccanti,matched
+6675,Dovbyk,Dovbyk,A,Bologna,Bologna,Fascia media titolare,,Dovbyk (Bologna) è secondo o terzo del Bologna,,,Rigorista indicato.,,§6 Attaccanti | §7 Rigoristi e piazzati,matched
+4359,Piccoli,Piccoli,A,Bologna,Bologna,Rotazioni di qualità,,Minuti e gerarchie da verificare; alcune coppie hanno costo complessivo rischioso.,,,,,§6 Attaccanti,matched
+7547,Kevin Carlos,Kevin Carlos,A,Cagliari,Cagliari,Low cost / ultimo slot,,"Profilo da prezzo minimo o quasi, non sostituto di un titolare.",,,,,§6 Attaccanti,matched
+7017,Douvikas,Douvikas,A,Como,Como,Semi-top,,,,,Tiratore di piazzati; gerarchia aperta o discordante.,,§6 Attaccanti | §7 Rigoristi e piazzati,matched
+2097,Kean,Kean,A,Como,Como,Semi-top,,,,,Tiratore di piazzati; gerarchia aperta o discordante.,,§6 Attaccanti | §7 Rigoristi e piazzati,matched
+7023,Pellegrino,Pellegrino M.,A,Fiorentina,Fiorentina,Rotazioni di qualità,,Minuti e gerarchie da verificare; alcune coppie hanno costo complessivo rischioso.,,,,,§6 Attaccanti,matched
+6530,Ghedjemis,Ghedjemis,A,Frosinone,Frosinone,Low cost / ultimo slot,,"Profilo da prezzo minimo o quasi, non sostituto di un titolare.",,,,,§6 Attaccanti,matched
+5436,Raimondo,Raimondo,A,Frosinone,Frosinone,Low cost / ultimo slot,,"Profilo da prezzo minimo o quasi, non sostituto di un titolare.",,,,,§6 Attaccanti,matched
+4923,Colombo,Colombo,A,Genoa,Genoa,Fascia media titolare,,Base per completare il reparto senza dipendere da sole scommesse. Colombo (Genoa) è primo rigorista del Genoa per entrambe le fonti,,,Rigorista indicato.,,§6 Attaccanti | §7 Rigoristi e piazzati,matched
+7453,Havel,Havel,A,Genoa,Genoa,Low cost / ultimo slot,,"Profilo da prezzo minimo o quasi, non sostituto di un titolare.",,,,,§6 Attaccanti,matched
+6669,Bonny,Bonny,A,Inter,Inter,Rotazioni di qualità,,Minuti e gerarchie da verificare; alcune coppie hanno costo complessivo rischioso.,,,,,§6 Attaccanti,matched
+2764,Lautaro Martinez,Martinez L.,A,Inter,Inter,Super-top,,,,,,,§6 Attaccanti,matched
+7071,Pio Esposito,Esposito F.P.,A,Inter,Inter,Rotazioni di qualità,,Minuti e gerarchie da verificare; alcune coppie hanno costo complessivo rischioso.,,,,,§6 Attaccanti,matched
+4871,Thuram,Thuram,A,Inter,Inter,Top / prima fascia,,Alternative più pulite ai due super-top; monitorare rigori e turnover.,,,,,§6 Attaccanti,matched
+5951,Kolo Muani,Kolo Muani,A,Juventus,Juventus,Semi-top,,,,,Tiratore di piazzati; gerarchia aperta o discordante.,,§6 Attaccanti | §7 Rigoristi e piazzati,matched
+6752,Woltemade,Woltemade,A,Juventus,Juventus,Rotazioni di qualità,,Minuti e gerarchie da verificare; alcune coppie hanno costo complessivo rischioso.,,,Tiratore di piazzati; gerarchia aperta o discordante.,,§6 Attaccanti | §7 Rigoristi e piazzati,matched
+2038,Pinamonti,Pinamonti,A,Lazio,Lazio,Fascia media titolare,,,,,Tiratore di piazzati; gerarchia aperta o discordante.,,§6 Attaccanti | §7 Rigoristi e piazzati,matched
+5029,Geubbels,Geubbels,A,Lecce,Lecce,Low cost / ultimo slot,,"Profilo da prezzo minimo o quasi, non sostituto di un titolare.",,,Rigorista indicato.,,§6 Attaccanti | §7 Rigoristi e piazzati,matched
+6519,Camarda,Camarda,A,Milan,Milan,Low cost / ultimo slot,,"Profilo da prezzo minimo o quasi, non sostituto di un titolare.",,,,,§6 Attaccanti,matched
+6397,Gonçalo Ramos,Ramos G.,A,Milan,Milan,Top / prima fascia,,Alternative più pulite ai due super-top; monitorare rigori e turnover.,,,,,§6 Attaccanti,matched
+6052,Hojlund,Hojlund,A,Napoli,Napoli,Top / prima fascia,,Alternative più pulite ai due super-top; monitorare rigori e turnover.,,,,,§6 Attaccanti,matched
+6229,El Bilal Touré,Tourè E.,A,Parma,Parma,Low cost / ultimo slot,,"Profilo da prezzo minimo o quasi, non sostituto di un titolare.",,,Candidato ai rigori; Tiratore di piazzati; gerarchia aperta o discordante.,,§6 Attaccanti | §7 Rigoristi e piazzati,matched
+7561,Lontani,Lontani,A,Parma,Parma,Low cost / ultimo slot,,"Profilo da prezzo minimo o quasi, non sostituto di un titolare.",,,,,§6 Attaccanti,matched
+6572,Castro,Castro S.,A,Roma,Roma,Rotazioni di qualità,,Minuti e gerarchie da verificare; alcune coppie hanno costo complessivo rischioso.,,,,,§6 Attaccanti,matched
+309,Dybala,Dybala,A,Roma,Roma,Semi-top,,,,Storico fisico da prezzare.,Rigorista indicato; punizioni/corner indicati.,,§6 Attaccanti | §7 Rigoristi e piazzati | §8 Infortuni e altri rischi,matched
+5585,Malen,Malen,A,Roma,Roma,Super-top,,"Malen (Roma) ha possibile quota rigori, Lautaro (Inter) non è il primo rigorista.",,,Rigorista indicato.,,§6 Attaccanti | §7 Rigoristi e piazzati,matched
+5734,Soulé,Soulè,A,Roma,Roma,Rotazioni di qualità,,Minuti e gerarchie da verificare; alcune coppie hanno costo complessivo rischioso.,,,punizioni/corner indicati.,,§6 Attaccanti | §7 Rigoristi e piazzati,matched
+531,Berardi,Berardi,A,Sassuolo,Sassuolo,Semi-top,,"Davis (Udinese) è primo rigorista Udinese, Berardi (Sassuolo) lo è del Sassuolo ma con lo storico fisico da scontare.",,Storico fisico da prezzare.,Rigorista indicato; punizioni/corner indicati.,,§6 Attaccanti | §7 Rigoristi e piazzati | §8 Infortuni e altri rischi,matched
+7347,Bowie,Bowie,A,Sassuolo,Sassuolo,Low cost / ultimo slot,,"Profilo da prezzo minimo o quasi, non sostituto di un titolare.",,,,,§6 Attaccanti,matched
+6060,Laurienté,Laurientè,A,Sassuolo,Sassuolo,Fascia media titolare,,,,,punizioni/corner indicati.,,§6 Attaccanti | §7 Rigoristi e piazzati,matched
+6646,Che Adams,Adams C.,A,Torino,Torino,Low cost / ultimo slot,,"Profilo da prezzo minimo o quasi, non sostituto di un titolare.",,,,,§6 Attaccanti,matched
+2061,Simeone,Simeone,A,Torino,Torino,Fascia media titolare,,Simeone (Torino) terzo del Torino per Fantamaster.,,,,,§6 Attaccanti,matched
+5637,Keinan Davis,Davis K.,A,Udinese,Udinese,Semi-top,,,,,,,§6 Attaccanti,matched
+7484,Akor,Adams A.,A,Venezia,Venezia,Low cost / ultimo slot,,"Profilo da prezzo minimo o quasi, non sostituto di un titolare.",,,,,§6 Attaccanti,matched

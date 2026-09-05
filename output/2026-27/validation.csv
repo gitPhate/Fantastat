@@ -1,0 +1,5 @@
+Ruolo,FoldValidi,MAE_Modello_Mediana,MAE_Baseline_Mediana,Spearman_Modello_Mediana,Spearman_Baseline_Mediana,Validazione
+P,5,36.5409,31.8147,0.6859,0.7321,NON_VALIDATO
+D,5,46.5344,45.2413,0.3754,0.4359,NON_VALIDATO
+C,5,39.9408,42.2022,0.5617,0.5454,VALIDATO
+A,5,55.1894,56.8597,0.4282,0.3665,VALIDATO

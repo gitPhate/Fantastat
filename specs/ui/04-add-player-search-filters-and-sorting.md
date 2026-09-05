@@ -4,7 +4,7 @@
 
 **Blocked by:** 02: Build the SQLite snapshot and initial player catalogue.
 
-**Status:** ready-for-agent
+**Status:** implemented
 
 - [ ] With no search or filters, the table shows the complete selected-season player universe.
 - [ ] Name search runs as the user types and performs case-insensitive substring matching without requiring wildcard characters.
@@ -16,4 +16,3 @@
 - [ ] Every displayed column supports deterministic sorting, including missing-value behavior.
 - [ ] Search, filtering, and sorting operate entirely from data already loaded into the local page.
 - [ ] Automated tests cover matching precedence, case handling, combined filters, missing enrichment, empty results, and deterministic sorting.
-

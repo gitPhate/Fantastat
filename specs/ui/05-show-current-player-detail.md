@@ -4,7 +4,7 @@
 
 **Blocked by:** 02: Build the SQLite snapshot and initial player catalogue.
 
-**Status:** ready-for-agent
+**Status:** implemented
 
 - [ ] Selecting a catalogue player opens or updates a persistent right-hand detail panel without navigating away from the table.
 - [ ] The panel identifies the selected player by Fantacalcio ID and shows the selected season's quotation-list name, role, club, current quotation, and FVM.
@@ -14,4 +14,3 @@
 - [ ] Selecting another row replaces the detail content while preserving the current search, filters, sorting, and season.
 - [ ] The panel remains usable on the supported laptop and desktop layout; phone-specific behavior is not required.
 - [ ] Automated tests verify ID-based selection, field provenance, missing-data presentation, and preservation of catalogue state.
-

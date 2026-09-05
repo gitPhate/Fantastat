@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** implemented
 
 - [ ] A season is represented by `YYYY_YY` at command boundaries and by `YYYY-YY` in the generated-artifact directory name.
 - [ ] Ranking, validation, and unified-guide artifacts for the same auction season are written beneath that season's directory.
@@ -12,4 +12,3 @@
 - [ ] Unified-guide extraction accepts the target season instead of relying on hard-coded season-specific inputs or outputs.
 - [ ] Generating artifacts for a future valid season requires only the corresponding inputs, not source-code changes.
 - [ ] Existing ranking and guide tests are updated or extended to cover season-scoped output discovery and invalid season handling.
-
