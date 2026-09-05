@@ -6,8 +6,9 @@ Realizzare in Python un modello statistico semplice, trasparente e riutilizzabil
 che ordini i calciatori disponibili per una stagione di Fantacalcio Classic.
 
 Per la stagione iniziale il modello deve considerare esclusivamente i calciatori
-presenti nel foglio `Tutti` di
-`data/player_lists/Quotazioni_Fantacalcio_Stagione_2026_27.xlsx` e deve produrre
+presenti in
+`data/player_lists/Quotazioni_Fantacalcio_Stagione_2026_27.csv` (estratto dal
+foglio `Tutti` del listone Excel corrispondente) e deve produrre
 quattro classifiche indipendenti: portieri (`P`), difensori (`D`),
 centrocampisti (`C`) e attaccanti (`A`). Le quattro classifiche condividono una
 sola colonna `Rank`, che riparte da 1 per ogni ruolo.
@@ -82,8 +83,7 @@ ottimizzazione iterativa sui risultati del backtest.
 
 Per una stagione obiettivo `YYYY_YY`, usare:
 
-- il foglio `Tutti` di
-  `data/player_lists/Quotazioni_Fantacalcio_Stagione_YYYY_YY.xlsx` come universo
+- `data/player_lists/Quotazioni_Fantacalcio_Stagione_YYYY_YY.csv` come universo
   dei calciatori da classificare;
 - le statistiche delle cinque stagioni immediatamente precedenti per generare
   il ranking;
@@ -92,11 +92,14 @@ Per una stagione obiettivo `YYYY_YY`, usare:
   obbligatori descritti nella sezione 10.
 
 I file statistici seguono il nome
-`data/stats/Statistiche_Fantacalcio_Stagione_YYYY_YY.xlsx`. I listoni storici
+`data/stats/Statistiche_Fantacalcio_Stagione_YYYY_YY.csv`. I listoni storici
 seguono lo stesso schema del listone corrente sotto `data/player_lists/`.
 
-Leggere esclusivamente il foglio `Tutti`. Nei file Excel la prima riga contiene
-il titolo e la seconda le intestazioni effettive (`header=1` con `pandas`).
+Ogni CSV e' estratto dal foglio `Tutti` del workbook Excel corrispondente
+tramite `src/convert_workbooks.py` (che legge il foglio con la prima riga di
+titolo e la seconda di intestazioni effettive, `header=1` con `pandas`, ed
+esclude quindi il foglio `Ceduti`) e ha le intestazioni effettive sulla prima
+riga. `ranking.py` legge esclusivamente questi CSV.
 
 Le sole colonne necessarie sono:
 
@@ -378,7 +381,9 @@ Usare soltanto:
 Non aggiungere `scikit-learn`, SciPy o framework di machine learning. Il punto
 di ingresso deve essere `src/run_ranking.py`. La logica puo' essere separata in
 un piccolo modulo testabile, ma non deve essere suddivisa in livelli o
-astrazioni che non servono al calcolo descritto.
+astrazioni che non servono al calcolo descritto. `openpyxl` serve soltanto a
+`src/convert_workbooks.py` per estrarre i CSV dai workbook Excel; `ranking.py`
+legge solo CSV con `pandas`.
 
 ## 13. Test automatici minimi
 

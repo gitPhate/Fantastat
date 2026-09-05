@@ -133,20 +133,20 @@ def effective_appearances(appearances: float) -> float:
 
 
 def player_list_path(root: Path, season: str) -> Path:
-    return root / "data" / "player_lists" / f"Quotazioni_Fantacalcio_Stagione_{season}.xlsx"
+    return root / "data" / "player_lists" / f"Quotazioni_Fantacalcio_Stagione_{season}.csv"
 
 
 def stats_path(root: Path, season: str) -> Path:
-    return root / "data" / "stats" / f"Statistiche_Fantacalcio_Stagione_{season}.xlsx"
+    return root / "data" / "stats" / f"Statistiche_Fantacalcio_Stagione_{season}.csv"
 
 
-def _read_excel(path: Path, season: str, columns: list[str], kind: str) -> pd.DataFrame:
+def _read_csv(path: Path, season: str, columns: list[str], kind: str) -> pd.DataFrame:
     if not path.is_file():
         raise RankingError(f"File {kind} mancante per stagione {season}: {path}")
     try:
-        data = pd.read_excel(path, sheet_name="Tutti", header=1)
-    except ValueError as exc:
-        raise RankingError(f"Foglio Tutti mancante o non leggibile in {path} (stagione {season})") from exc
+        data = pd.read_csv(path)
+    except (pd.errors.ParserError, pd.errors.EmptyDataError) as exc:
+        raise RankingError(f"File {kind} non leggibile in {path} (stagione {season})") from exc
     missing = [column for column in columns if column not in data.columns]
     if missing:
         raise RankingError(f"Colonne mancanti in {path} (stagione {season}): {', '.join(missing)}")
@@ -158,7 +158,7 @@ def _read_excel(path: Path, season: str, columns: list[str], kind: str) -> pd.Da
 
 def read_player_list(root: Path, season: str, descriptive: bool = False) -> pd.DataFrame:
     columns = ["Id", "R"] + (["Nome", "Squadra"] if descriptive else [])
-    data = _read_excel(player_list_path(root, season), season, columns, "listone")
+    data = _read_csv(player_list_path(root, season), season, columns, "listone")
     invalid = ~data["R"].isin(ROLES)
     if invalid.any():
         raise RankingError(f"Ruolo non valido in {player_list_path(root, season)} (stagione {season})")
@@ -167,7 +167,7 @@ def read_player_list(root: Path, season: str, descriptive: bool = False) -> pd.D
 
 def read_stats(root: Path, season: str) -> pd.DataFrame:
     path = stats_path(root, season)
-    data = _read_excel(path, season, ["Id", "Pv", "Fm"], "statistiche")
+    data = _read_csv(path, season, ["Id", "Pv", "Fm"], "statistiche")
     pv = pd.to_numeric(data["Pv"], errors="coerce")
     if pv.isna().any() or (pv < 0).any() or (pv > 38).any():
         raise RankingError(f"Pv non valido in {path} (stagione {season})")
