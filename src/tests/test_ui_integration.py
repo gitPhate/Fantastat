@@ -247,6 +247,19 @@ class OfflineAuctionUiTests(unittest.TestCase):
         row = self.page.locator('tr[data-id="900001"]')
         self.assertEqual("210", row.locator("td").nth(5).inner_text())
 
+    def test_catalogue_puts_missing_expected_points_after_numeric_values(self) -> None:
+        self.page.locator("#season").select_option("2025")
+        self.page.wait_for_selector('tr[data-id="900001"]')
+        expected_points = self.page.locator('th[data-key="expected_points"]')
+        rows = self.page.locator("#players tr")
+        self.assertEqual("Test Rossi", rows.nth(0).locator("td").nth(0).inner_text())
+        self.assertEqual("Test Ranking Only", rows.nth(1).locator("td").nth(0).inner_text())
+        self.assertEqual("—", rows.nth(2).locator("td").nth(5).inner_text())
+        expected_points.click()
+        self.assertEqual("Test Ranking Only", rows.nth(0).locator("td").nth(0).inner_text())
+        self.assertEqual("Test Rossi", rows.nth(1).locator("td").nth(0).inner_text())
+        self.assertEqual("—", rows.nth(2).locator("td").nth(5).inner_text())
+
     def test_search_filters_and_sorting_use_loaded_catalogue(self) -> None:
         self.page.locator("#search").fill("adams")
         self.assertEqual({"Adams C.", "Adams A."}, set(self._names()))

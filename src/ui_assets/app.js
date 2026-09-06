@@ -15,6 +15,7 @@ function filtered() {
   return state.players.filter(p => (!needle || p.name.toLocaleLowerCase().includes(needle)) && (!role || p.role===role) && (!club || p.club===club) && (!tier || (tier === "__missing__" ? missing(p.tier) : p.tier===tier))).sort((a,b) => {
     const match=score(a)-score(b); if (needle && match) return match;
     const av=a[state.sort], bv=b[state.sort]; let result;
+    if (state.sort === "expected_points" && missing(av) !== missing(bv)) return missing(av) ? 1 : -1;
     if (missing(av) !== missing(bv)) result=missing(av)?1:-1;
     else if (typeof av === "number" && typeof bv === "number") result=av-bv;
     else result=String(av??"").localeCompare(String(bv??""), "it", {sensitivity:"base"});
