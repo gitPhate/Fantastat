@@ -17,9 +17,10 @@ from ranking import ROLES, RankingError, season_name
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 ARTIFACT_SEASON_RE = re.compile(r"^(\d{4})-(\d{2})$")
 QUOTE_COLUMNS = ("Id", "R", "Nome", "Squadra", "Qt.A", "FVM")
+ONLINE_PLAYER_COLUMNS = ("starting_index", "age")
 RANKING_COLUMNS = ("Id", "Rank", "PresenzePreviste", "FantamediaPrevista", "PuntiAttesi", "Validazione")
 GUIDE_COLUMNS = ("id", "fascia", "funzione", "note", "infortuni", "status_rischi", "rigori_piazzati", "gerarchia_pacchetto")
 INJURY_COLUMNS = ("Id", "Player", "Club", "Role", "ExpectedReturn")
@@ -69,6 +70,14 @@ def _read(path: Path, season: str, columns: tuple[str, ...], kind: str, require_
 
 def _optional_read(path: Path, season: str, columns: tuple[str, ...], kind: str) -> pd.DataFrame | None:
     return None if not path.exists() else _read(path, season, columns, kind, require_ids=kind != "guida")
+
+
+def _player_list_paths(root: Path, season: str) -> tuple[Path, Path]:
+    """Return the authoritative list and its optional Online-enriched copy."""
+    official = root / "data" / "player_lists" / "fantacalcio" / f"Quotazioni_Fantacalcio_Stagione_{season}.csv"
+    start, end = season.split("_")
+    enriched = root / "output" / f"{start}-{end}" / f"Quotazioni_Fantacalcio_Stagione_{season}.csv"
+    return official, enriched
 
 
 def _value(value: Any) -> Any:
@@ -125,6 +134,7 @@ def _create_schema(connection: sqlite3.Connection) -> None:
         CREATE TABLE players (
             season_start INTEGER NOT NULL, player_id INTEGER NOT NULL, name TEXT NOT NULL,
             role TEXT NOT NULL, club TEXT NOT NULL, quotation REAL, fvm REAL,
+            starting_index REAL, age REAL,
             PRIMARY KEY (season_start, player_id)
         );
         CREATE TABLE rankings (
@@ -178,13 +188,17 @@ def build_snapshot(root: Path = ROOT, database: Path | None = None) -> Path:
             for start in seasons:
                 season = season_name(start)
                 artifact = root / "output" / f"{start}-{(start + 1) % 100:02d}"
-                quotes = _read(root / "data" / "player_lists" / f"Quotazioni_Fantacalcio_Stagione_{season}.csv", season, QUOTE_COLUMNS, "listone")
+                official_path, enriched_path = _player_list_paths(root, season)
+                quotes = _read(official_path, season, QUOTE_COLUMNS, "listone")
+                source_quotes = pd.read_csv(enriched_path) if enriched_path.is_file() else pd.DataFrame()
+                for column in ONLINE_PLAYER_COLUMNS:
+                    quotes[column] = source_quotes[column] if column in source_quotes.columns else pd.NA
                 if (~quotes["R"].isin(ROLES)).any():
                     raise SnapshotError(f"Stagione {season}: ruolo non valido nel listone")
                 connection.execute("INSERT INTO seasons VALUES (?, ?)", (start, display_label(start)))
                 players = quotes.rename(columns={"Id": "player_id", "Nome": "name", "R": "role", "Squadra": "club", "Qt.A": "quotation", "FVM": "fvm"})
                 players.insert(0, "season_start", start)
-                _insert_frame(connection, "players", ("season_start", "player_id", "name", "role", "club", "quotation", "fvm"), players)
+                _insert_frame(connection, "players", ("season_start", "player_id", "name", "role", "club", "quotation", "fvm", "starting_index", "age"), players)
 
                 ranking = _optional_read(artifact / "ranking.csv", season, RANKING_COLUMNS, "ranking")
                 if ranking is not None:

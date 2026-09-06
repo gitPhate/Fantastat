@@ -1,6 +1,8 @@
 # Quotazioni giocatori — Legenda
 
-File dati in questa cartella: `Quotazioni_Fantacalcio_Stagione_20XX_YY.xlsx` (stagioni 2022/23, 2023/24, 2024/25, 2025/26, 2026/27). Export standard di Fantacalcio.it — la quotazione di listino usata come base per l'asta (non il prezzo realmente pagato: per quello vedi [STORICO_ASTE.md](../../docs/STORICO_ASTE.md)).
+Questa cartella contiene i workbook e i CSV estratti dal foglio **Tutti** del
+listone ufficiale Fantacalcio.it. Questi CSV definiscono l'universo Classic e
+sono l'unico input dei calcoli di ranking.
 
 Ogni file contiene un solo foglio, **Tutti**, con una riga per giocatore (i fogli separati per ruolo — Portieri/Difensori/Centrocampisti/Attaccanti — e il foglio **Ceduti** sono stati rimossi perché ridondanti/fuori scope).
 

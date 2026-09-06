@@ -5,7 +5,7 @@ import unittest
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from ranking import artifact_directory, effective_appearances, predict, rank_players, season_name, season_start  # noqa: E402
+from ranking import artifact_directory, effective_appearances, player_list_path, predict, rank_players, season_name, season_start  # noqa: E402
 
 
 class RankingCalculationTests(unittest.TestCase):
@@ -57,6 +57,12 @@ class RankingCalculationTests(unittest.TestCase):
     def test_future_season_is_derived_without_hard_coding(self):
         self.assertEqual(2027, season_start("2027_28"))
         self.assertEqual("2027_28", season_name(2027))
+
+    def test_player_lists_are_read_from_the_official_source_directory(self):
+        self.assertEqual(
+            Path("data/player_lists/fantacalcio/Quotazioni_Fantacalcio_Stagione_2027_28.csv"),
+            player_list_path(Path("."), "2027_28"),
+        )
 
     def test_artifacts_are_scoped_by_hyphenated_season_directory(self):
         self.assertEqual(Path("output/2027-28"), artifact_directory(Path("."), "2027_28"))

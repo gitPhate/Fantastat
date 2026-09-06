@@ -20,13 +20,15 @@ class SnapshotAndUiTests(unittest.TestCase):
     def test_snapshot_keeps_players_without_optional_enrichment_and_history(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            quotes = root / "data" / "player_lists"
+            quotes = root / "data" / "player_lists" / "fantacalcio"
             stats = root / "data" / "stats"
             artifact = root / "output" / "2026-27"
             quotes.mkdir(parents=True)
             stats.mkdir(parents=True)
             artifact.mkdir(parents=True)
-            pd.DataFrame({"Id": [1, 2], "R": ["P", "D"], "Nome": ["Rossi", "Bianchi"], "Squadra": ["Roma", "Inter"], "Qt.A": [10, 5], "FVM": [20, 10]}).to_csv(quotes / "Quotazioni_Fantacalcio_Stagione_2026_27.csv", index=False)
+            player_list = {"Id": [1, 2], "R": ["P", "D"], "Nome": ["Rossi", "Bianchi"], "Squadra": ["Roma", "Inter"], "Qt.A": [10, 5], "FVM": [20, 10]}
+            pd.DataFrame(player_list).to_csv(quotes / "Quotazioni_Fantacalcio_Stagione_2026_27.csv", index=False)
+            pd.DataFrame({**player_list, "starting_index": [80, 60], "age": [24, 28]}).to_csv(artifact / "Quotazioni_Fantacalcio_Stagione_2026_27.csv", index=False)
             pd.DataFrame({"Id": [1], "Rank": [1], "PresenzePreviste": [30], "FantamediaPrevista": [6.2], "PuntiAttesi": [186], "Validazione": ["VALIDATO"]}).to_csv(artifact / "ranking.csv", index=False)
             pd.DataFrame({"id": [1], "fascia": ["Top"], "funzione": ["Titolare"], "note": ["nota"], "infortuni": [""], "status_rischi": [""], "rigori_piazzati": [""], "gerarchia_pacchetto": [""]}).to_csv(artifact / "giocatori_guida_unificata_asta.csv", index=False)
             pd.DataFrame({"Id": [1], "R": ["P"], "Nome": ["Vecchio Rossi"], "Squadra": ["Milan"], "Pv": [0], "Fm": [None]}).to_csv(stats / "Statistiche_Fantacalcio_Stagione_2025_26.csv", index=False)
@@ -37,6 +39,8 @@ class SnapshotAndUiTests(unittest.TestCase):
             self.assertIsNone(next(player for player in players if player["id"] == 2)["rank"])
             detail = player_detail(database, 2026, 1)
             self.assertEqual("Rossi", detail["player"]["name"])
+            self.assertEqual(80, detail["player"]["starting_index"])
+            self.assertEqual(24, detail["player"]["age"])
             self.assertEqual("Milan", detail["history"][0]["club"])
             self.assertEqual(0.0, detail["history"][0]["appearances"])
             self.assertEqual("2025/26", detail["history"][0]["label"])
@@ -44,7 +48,7 @@ class SnapshotAndUiTests(unittest.TestCase):
     def test_catalogue_includes_injury_information(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            quotes = root / "data" / "player_lists"
+            quotes = root / "data" / "player_lists" / "fantacalcio"
             artifact = root / "output" / "2026-27"
             quotes.mkdir(parents=True)
             artifact.mkdir(parents=True)

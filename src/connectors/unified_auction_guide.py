@@ -298,6 +298,7 @@ def extract_players(
         root
         / "data"
         / "player_lists"
+        / "fantacalcio"
         / f"Quotazioni_Fantacalcio_Stagione_{season}.csv"
     )
     try:

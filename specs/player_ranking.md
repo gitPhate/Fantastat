@@ -7,8 +7,8 @@ che ordini i calciatori disponibili per una stagione di Fantacalcio Classic.
 
 Per la stagione iniziale il modello deve considerare esclusivamente i calciatori
 presenti in
-`data/player_lists/Quotazioni_Fantacalcio_Stagione_2026_27.csv` (estratto dal
-foglio `Tutti` del listone Excel corrispondente) e deve produrre
+`data/player_lists/fantacalcio/Quotazioni_Fantacalcio_Stagione_2026_27.csv`
+(listone ufficiale) e deve produrre
 quattro classifiche indipendenti: portieri (`P`), difensori (`D`),
 centrocampisti (`C`) e attaccanti (`A`). Le quattro classifiche condividono una
 sola colonna `Rank`, che riparte da 1 per ogni ruolo.
@@ -38,7 +38,7 @@ Il modello non deve usare:
 - prezzi delle aste storiche;
 - squadra attuale come variabile predittiva;
 - forza della squadra, allenatore o trasferimenti;
-- eta', infortuni, probabili formazioni o fonti esterne;
+- eta', indice di titolarita', infortuni, probabili formazioni o fonti esterne;
 - foglio `Ceduti` dei listoni;
 - confronti fuzzy sul nome del calciatore.
 
@@ -83,7 +83,7 @@ ottimizzazione iterativa sui risultati del backtest.
 
 Per una stagione obiettivo `YYYY_YY`, usare:
 
-- `data/player_lists/Quotazioni_Fantacalcio_Stagione_YYYY_YY.csv` come universo
+- `data/player_lists/fantacalcio/Quotazioni_Fantacalcio_Stagione_YYYY_YY.csv` come universo
   dei calciatori da classificare;
 - le statistiche delle cinque stagioni immediatamente precedenti per generare
   il ranking;
@@ -93,13 +93,12 @@ Per una stagione obiettivo `YYYY_YY`, usare:
 
 I file statistici seguono il nome
 `data/stats/Statistiche_Fantacalcio_Stagione_YYYY_YY.csv`. I listoni storici
-seguono lo stesso schema del listone corrente sotto `data/player_lists/`.
+seguono lo stesso schema del listone corrente sotto `data/player_lists/fantacalcio/`.
 
-Ogni CSV e' estratto dal foglio `Tutti` del workbook Excel corrispondente
-tramite `src/convert_workbooks.py` (che legge il foglio con la prima riga di
-titolo e la seconda di intestazioni effettive, `header=1` con `pandas`, ed
-esclude quindi il foglio `Ceduti`) e ha le intestazioni effettive sulla prima
-riga. `ranking.py` legge esclusivamente questi CSV.
+`src/convert_workbooks.py` estrae il foglio `Tutti` ufficiale. Quando il CSV
+Fantacalcio Online e la relativa mappa esplicita basata su `Id` sono
+disponibili, produce anche un CSV arricchito con `starting_index` e `age` per
+la UI. `ranking.py` legge esclusivamente il CSV ufficiale.
 
 Le sole colonne necessarie sono:
 

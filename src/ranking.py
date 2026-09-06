@@ -139,7 +139,7 @@ def effective_appearances(appearances: float) -> float:
 
 
 def player_list_path(root: Path, season: str) -> Path:
-    return root / "data" / "player_lists" / f"Quotazioni_Fantacalcio_Stagione_{season}.csv"
+    return root / "data" / "player_lists" / "fantacalcio" / f"Quotazioni_Fantacalcio_Stagione_{season}.csv"
 
 
 def stats_path(root: Path, season: str) -> Path:

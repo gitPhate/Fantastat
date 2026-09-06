@@ -7,7 +7,7 @@ directory name under `output/`.
 
 ## Checklist
 
-1. Download the new Fantacalcio.it workbooks and convert them to CSV.
+1. Download the Fantacalcio.it and Fantacalcio Online player lists and convert them to CSV.
 2. Optionally update the auction-guide source material and regenerate `docs/GUIDA_ASTA.md`.
 3. Create the season research folder and collect current-season source material.
 4. Aggregate the research into a unified guide and standardized player records in `output/<season>/guida_unificata_asta.md`.
@@ -21,7 +21,7 @@ The order matters: the player list and guide CSV must exist before the snapshot
 is built, the injury CSV must be available before the snapshot build, and the
 historical statistics must exist before ranking generation.
 
-## 1. Download and convert the Fantacalcio.it workbooks
+## 1. Download, convert, and merge player lists
 
 Go to Fantacalcio.it and download:
 
@@ -30,11 +30,29 @@ Go to Fantacalcio.it and download:
 - the quotation/player-list workbook for the auction season being prepared,
   for example `Quotazioni_Fantacalcio_Stagione_2027_28.xlsx`.
 
-Put the workbooks in `data/stats/` and `data/player_lists/`, respectively.
-Preserve the `YYYY_YY` naming convention. The workbook must contain the
-`Tutti` sheet; the converter reads that sheet with its effective headers on
-row two. The ranking uses Classic fields and identifies players by
-Fantacalcio.it `Id`, not by fuzzy name matching.
+Put the statistics workbook in `data/stats/` and the quotation workbook in
+`data/player_lists/fantacalcio/`. Preserve the
+`Quotazioni_Fantacalcio_Stagione_YYYY_YY.xlsx` name. The official workbook
+must contain the `Tutti` sheet; the converter reads its effective headers on
+row two.
+
+For every newly prepared auction season, download the corresponding Fantacalcio Online workbook and rename it to the
+same season form, for example
+`Quotazioni_Fantacalcio_Stagione_2027_28.xlsx`. Put it in
+`data/player_lists/fantacalcio-online/`. Its effective headers must be on row
+two and include `Nome`, `Ruolo Fantacalcio.it`, `Squadra`, `IS %`, and `ETA'`.
+
+The Online source has no Fantacalcio ID and uses a different name format. For
+each new season, create
+`data/player_lists/fantacalcio-online/Collegamenti_Fantacalcio_Online_Stagione_YYYY_YY.csv`
+with exactly these columns:
+
+```csv
+Id,NomeOnline,SquadraOnline
+```
+
+It must link every official player ID exactly once to the extracted Online name
+and club. This is an explicit reviewed identity map, not a fuzzy name match.
 
 Run the converter from the repository root:
 
@@ -42,11 +60,18 @@ Run the converter from the repository root:
 python src/convert_workbooks.py
 ```
 
-This writes a CSV beside every workbook. Check that the new files exist and
-that their headers match [the player-list legend](../data/player_lists/LEGEND.md)
-and [the statistics legend](../data/stats/LEGEND.md). Do not manually edit the
-generated CSVs; fix the workbook or the conversion inputs and rerun the
-converter if necessary.
+This writes CSVs beside every workbook. The official CSV under
+`data/player_lists/fantacalcio/` is always the ranking input. For each new
+season, the required Online CSV and its reviewed links also produce the
+generated enriched CSV `output/YYYY-YY/Quotazioni_Fantacalcio_Stagione_YYYY_YY.csv`, retaining
+every official `Tutti`-sheet column and adding `starting_index` (the Online
+`IS %`, Indice di titolarità) and `age` (the Online `ETA'`). Historical seasons
+without Online data continue to use their official lists; the two UI fields are
+unavailable for those seasons. Check the headers against the
+[Fantacalcio legend](../data/player_lists/fantacalcio/LEGEND.md), the
+[Fantacalcio Online legend](../data/player_lists/fantacalcio-online/LEGEND.md),
+and [the statistics legend](../data/stats/LEGEND.md). Do not edit generated
+CSVs; correct the workbook or reviewed link map and rerun the converter.
 
 ## 2. Update the general auction guide (optional)
 
@@ -306,7 +331,7 @@ output/<season>/infortuni_fantacalcio.csv
 ```
 
 Bind each player to the `Id` in the current season's quotation CSV
-(`data/player_lists/Quotazioni_Fantacalcio_Stagione_<season>.csv`). Do not use
+(`data/player_lists/fantacalcio/Quotazioni_Fantacalcio_Stagione_<season>.csv`). Do not use
 fuzzy name matching or invent IDs. The CSV must contain `Id`, `Player`,
 `Club`, `Role`, and `ExpectedReturn`; use `To be assessed` when no return
 estimate is available. During the snapshot build, `build_snapshot.py` imports

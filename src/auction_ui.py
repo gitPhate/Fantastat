@@ -71,6 +71,7 @@ def catalogue(database: Path, season_start: int) -> list[dict[str, object]]:
             raise SnapshotUnavailable("Stagione non presente nello snapshot. Scegli una stagione dal selettore.")
         return _rows(connection, """
             SELECT p.player_id AS id, p.name, p.role, p.club, p.quotation, p.fvm,
+                   p.starting_index, p.age,
                    r.rank, r.predicted_appearances, r.predicted_fantasy_average,
                    r.expected_points, r.validation_status, g.tier, g.injuries
             FROM players p
@@ -125,6 +126,7 @@ def player_detail(database: Path, season_start: int, player_id: int) -> dict[str
     try:
         current = _rows(connection, """
             SELECT p.player_id AS id, p.name, p.role, p.club, p.quotation, p.fvm,
+              p.starting_index, p.age,
               r.rank, r.predicted_appearances, r.predicted_fantasy_average, r.expected_points,
               r.validation_status, g.tier, g.function, g.notes, g.injuries, g.risks,
               g.set_pieces, g.hierarchy

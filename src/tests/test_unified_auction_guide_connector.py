@@ -47,7 +47,7 @@ class UnifiedAuctionGuideConnectorTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temporary = tempfile.TemporaryDirectory()
         self.root = Path(self.temporary.name)
-        (self.root / "data" / "player_lists").mkdir(parents=True)
+        (self.root / "data" / "player_lists" / "fantacalcio").mkdir(parents=True)
         (self.root / "output" / "2027-28").mkdir(parents=True)
 
     def tearDown(self) -> None:
@@ -58,6 +58,7 @@ class UnifiedAuctionGuideConnectorTests(unittest.TestCase):
             self.root
             / "data"
             / "player_lists"
+            / "fantacalcio"
             / "Quotazioni_Fantacalcio_Stagione_2027_28.csv",
             index=False,
         )

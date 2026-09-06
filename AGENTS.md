@@ -10,7 +10,7 @@ The ranking is a quantitative signal, not a complete auction recommendation. It 
 
 ## Repository Data
 
-- `data/player_lists/` contains Fantacalcio.it Excel player lists and auction quotazioni by season, plus a CSV extracted from each workbook's `Tutti` sheet (via `src/convert_workbooks.py`); the ranking code reads only the CSV. The `Tutti` sheet/CSV is the player universe; `Ceduti` and Mantra-only fields are not part of the Classic ranking universe.
+- `data/player_lists/fantacalcio/` contains official Fantacalcio.it quotation workbooks and extracted CSVs; these are the ranking inputs and define the Classic player universe. `data/player_lists/fantacalcio-online/` contains the required Online workbooks, extracted CSVs, and reviewed ID-link CSVs for new auction seasons. The converter writes the enriched player-list CSV under that season's `output/YYYY-YY/`; Online `starting_index` and `age` are UI evidence only. Historical seasons without Online data remain supported by their official lists.
 - `data/stats/` contains Fantacalcio.it historical statistics workbooks, plus a CSV extracted from each workbook's `Tutti` sheet (via `src/convert_workbooks.py`); the ranking code reads only the CSV. The `Tutti` sheet/CSV provides player IDs, roles, appearances (`Pv`), fantasy average (`Fm`), and related performance fields. `data/stats/LEGEND.md` defines the columns.
 - `data/seasons/` contains season-specific research gathered from football and Fantacalcio sources: likely lineups, injuries, set-piece takers, goalkeeper hierarchies, low-cost ideas, transfers, and auction notes. Use it as human decision support, not as an automatic ranking input unless the relevant spec is changed.
 - `data/auction_guide/` and `docs/` contain the league context, rules, auction strategy, and historical reconstruction. `docs/RULES.md` is the current league-rule reference; market and roster rules are reconsidered each season and should be verified before relying on them.
@@ -23,7 +23,7 @@ Historical auction records are incomplete and partly reconstructed from photogra
 
 Use `specs/` as the behavioral source of truth for ranking behavior, formulas, validation, input requirements, and output schemas. Use `docs/` for league rules and domain context, and the data legends for workbook schemas. Before changing behavior, check whether the requested change belongs in the specification, configuration, documentation, or implementation.
 
-When adding a new season, preserve the `YYYY_YY` naming convention, verify the corresponding player-list and statistics workbooks, and run `python src/convert_workbooks.py` to (re)generate their CSVs before running the ranking. Do not silently fill gaps or reinterpret uncertain source data. Keep raw league and player data private.
+When adding a new season, preserve the `YYYY_YY` naming convention, verify the official, Online, and statistics workbooks, prepare the reviewed Online-to-Fantacalcio ID-link CSV, and run `python src/convert_workbooks.py` to (re)generate their CSVs before running the ranking. Historical seasons may use only their official lists. Do not silently fill gaps or reinterpret uncertain source data. Keep raw league and player data private.
 
 ## Code Structure
 
@@ -31,7 +31,7 @@ The code area is `src/`: `ranking.py` contains calculation, validation, and file
 
 Use standard Python conventions: four-space indentation, `snake_case` functions and variables, `PascalCase` classes, and uppercase module constants. Keep type hints on public and calculation-heavy functions, use `pathlib.Path` for paths, and prefer small deterministic functions suitable for unit testing. Preserve the explicit error style by raising `RankingError` with the affected file, season, and cause. No formatter or linter is configured; keep changes PEP 8-compatible and imports grouped as in existing modules.
 
-The implementation uses only the standard library, `pandas`, and `openpyxl`. There is no build step or dependency manifest. `ranking.py` reads plain CSV (headers on row one); `openpyxl` is only needed by `convert_workbooks.py`, which reads each workbook's `Tutti` sheet (effective headers on row two, `header=1`) and writes the CSV. Player identity is based on Fantacalcio.it `Id`, never on a fuzzy name match.
+The implementation uses only the standard library, `pandas`, and `openpyxl`. There is no build step or dependency manifest. `ranking.py` reads plain CSV (headers on row one); `convert_workbooks.py` reads official `Tutti` sheets and Online row-two headers, then merges them through reviewed Fantacalcio IDs. Player identity is based on Fantacalcio.it `Id`, never on a fuzzy name match.
 
 ## Testing and Verification
 
