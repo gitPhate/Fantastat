@@ -1,146 +1,188 @@
-﻿id,nome_guida,nome_listone,ruolo,squadra,squadra_guida,fascia,funzione,note,infortuni,status_rischi,rigori_piazzati,gerarchia_pacchetto,source_sections,match_status
-4431,Carnesecchi,Carnesecchi,P,Atalanta,Atalanta,Top,,Carnesecchi (Atalanta) per voto,,,,,§3 Portieri,matched
-4360,Caprile,Caprile,P,Cagliari,Cagliari,Low cost / alternanza,,Soltanto con titolarità confermata e un secondo titolare complementare.,,,,,§3 Portieri,matched
-6966,Butez,Butez,P,Como,Como,Top,,coprire Martinez (Inter) con Provedel (Inter) e Butez (Como) con Sanchez (Como).,,,,Butez-Sanchez: ballottaggio aperto; valutare come coppia.,§3 Portieri,matched
-2521,De Gea,De Gea,P,Fiorentina,Fiorentina,Fascia media,,,,,,,§3 Portieri,matched
-7332,Bijlow,Bijlow,P,Genoa,Genoa,Low cost / alternanza,,Soltanto con titolarità confermata e un secondo titolare complementare.,,,,,§3 Portieri,matched
-5116,Josep Martinez,Martinez Jo.,P,Inter,Inter,Top,,,,,,Josep Martinez-Provedel: valutare come coppia.,§3 Portieri,matched
-4964,Vicario,Vicario,P,Juventus,Juventus,Top,,,,,,,§3 Portieri,matched
-6482,Mandas,Mandas,P,Lazio,Lazio,Fascia media,,Meret (Napoli) è il miglior rapporto qualità-prezzo del ruolo: titolare confermato del Napoli a una frazione del costo dei top. Mandas (Lazio) va comprato in pacchetto con Motta (Lazio).,,,,Mandas-Motta: valutare come coppia.,§3 Portieri,matched
-2134,Falcone,Falcone,P,Lecce,Lecce,Fascia media,,,,,,,§3 Portieri,matched
-4312,Maignan,Maignan,P,Milan,Milan,Top,,,,,,,§3 Portieri,matched
-572,Meret,Meret,P,Napoli,Napoli,Fascia media,,Meret (Napoli) è il miglior rapporto qualità-prezzo del ruolo: titolare confermato del Napoli a una frazione del costo dei top. Mandas (Lazio) va comprato in pacchetto con Motta (Lazio).,,,,,§3 Portieri,matched
-6662,Corvi,Corvi,P,Parma,Parma,Low cost / alternanza,,Soltanto con titolarità confermata e un secondo titolare complementare.,,,,,§3 Portieri,matched
-5841,Svilar,Svilar,P,Roma,Roma,Super-top,,Prima scelta condivisa; accettare il prezzo premium solo entro il tetto del pacchetto.,,,,,§3 Portieri,matched
-4236,Muric,Muric,P,Sassuolo,Sassuolo,Low cost / alternanza,,Soltanto con titolarità confermata e un secondo titolare complementare.,,,,,§3 Portieri,matched
-6534,Perri,Perri,P,Torino,Torino,Low cost / alternanza,,Soltanto con titolarità confermata e un secondo titolare complementare.,,,,,§3 Portieri,matched
-6462,Okoye,Okoye,P,Udinese,Udinese,Fascia media,,,,,,,§3 Portieri,matched
-6248,Stankovic,Stankovic F.,P,Venezia,Venezia,Low cost / alternanza,,Soltanto con titolarità confermata e un secondo titolare complementare.,,,,,§3 Portieri,matched
-6485,Kristensen,Kristensen T.,D,Atalanta,Atalanta,Fascia media,Centrali da modificatore,Preferibili ai puri riempitivi se il prezzo resta medio-basso.,,,,,§4 Difensori,matched
-554,Zappacosta,Zappacosta,D,Atalanta,Atalanta,Fascia alta,Esterni da bonus,"Controllare modulo, concorrenza e coppe.",,,,,§4 Difensori,matched
-4734,Miranda,Miranda J.,D,Bologna,Bologna,Fascia media,Esterni da bonus,"Controllare modulo, concorrenza e coppe.",,,,,§4 Difensori,matched
-4210,Mina,Mina,D,Cagliari,Cagliari,Sopra ai low cost,Centrali da modificatore,Preferibili ai puri riempitivi se il prezzo resta medio-basso.,,,,,§4 Difensori,matched
-5641,Chalobah,Chalobah T.,D,Como,Como,Possibile sorpresa,Centrali da modificatore,Preferibili ai puri riempitivi se il prezzo resta medio-basso.,,,,,§4 Difensori,matched
-7414,Kaiki,Kaiki,D,Como,Como,Scommessa,Sorprese / low cost,Al massimo uno o due profili incerti nello stesso reparto.,,,,,§4 Difensori,matched
-6869,Ramon,Ramon,D,Como,Como,Sotto ai Semitop,Centrali da bonus + voto,"Centrali che segnano: uniscono voto da modificatore e minaccia sui piazzati. Non sono riempitivi. Ramon (Como) porta però molti malus, Ostigard (Genoa) cartellini.",,,,,§4 Difensori,matched
-6727,Yan Couto,Couto,D,Como,Como,Possibile sorpresa,Esterni da bonus,"Controllare modulo, concorrenza e coppe.",,,,,§4 Difensori,matched
-6531,Jimenez,Jimenez A.,D,Fiorentina,Fiorentina,Scommessa,Sorprese / low cost,Al massimo uno o due profili incerti nello stesso reparto.,,,,,§4 Difensori,matched
-7294,Valdepeñas,Valdepenas,D,Fiorentina,Como,Scommessa,Sorprese / low cost,Al massimo uno o due profili incerti nello stesso reparto.,,,,,§4 Difensori,matched
-5742,Drameh,Drameh,D,Genoa,Genoa,Sorpresa,Sorprese / low cost,Al massimo uno o due profili incerti nello stesso reparto.,,,,,§4 Difensori,matched
-7537,Mitaj,Mitaj,D,Genoa,Genoa,Scommessa,Sorprese / low cost,Al massimo uno o due profili incerti nello stesso reparto.,,,punizioni/corner indicati.,,§4 Difensori | §7 Rigoristi e piazzati,matched
-5750,Ostigard,Ostigard,D,Genoa,Genoa,Top,Centrali da bonus + voto,"Centrali che segnano: uniscono voto da modificatore e minaccia sui piazzati. Non sono riempitivi. Ramon (Como) porta però molti malus, Ostigard (Genoa) cartellini.",,,,,§4 Difensori,matched
-4159,Akanji,Akanji,D,Inter,Inter,Semitop,Top equilibrati,"Buon compromesso tra voto, titolarità e piazzati.",,,,,§4 Difensori,matched
-2120,Bastoni,Bastoni,D,Inter,Inter,Top,Top equilibrati,"Buon compromesso tra voto, titolarità e piazzati.",,,,,§4 Difensori,matched
-6217,Bisseck,Bisseck,D,Inter,Inter,Sotto ai Semitop,Centrali da bonus + voto,,,,,,§4 Difensori,matched
-254,Dimarco,Dimarco,D,Inter,Inter,Super Top,Premium bonus + voto,Dimarco (Inter) è il consenso assoluto,,,punizioni/corner indicati.,,§4 Difensori | §7 Rigoristi e piazzati,matched
-2788,Bremer,Bremer,D,Juventus,Juventus,Top,Premium bonus + voto,Bremer (Juventus) è forte per il modificatore ma va scontato per il rischio fisico.,,,,,§4 Difensori,matched
-5520,Cambiaso,Cambiaso,D,Juventus,Juventus,Jolly 1ª fascia,Esterni da bonus,"Controllare modulo, concorrenza e coppe.",,,Tiratore di piazzati; gerarchia aperta o discordante.,,§4 Difensori | §7 Rigoristi e piazzati,matched
-4657,Celik,Celik,D,Juventus,Juventus,Fascia alta,Esterni da bonus,"Controllare modulo, concorrenza e coppe.",,,,,§4 Difensori,matched
-4976,Kalulu,Kalulu,D,Juventus,Juventus,Semitop,Top equilibrati,"Buon compromesso tra voto, titolarità e piazzati.",,,,,§4 Difensori,matched
-6042,Lucumì,Lucumì,D,Juventus,Juventus,Fascia alta,Centrali da modificatore,Preferibili ai puri riempitivi se il prezzo resta medio-basso.,,,,,§4 Difensori,matched
-4817,Pedraza,Pedraza,D,Lazio,Lazio,Low cost,Sorprese / low cost,Al massimo uno o due profili incerti nello stesso reparto.,,,,,§4 Difensori,matched
-6989,Tiago Gabriel,Tiago Gabriel,D,Lecce,Lecce,Sopra ai low cost,Centrali da modificatore,Preferibili ai puri riempitivi se il prezzo resta medio-basso.,,,,,§4 Difensori,matched
-5833,Gila,Gila,D,Milan,Milan,Semitop,Centrali da modificatore,Preferibili ai puri riempitivi se il prezzo resta medio-basso.,,,,,§4 Difensori,matched
-5022,Pavlovic,Pavlovic,D,Milan,Milan,Top,Top equilibrati,"Buon compromesso tra voto, titolarità e piazzati.",,,,,§4 Difensori,matched
-2816,Di Lorenzo,Di Lorenzo,D,Napoli,Napoli,Semitop,Top equilibrati,"Buon compromesso tra voto, titolarità e piazzati.",,,,,§4 Difensori,matched
-4409,Rrahmani,Rrahmani,D,Napoli,Napoli,Semitop,Centrali da modificatore,Preferibili ai puri riempitivi se il prezzo resta medio-basso.,,,,,§4 Difensori,matched
-1852,Spinazzola,Spinazzola,D,Napoli,Napoli,Fascia alta,Esterni da bonus,"Controllare modulo, concorrenza e coppe.",,,,,§4 Difensori,matched
-7529,Koulierakis,Koulierakis,D,Roma,Roma,Possibile sorpresa,Sorprese / low cost,Al massimo uno o due profili incerti nello stesso reparto.,,,,,§4 Difensori,matched
-7599,Lulli,Lulli,D,Roma,Roma,Scommessa,Sorprese / low cost,Al massimo uno o due profili incerti nello stesso reparto.,,,,,§4 Difensori,matched
-2296,Mancini,Mancini,D,Roma,Roma,Semitop,Top equilibrati,"Buon compromesso tra voto, titolarità e piazzati.",,,,,§4 Difensori,matched
-4998,Molina,Molina N.,D,Roma,Roma,Top,Esterni da bonus,"Controllare modulo, concorrenza e coppe.",,,,,§4 Difensori,matched
-4317,Ndicka,N'Dicka,D,Roma,Roma,Sotto ai Semitop,Top equilibrati,"Buon compromesso tra voto, titolarità e piazzati.",,,,,§4 Difensori,matched
-6986,Rensch,Rensch,D,Roma,Roma,Scommessa,Sorprese / low cost,Al massimo uno o due profili incerti nello stesso reparto.,,,,,§4 Difensori,matched
-7181,Wesley,Wesley,D,Roma,Roma,Top,Premium bonus + voto,,,,,,§4 Difensori,matched
-6672,Idzes,Idzes,D,Sassuolo,Sassuolo,Non specificata,Centrali da modificatore,Preferibili ai puri riempitivi se il prezzo resta medio-basso.,,,,,§4 Difensori,matched
-7220,Belghali,Belghali,D,Torino,Torino,Fascia media,Esterni da bonus,"Controllare modulo, concorrenza e coppe.",,,,,§4 Difensori,matched
-6956,Solet,Solet,D,Udinese,Udinese,Top,Top equilibrati,"Buon compromesso tra voto, titolarità e piazzati.",,,Rigorista indicato.,,§4 Difensori | §7 Rigoristi e piazzati,matched
-4994,Vojvoda,Vojvoda,D,Udinese,Udinese,Possibile sorpresa,Sorprese / low cost,Al massimo uno o due profili incerti nello stesso reparto.,,,punizioni/corner indicati.,,§4 Difensori | §7 Rigoristi e piazzati,matched
-5792,Ederson,Ederson D.S.,C,Atalanta,Atalanta,Rapporto qualità-prezzo,,,,,,,§5 Centrocampisti,matched
-1850,Kessié,Kessiè,C,Atalanta,Atalanta,Semi-top,,Molti hanno rigori/piazzati o giocano avanzati; più variabilità dei top.,,,,,§5 Centrocampisti,matched
-6844,Rowe,Rowe,C,Atalanta,Atalanta,Upside / assist,,Da prendere solo se ruolo e minuti sono confermati.,,,,,§5 Centrocampisti,matched
-5119,Samardzic,Samardzic,C,Atalanta,Atalanta,Upside / assist,,Da prendere solo se ruolo e minuti sono confermati.,,,Candidato ai rigori; Tiratore di piazzati; gerarchia aperta o discordante.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
-184,Bernardeschi,Bernardeschi,C,Bologna,Bologna,Rapporto qualità-prezzo,,,,,Rigorista indicato; punizioni/corner indicati.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
-5858,Ferguson,Ferguson,C,Bologna,Bologna,Low cost da voto,,Servono a non dipendere da otto profili offensivi incerti.,,,,,§5 Centrocampisti,matched
-2167,Orsolini,Orsolini,C,Bologna,Bologna,Top,,Potenziale da doppia cifra o ruolo molto offensivo; scontare infortuni e minutaggio.,Stop/condizione con rientri più brevi,Piccolo sconto e controllo finale.,Rigorista indicato; punizioni/corner indicati.,,§5 Centrocampisti | §7 Rigoristi e piazzati | §8 Infortuni e altri rischi,matched
-6815,Fadera,Fadera,C,Cagliari,Cagliari,Scommesse finali,,"Uno o due nomi, con almeno cinque/sei voti affidabili già in rosa.",,,,,§5 Centrocampisti,matched
-6010,Fazzini,Fazzini,C,Cagliari,Cagliari,Low cost da voto,,Servono a non dipendere da otto profili offensivi incerti.,,,punizioni/corner indicati.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
-7311,Romano,Romano,C,Cagliari,Cagliari,Scommesse finali,,"Uno o due nomi, con almeno cinque/sei voti affidabili già in rosa.",,,,,§5 Centrocampisti,matched
-7126,Baturina,Baturina,C,Como,Como,Top,,Potenziale da doppia cifra o ruolo molto offensivo; scontare infortuni e minutaggio.,,,Tiratore di piazzati; gerarchia aperta o discordante.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
-5559,Da Cunha,Da Cunha,C,Como,Como,Rapporto qualità-prezzo,,,,,Tiratore di piazzati; gerarchia aperta o discordante.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
-6678,Liberali,Liberali,C,Como,Como,Scommesse finali,,"Uno o due nomi, con almeno cinque/sei voti affidabili già in rosa.",,,,,§5 Centrocampisti,matched
-6875,Nico Paz,Paz N.,C,Como,Como,Super-top,,Rigori e piazzati per il primo; bonus e punizioni per il secondo.,,,Tiratore di piazzati; gerarchia aperta o discordante.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
-6151,Perrone,Perrone,C,Como,Como,Rapporto qualità-prezzo,,,,,,,§5 Centrocampisti,matched
-6908,Atta,Atta,C,Fiorentina,Fiorentina,Semi-top,,Molti hanno rigori/piazzati o giocano avanzati; più variabilità dei top.,,,,,§5 Centrocampisti,matched
-7078,Mastantuono,Mastantuono,C,Fiorentina,Fiorentina,Semi-top,,Molti hanno rigori/piazzati o giocano avanzati; più variabilità dei top.,,,Candidato ai rigori; gerarchia aperta o discordante.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
-7464,Oulai,Oulai,C,Fiorentina,Fiorentina,Scommesse finali,,"Uno o due nomi, con almeno cinque/sei voti affidabili già in rosa.",,,,,§5 Centrocampisti,matched
-5791,Frendrup,Frendrup,C,Genoa,Genoa,Low cost da voto,,Servono a non dipendere da otto profili offensivi incerti.,,,,,§5 Centrocampisti,matched
-7409,Meichtry,Meichtry,C,Genoa,Genoa,Scommesse finali,,"Uno o due nomi, con almeno cinque/sei voti affidabili già in rosa.",,,,,§5 Centrocampisti,matched
-1870,Barella,Barella,C,Inter,Inter,Rapporto qualità-prezzo,,,,,,,§5 Centrocampisti,matched
-2194,Calhanoglu,Calhanoglu,C,Inter,Inter,Super-top,,Rigori e piazzati per il primo; bonus e punizioni per il secondo.,,,Rigorista indicato; punizioni/corner indicati.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
-7070,Sucic,Sucic P.,C,Inter,Inter,Upside / assist,,Da prendere solo se ruolo e minuti sono confermati.,,,,,§5 Centrocampisti,matched
-152,Zielinski,Zielinski,C,Inter,Inter,Semi-top,,Molti hanno rigori/piazzati o giocano avanzati; più variabilità dei top.,,,punizioni/corner indicati.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
-6884,Conceição,Conceicao,C,Juventus,Juventus,Upside / assist,,Da prendere solo se ruolo e minuti sono confermati.,,,,,§5 Centrocampisti,matched
-4911,Douglas Luiz,Douglas Luiz,C,Juventus,Juventus,Upside / assist,,Da prendere solo se ruolo e minuti sono confermati.,,,Tiratore di piazzati; gerarchia aperta o discordante.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
-827,Locatelli,Locatelli,C,Juventus,Juventus,Low cost da voto,,Servono a non dipendere da otto profili offensivi incerti.,,,Tiratore di piazzati; gerarchia aperta o discordante.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
-4973,McKennie,McKennie,C,Juventus,Juventus,Semi-top,,Molti hanno rigori/piazzati o giocano avanzati; più variabilità dei top.,,,,,§5 Centrocampisti,matched
-2848,Frattesi,Frattesi,C,Lazio,Lazio,Top,,Potenziale da doppia cifra o ruolo molto offensivo; scontare infortuni e minutaggio.,,,,,§5 Centrocampisti,matched
-632,Zaccagni,Zaccagni,C,Lazio,Lazio,Semi-top,,Molti hanno rigori/piazzati o giocano avanzati; più variabilità dei top.,,,Tiratore di piazzati; gerarchia aperta o discordante.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
-6618,Cissé,Cissè A.,C,Milan,Verona,Scommesse finali,,"Uno o due nomi, con almeno cinque/sei voti affidabili già in rosa.",,,,,§5 Centrocampisti,matched
-2606,Modric,Modric,C,Milan,Milan,Rapporto qualità-prezzo,,utili come secondo-terzo slot. Modric (Milan) non è un low cost: SOS lo colloca in fascia alta e guida punizioni e corner del Milan.,,,Tiratore di piazzati; gerarchia aperta o discordante.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
-6372,Moreira,Moreira,C,Milan,Milan,Upside / assist,,Da prendere solo se ruolo e minuti sono confermati.,,,,,§5 Centrocampisti,matched
-2423,Pulisic,Pulisic,C,Milan,Milan,Top,,Potenziale da doppia cifra o ruolo molto offensivo; scontare infortuni e minutaggio.,,,,,§5 Centrocampisti,matched
-2379,Rabiot,Rabiot,C,Milan,Milan,Top,,Potenziale da doppia cifra o ruolo molto offensivo; scontare infortuni e minutaggio.,,,,,§5 Centrocampisti,matched
-4892,Saelemaekers,Saelemaekers,C,Milan,Milan,Upside / assist,,Da prendere solo se ruolo e minuti sono confermati.,,,,,§5 Centrocampisti,matched
-2517,De Bruyne,De Bruyne,C,Napoli,Napoli,Top,,Potenziale da doppia cifra o ruolo molto offensivo; scontare infortuni e minutaggio.,,,,,§5 Centrocampisti,matched
-4287,Lobotka,Lobotka,C,Napoli,Napoli,Low cost da voto,,Servono a non dipendere da otto profili offensivi incerti.,,,,,§5 Centrocampisti,matched
-4777,McTominay,McTominay,C,Napoli,Napoli,Top,,Potenziale da doppia cifra o ruolo molto offensivo; scontare infortuni e minutaggio.,Rientro previsto alla 6ª,Top soltanto a prezzo scontato.,,,§5 Centrocampisti | §8 Infortuni e altri rischi,matched
-536,Politano,Politano,C,Napoli,Napoli,Rapporto qualità-prezzo,,,,,,,§5 Centrocampisti,matched
-779,Cristante,Cristante,C,Roma,Roma,Low cost da voto,,Servono a non dipendere da otto profili offensivi incerti.,,,,,§5 Centrocampisti,matched
-7556,Mora,Mora,C,Roma,Roma,Semi-top,,Molti hanno rigori/piazzati o giocano avanzati; più variabilità dei top.,,,,,§5 Centrocampisti,matched
-7036,Bakola,Bakola,C,Sassuolo,Sassuolo,Scommesse finali,,"Uno o due nomi, con almeno cinque/sei voti affidabili già in rosa.",,,,,§5 Centrocampisti,matched
-5844,Thorstvedt,Thorstvedt,C,Sassuolo,Sassuolo,Rapporto qualità-prezzo,,,,,,,§5 Centrocampisti,matched
-1933,Mandragora,Mandragora,C,Torino,Torino,Rapporto qualità-prezzo,,,,,Rigorista indicato; punizioni/corner indicati.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
-5687,Vlasic,Vlasic,C,Torino,Torino,Semi-top,,Molti hanno rigori/piazzati o giocano avanzati; più variabilità dei top.,,,Rigorista indicato; punizioni/corner indicati.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
-6680,Karlstrom,Karlstrom,C,Udinese,Udinese,Low cost da voto,,Servono a non dipendere da otto profili offensivi incerti.,,,,,§5 Centrocampisti,matched
-6783,Unai Gómez,Unai Gomez,C,Udinese,Udinese,Scommesse finali,,"Uno o due nomi, con almeno cinque/sei voti affidabili già in rosa.",,,,,§5 Centrocampisti,matched
-2766,Zaniolo,Zaniolo,C,Udinese,Udinese,Semi-top,,Molti hanno rigori/piazzati o giocano avanzati; più variabilità dei top.,Stop/condizione con rientri più brevi,Piccolo sconto e controllo finale.,punizioni/corner indicati.,,§5 Centrocampisti | §7 Rigoristi e piazzati | §8 Infortuni e altri rischi,matched
-5507,Busio,Busio,C,Venezia,Venezia,Low cost da voto,,Servono a non dipendere da otto profili offensivi incerti.,,,Rigorista indicato; punizioni/corner indicati.,,§5 Centrocampisti | §7 Rigoristi e piazzati,matched
-5995,De Ketelaere,De Ketelaere,A,Atalanta,Atalanta,Fascia media titolare,,,,,Candidato ai rigori; Tiratore di piazzati; gerarchia aperta o discordante.,,§6 Attaccanti | §7 Rigoristi e piazzati,matched
-6435,Krstovic,Krstovic,A,Atalanta,Atalanta,Rotazioni di qualità,,Minuti e gerarchie da verificare; alcune coppie hanno costo complessivo rischioso.,,,,,§6 Attaccanti,matched
-4371,Raspadori,Raspadori,A,Atalanta,Atalanta,Fascia media titolare,,,,,,,§6 Attaccanti,matched
-2137,Scamacca,Scamacca,A,Atalanta,Atalanta,Semi-top,,,,,,,§6 Attaccanti,matched
-6675,Dovbyk,Dovbyk,A,Bologna,Bologna,Fascia media titolare,,Dovbyk (Bologna) è secondo o terzo del Bologna,,,Rigorista indicato.,,§6 Attaccanti | §7 Rigoristi e piazzati,matched
-4359,Piccoli,Piccoli,A,Bologna,Bologna,Rotazioni di qualità,,Minuti e gerarchie da verificare; alcune coppie hanno costo complessivo rischioso.,,,,,§6 Attaccanti,matched
-7547,Kevin Carlos,Kevin Carlos,A,Cagliari,Cagliari,Low cost / ultimo slot,,"Profilo da prezzo minimo o quasi, non sostituto di un titolare.",,,,,§6 Attaccanti,matched
-7017,Douvikas,Douvikas,A,Como,Como,Semi-top,,,,,Tiratore di piazzati; gerarchia aperta o discordante.,,§6 Attaccanti | §7 Rigoristi e piazzati,matched
-2097,Kean,Kean,A,Como,Como,Semi-top,,,,,Tiratore di piazzati; gerarchia aperta o discordante.,,§6 Attaccanti | §7 Rigoristi e piazzati,matched
-7023,Pellegrino,Pellegrino M.,A,Fiorentina,Fiorentina,Rotazioni di qualità,,Minuti e gerarchie da verificare; alcune coppie hanno costo complessivo rischioso.,,,,,§6 Attaccanti,matched
-6530,Ghedjemis,Ghedjemis,A,Frosinone,Frosinone,Low cost / ultimo slot,,"Profilo da prezzo minimo o quasi, non sostituto di un titolare.",,,,,§6 Attaccanti,matched
-5436,Raimondo,Raimondo,A,Frosinone,Frosinone,Low cost / ultimo slot,,"Profilo da prezzo minimo o quasi, non sostituto di un titolare.",,,,,§6 Attaccanti,matched
-4923,Colombo,Colombo,A,Genoa,Genoa,Fascia media titolare,,Base per completare il reparto senza dipendere da sole scommesse. Colombo (Genoa) è primo rigorista del Genoa per entrambe le fonti,,,Rigorista indicato.,,§6 Attaccanti | §7 Rigoristi e piazzati,matched
-7453,Havel,Havel,A,Genoa,Genoa,Low cost / ultimo slot,,"Profilo da prezzo minimo o quasi, non sostituto di un titolare.",,,,,§6 Attaccanti,matched
-6669,Bonny,Bonny,A,Inter,Inter,Rotazioni di qualità,,Minuti e gerarchie da verificare; alcune coppie hanno costo complessivo rischioso.,,,,,§6 Attaccanti,matched
-2764,Lautaro Martinez,Martinez L.,A,Inter,Inter,Super-top,,,,,,,§6 Attaccanti,matched
-7071,Pio Esposito,Esposito F.P.,A,Inter,Inter,Rotazioni di qualità,,Minuti e gerarchie da verificare; alcune coppie hanno costo complessivo rischioso.,,,,,§6 Attaccanti,matched
-4871,Thuram,Thuram,A,Inter,Inter,Top / prima fascia,,Alternative più pulite ai due super-top; monitorare rigori e turnover.,,,,,§6 Attaccanti,matched
-5951,Kolo Muani,Kolo Muani,A,Juventus,Juventus,Semi-top,,,,,Tiratore di piazzati; gerarchia aperta o discordante.,,§6 Attaccanti | §7 Rigoristi e piazzati,matched
-6752,Woltemade,Woltemade,A,Juventus,Juventus,Rotazioni di qualità,,Minuti e gerarchie da verificare; alcune coppie hanno costo complessivo rischioso.,,,Tiratore di piazzati; gerarchia aperta o discordante.,,§6 Attaccanti | §7 Rigoristi e piazzati,matched
-2038,Pinamonti,Pinamonti,A,Lazio,Lazio,Fascia media titolare,,,,,Tiratore di piazzati; gerarchia aperta o discordante.,,§6 Attaccanti | §7 Rigoristi e piazzati,matched
-5029,Geubbels,Geubbels,A,Lecce,Lecce,Low cost / ultimo slot,,"Profilo da prezzo minimo o quasi, non sostituto di un titolare.",,,Rigorista indicato.,,§6 Attaccanti | §7 Rigoristi e piazzati,matched
-6519,Camarda,Camarda,A,Milan,Milan,Low cost / ultimo slot,,"Profilo da prezzo minimo o quasi, non sostituto di un titolare.",,,,,§6 Attaccanti,matched
-6397,Gonçalo Ramos,Ramos G.,A,Milan,Milan,Top / prima fascia,,Alternative più pulite ai due super-top; monitorare rigori e turnover.,,,,,§6 Attaccanti,matched
-6052,Hojlund,Hojlund,A,Napoli,Napoli,Top / prima fascia,,Alternative più pulite ai due super-top; monitorare rigori e turnover.,,,,,§6 Attaccanti,matched
-6229,El Bilal Touré,Tourè E.,A,Parma,Parma,Low cost / ultimo slot,,"Profilo da prezzo minimo o quasi, non sostituto di un titolare.",,,Candidato ai rigori; Tiratore di piazzati; gerarchia aperta o discordante.,,§6 Attaccanti | §7 Rigoristi e piazzati,matched
-7561,Lontani,Lontani,A,Parma,Parma,Low cost / ultimo slot,,"Profilo da prezzo minimo o quasi, non sostituto di un titolare.",,,,,§6 Attaccanti,matched
-6572,Castro,Castro S.,A,Roma,Roma,Rotazioni di qualità,,Minuti e gerarchie da verificare; alcune coppie hanno costo complessivo rischioso.,,,,,§6 Attaccanti,matched
-309,Dybala,Dybala,A,Roma,Roma,Semi-top,,,,Storico fisico da prezzare.,Rigorista indicato; punizioni/corner indicati.,,§6 Attaccanti | §7 Rigoristi e piazzati | §8 Infortuni e altri rischi,matched
-5585,Malen,Malen,A,Roma,Roma,Super-top,,"Malen (Roma) ha possibile quota rigori, Lautaro (Inter) non è il primo rigorista.",,,Rigorista indicato.,,§6 Attaccanti | §7 Rigoristi e piazzati,matched
-5734,Soulé,Soulè,A,Roma,Roma,Rotazioni di qualità,,Minuti e gerarchie da verificare; alcune coppie hanno costo complessivo rischioso.,,,punizioni/corner indicati.,,§6 Attaccanti | §7 Rigoristi e piazzati,matched
-531,Berardi,Berardi,A,Sassuolo,Sassuolo,Semi-top,,"Davis (Udinese) è primo rigorista Udinese, Berardi (Sassuolo) lo è del Sassuolo ma con lo storico fisico da scontare.",,Storico fisico da prezzare.,Rigorista indicato; punizioni/corner indicati.,,§6 Attaccanti | §7 Rigoristi e piazzati | §8 Infortuni e altri rischi,matched
-7347,Bowie,Bowie,A,Sassuolo,Sassuolo,Low cost / ultimo slot,,"Profilo da prezzo minimo o quasi, non sostituto di un titolare.",,,,,§6 Attaccanti,matched
-6060,Laurienté,Laurientè,A,Sassuolo,Sassuolo,Fascia media titolare,,,,,punizioni/corner indicati.,,§6 Attaccanti | §7 Rigoristi e piazzati,matched
-6646,Che Adams,Adams C.,A,Torino,Torino,Low cost / ultimo slot,,"Profilo da prezzo minimo o quasi, non sostituto di un titolare.",,,,,§6 Attaccanti,matched
-2061,Simeone,Simeone,A,Torino,Torino,Fascia media titolare,,Simeone (Torino) terzo del Torino per Fantamaster.,,,,,§6 Attaccanti,matched
-5637,Keinan Davis,Davis K.,A,Udinese,Udinese,Semi-top,,,,,,,§6 Attaccanti,matched
-7484,Akor,Adams A.,A,Venezia,Venezia,Low cost / ultimo slot,,"Profilo da prezzo minimo o quasi, non sostituto di un titolare.",,,,,§6 Attaccanti,matched
+﻿id,nome_guida,nome_listone,ruolo,squadra,squadra_guida,fascia,funzione,note,infortuni,status_rischi,rigori_piazzati,gerarchia_pacchetto,fonti,confidenza,da_verificare,match_status
+4431,Carnesecchi,Carnesecchi,P,Atalanta,Atalanta,Fascia alta,Titolare sicuro,"Alternativa forte, adatta al modificatore.",,,,,G 02-09; N 26-08; L,Alta,,matched
+133,Skorupski,Skorupski,P,Bologna,Bologna,Fascia media,Titolare sicuro,Alternativa o scommessa condivisa.,,,,,G 02-09; N 26-08; L,Alta,,matched
+4360,Caprile,Caprile,P,Cagliari,Cagliari,Fascia media,Alternanza,Alternativa o scommessa condivisa.,,,,,G 02-09; N 26-08; L,Alta,Titolarità.,matched
+6966,Butez,Butez,P,Como,Como,Top,Titolare con riserva,Prima fascia condivisa.,,Competizione interna.,,Butez (Como)–Sanchez Ro. (Como),G 02-09; N 26-08; L,Alta,Gerarchia e costo coppia.,matched
+6344,Sanchez Ro.,Sanchez Ro.,P,Como,Como,Da monitorare,Secondo da pacchetto,Copertura citata per Butez (Como).,,Gerarchia da confermare.,,Butez (Como)–Sanchez Ro. (Como),G 02-09; N 26-08; L,Media,Gerarchia.,matched
+2521,De Gea,De Gea,P,Fiorentina,Fiorentina,Fascia alta,Titolare sicuro,Consigliato da entrambe le fonti.,,,,,G 02-09; N 26-08; L,Alta,,matched
+5116,Martinez Jo.,Martinez Jo.,P,Inter,Inter,Top,Titolare con riserva,Prima fascia condivisa; le fonti usano una grafia estesa diversa.,,Gerarchia da confermare.,,Martinez Jo. (Inter)–Provedel (Inter),G 02-09; N 26-08; L,Media,Gerarchia e costo coppia.,matched
+2814,Provedel,Provedel,P,Inter,Inter,Da monitorare,Secondo da pacchetto,Copertura citata per Martinez Jo. (Inter).,,Gerarchia da confermare.,,Martinez Jo. (Inter)–Provedel (Inter),G 02-09; N 26-08; L,Media,Gerarchia.,matched
+4964,Vicario,Vicario,P,Juventus,Juventus,Top,Titolare sicuro,"Top per N, consigliato per G.",,,,,G 02-09; N 26-08; L,Media,,matched
+6482,Mandas,Mandas,P,Lazio,Lazio,Fascia alta,Titolare con riserva,"Consigliato, con gerarchia aperta.",,Gerarchia da confermare.,,Mandas (Lazio)–Motta (Lazio),G 02-09; N 26-08; L,Media,Gerarchia e costo coppia.,matched
+7337,Motta,Motta,P,Lazio,Lazio,Da monitorare,Secondo da pacchetto,Copertura citata per Mandas (Lazio).,,Gerarchia da confermare.,,Mandas (Lazio)–Motta (Lazio),G 02-09; N 26-08; L,Media,Gerarchia.,matched
+2134,Falcone,Falcone,P,Lecce,Lecce,Fascia alta,Titolare sicuro,Profilo associato al modificatore.,,,,,G 02-09; N 26-08; L,Alta,,matched
+4312,Maignan,Maignan,P,Milan,Milan,Top,Titolare sicuro,Prima fascia condivisa.,,,,,G 02-09; N 26-08; L,Alta,,matched
+572,Meret,Meret,P,Napoli,Napoli,Top,Titolare con riserva,Possibile valore qualità-prezzo.,,Competizione interna.,,Meret (Napoli)–Milinkovic-Savic V. (Napoli),G 02-09; N 26-08; L,Alta,Confermare titolare.,matched
+2170,Milinkovic-Savic V.,Milinkovic-Savic V.,P,Napoli,Napoli,Da monitorare,Secondo da pacchetto,Copertura citata per Meret (Napoli).,,Gerarchia da confermare.,,Meret (Napoli)–Milinkovic-Savic V. (Napoli),G 02-09; N 26-08; L,Media,Gerarchia.,matched
+6662,Corvi,Corvi,P,Parma,Parma,Scommessa,Titolare con riserva,Scommessa condivisa da confermare.,,Minuti da confermare.,,,G 02-09; N 26-08; L,Media,Titolarità.,matched
+5841,Svilar,Svilar,P,Roma,Roma,Top,Titolare sicuro,Riferimento condiviso per rendimento.,,,,,G 02-09; N 26-08; L,Alta,,matched
+4236,Muric,Muric,P,Sassuolo,Sassuolo,Fascia media,Alternanza,Alternativa o scommessa condivisa.,,,,,G 02-09; N 26-08; L,Alta,Titolarità.,matched
+7457,Mascardi,Mascardi,P,Torino,Torino,Scommessa,Titolare con riserva,Scommessa indicata da N.,,Minuti da confermare.,,,N 26-08; L,Bassa,Titolarità.,matched
+6534,Perri,Perri,P,Torino,Torino,Fascia media,Alternanza,Alternativa indicata da G.,,,,,G 02-09; L,Media,Titolarità.,matched
+6462,Okoye,Okoye,P,Udinese,Udinese,Fascia alta,Alternanza,Indicato soprattutto per alternanza.,,,,,G 02-09; N 26-08; L,Alta,Calendario.,matched
+6248,Stankovic F.,Stankovic F.,P,Venezia,Venezia,Fascia media,Titolare con riserva,Scommessa condivisa da confermare.,,Minuti da confermare.,,,G 02-09; N 26-08; L,Media,Titolarità.,matched
+4887,Bellanova,Bellanova,D,Atalanta,Atalanta,Scommessa,Scommessa,Upside indicato da G.,,Minuti da confermare.,,,G 02-09; L,Media,Titolarità.,matched
+6485,Kristensen T.,Kristensen T.,D,Atalanta,Atalanta,Fascia alta,Centrale da modificatore,Profilo da buon voto condiviso.,,,,,G 02-09; N 26-08; L,Alta,,matched
+5526,Scalvini,Scalvini,D,Atalanta,Atalanta,Fascia alta,Titolare affidabile,Titolare da bonus condiviso.,,,,,G 02-09; N 26-08; L,Alta,Minuti.,matched
+7212,Heggem,Heggem,D,Bologna,Bologna,Scommessa,Scommessa,Upside indicato da G.,,Minuti da confermare.,,,G 02-09; L,Media,Titolarità.,matched
+4734,Miranda J.,Miranda J.,D,Bologna,Bologna,Fascia alta,Centrale da modificatore,Profilo da buon voto condiviso.,,,,,G 02-09; N 26-08; L,Alta,,matched
+4210,Mina,Mina,D,Cagliari,Cagliari,Fascia alta,Centrale da modificatore,Specialista del modificatore secondo N.,,,,,G 02-09; N 26-08; L,Alta,,matched
+5641,Chalobah T.,Chalobah T.,D,Como,Como,Fascia alta,Centrale da modificatore,Profilo da buon voto condiviso.,,,,,G 02-09; N 26-08; L,Alta,,matched
+6727,Couto,Couto,D,Como,Como,Fascia alta,Esterno da bonus,Titolare da bonus condiviso.,,,,,G 02-09; N 26-08; L,Alta,Minuti.,matched
+7414,Kaiki,Kaiki,D,Como,Como,Scommessa,Scommessa,Upside indicato da G.,,Minuti da confermare.,,,G 02-09; L,Media,Titolarità.,matched
+6893,Kempf,Kempf,D,Como,Como,Fascia alta,Premium bonus,Titolare da bonus condiviso.,,,,,G 02-09; N 26-08; L,Alta,,matched
+6869,Ramon,Ramon,D,Como,Como,Fascia alta,Centrale da modificatore,Profilo da buon voto condiviso.,,,,,G 02-09; N 26-08; L,Alta,,matched
+5885,Dodò,Dodò,D,Fiorentina,Fiorentina,Fascia alta,Centrale da modificatore,Profilo da buon voto per N.,,,,,N 26-08; L,Media,,matched
+6531,Jimenez A.,Jimenez A.,D,Fiorentina,Fiorentina,Scommessa,Scommessa,Upside indicato da G.,,Minuti da confermare.,,,G 02-09; L,Media,Titolarità.,matched
+7469,Bracaglia,Bracaglia,D,Frosinone,Frosinone,Scommessa,Scommessa,Upside indicato da G.,,Minuti da confermare.,,,G 02-09; L,Media,Titolarità.,matched
+7537,Mitaj,Mitaj,D,Genoa,Genoa,Scommessa,Scommessa,Upside indicato da G.,,Minuti da confermare.,,,G 02-09; L,Media,Titolarità.,matched
+5750,Ostigard,Ostigard,D,Genoa,Genoa,Fascia alta,Premium bonus,Centrale con capacità realizzativa.,,,,,G 02-09; N 26-08; L,Alta,,matched
+4159,Akanji,Akanji,D,Inter,Inter,Semitop,Centrale da modificatore,"Da buon voto per G, top per N.",,Valutazione editoriale discordante.,,,G 02-09; N 26-08; L,Media,Minuti.,matched
+2120,Bastoni,Bastoni,D,Inter,Inter,Fascia alta,Centrale da modificatore,Profilo da buon voto condiviso.,,,,,G 02-09; N 26-08; L,Alta,,matched
+6217,Bisseck,Bisseck,D,Inter,Inter,Semitop,Centrale da modificatore,"Top per G, da buon voto per N.",,Valutazione editoriale discordante.,,,G 02-09; N 26-08; L,Media,Minuti.,matched
+254,Dimarco,Dimarco,D,Inter,Inter,Super Top,Premium bonus,Massimo investimento del reparto e impatto sul modificatore.,,,Tiratore piazzati,,G 02-09; N 26-08; L,Alta,Gerarchia piazzati.,matched
+5982,Spence,Spence,D,Inter,Inter,Fascia alta,Esterno da bonus,Titolare da bonus condiviso.,,Rotazione possibile.,,,G 02-09; N 26-08; L,Media,Minuti.,matched
+2514,Stones,Stones,D,Inter,Inter,Scommessa,Scommessa,Upside indicato da G.,,Minuti da confermare.,,,G 02-09; L,Media,Titolarità.,matched
+2788,Bremer,Bremer,D,Juventus,Juventus,Top,Centrale da modificatore,Centrale premium condiviso.,,,,,G 02-09; N 26-08; L,Alta,,matched
+5520,Cambiaso,Cambiaso,D,Juventus,Juventus,Fascia alta,Esterno da bonus,Titolare da bonus per N.,,,,,N 26-08; L,Media,Minuti.,matched
+4657,Celik,Celik,D,Juventus,Juventus,Fascia alta,Esterno da bonus,Titolare da bonus per G.,,,,,G 02-09; L,Media,Ruolo e minuti.,matched
+4976,Kalulu,Kalulu,D,Juventus,Juventus,Fascia alta,Centrale da modificatore,Profilo da buon voto condiviso.,,,,,G 02-09; N 26-08; L,Alta,,matched
+6042,Lucumì,Lucumì,D,Juventus,Juventus,Fascia alta,Centrale da modificatore,Profilo da buon voto condiviso.,,,,,G 02-09; N 26-08; L,Alta,,matched
+6320,Doekhi,Doekhi,D,Lazio,Lazio,Scommessa,Scommessa,Upside indicato da G.,,Minuti da confermare.,,,G 02-09; L,Media,Titolarità.,matched
+6989,Tiago Gabriel,Tiago Gabriel,D,Lecce,Lecce,Fascia alta,Centrale da modificatore,Profilo da buon voto condiviso.,,,,,G 02-09; N 26-08; L,Alta,,matched
+5833,Gila,Gila,D,Milan,Milan,Fascia alta,Centrale da modificatore,Profilo da buon voto condiviso.,,,,,G 02-09; N 26-08; L,Alta,,matched
+5022,Pavlovic,Pavlovic,D,Milan,Milan,Fascia alta,Premium bonus,Centrale con pericolosità offensiva.,,,,,G 02-09; N 26-08; L,Alta,,matched
+2816,Di Lorenzo,Di Lorenzo,D,Napoli,Napoli,Fascia alta,Esterno da bonus,Titolare da bonus condiviso.,,,,,G 02-09; N 26-08; L,Alta,,matched
+4409,Rrahmani,Rrahmani,D,Napoli,Napoli,Fascia alta,Centrale da modificatore,Profilo da buon voto condiviso.,,,,,G 02-09; N 26-08; L,Alta,,matched
+1852,Spinazzola,Spinazzola,D,Napoli,Napoli,Fascia alta,Esterno da bonus,Esterno da bonus condiviso.,,Minuti e ruolo incerti.,,,G 02-09; N 26-08; L,Media,Collocazione e minuti.,matched
+4137,Diego Carlos,Diego Carlos,D,Parma,Parma,Fascia alta,Centrale da modificatore,Profilo da buon voto per G.,,,,,G 02-09; L,Media,,matched
+2296,Mancini,Mancini,D,Roma,Roma,Top,Centrale da modificatore,Top condiviso.,,,,,G 02-09; N 26-08; L,Alta,,matched
+4998,Molina N.,Molina N.,D,Roma,Roma,Fascia alta,Esterno da bonus,Esterno da bonus condiviso.,,Minuti e ruolo incerti.,,,G 02-09; N 26-08; L,Media,Collocazione e minuti.,matched
+4317,N'Dicka,N'Dicka,D,Roma,Roma,Fascia alta,Centrale da modificatore,Profilo da buon voto condiviso.,,,,,G 02-09; N 26-08; L,Alta,,matched
+6986,Rensch,Rensch,D,Roma,Roma,Scommessa,Scommessa,Upside indicato da G.,,Minuti da confermare.,,,G 02-09; L,Media,Titolarità.,matched
+7181,Wesley,Wesley,D,Roma,Roma,Top,Premium bonus,Top condiviso.,,,,,G 02-09; N 26-08; L,Alta,,matched
+7573,Cinquegrano,Cinquegrano,D,Sassuolo,Sassuolo,Scommessa,Scommessa,Upside indicato da G.,,Minuti da confermare.,,,G 02-09; L,Media,Titolarità.,matched
+6672,Idzes,Idzes,D,Sassuolo,Sassuolo,Fascia alta,Centrale da modificatore,Profilo da buon voto condiviso.,,,,,G 02-09; N 26-08; L,Alta,,matched
+7220,Belghali,Belghali,D,Torino,Torino,Fascia alta,Esterno da bonus,Titolare da bonus per G.,,,,,G 02-09; L,Media,Minuti.,matched
+6495,Comuzzo,Comuzzo,D,Torino,Torino,Scommessa,Scommessa,Upside indicato da G.,,Minuti da confermare.,,,G 02-09; L,Media,Titolarità.,matched
+7069,Fortini,Fortini,D,Torino,Torino,Scommessa,Scommessa,Upside indicato da G.,,Minuti da confermare.,,,G 02-09; L,Media,Titolarità.,matched
+6956,Solet,Solet,D,Udinese,Udinese,Fascia alta,Premium bonus,Titolare da bonus condiviso.,,,,,G 02-09; N 26-08; L,Alta,,matched
+4845,Correia T.,Correia T.,D,Venezia,Venezia,Scommessa,Scommessa,Upside indicato da G.,,Minuti da confermare.,,,G 02-09; L,Media,Titolarità.,matched
+5695,Haps,Haps,D,Venezia,Venezia,Fascia alta,Titolare affidabile,Profilo da buon voto condiviso.,,,,,G 02-09; N 26-08; L,Alta,,matched
+5792,Ederson D.S.,Ederson D.S.,C,Atalanta,Atalanta,Fascia alta,Titolare offensivo,Titolare da bonus condiviso.,,,,,G 02-09; N 26-08; L,Alta,,matched
+4364,Gaetano,Gaetano,C,Atalanta,Atalanta,Fascia media,Da voto,"Da voto per G, scommessa per N.",,Valutazione editoriale discordante.,,,G 02-09; N 26-08; L,Media,Ruolo e minuti.,matched
+1850,Kessiè,Kessiè,C,Atalanta,Atalanta,Fascia alta,Titolare offensivo,Titolare da bonus per G.,,,,,G 02-09; L,Media,Minuti.,matched
+6844,Rowe,Rowe,C,Atalanta,Atalanta,Fascia alta,Titolare offensivo,Upside alto condiviso.,,Minuti incerti.,,,G 02-09; N 26-08; L,Media,Ruolo e minuti.,matched
+5119,Samardzic,Samardzic,C,Atalanta,Atalanta,Scommessa,Scommessa,Upside da pagare poco.,,Minuti incerti.,,,N 26-08; L,Media,Titolarità.,matched
+184,Bernardeschi,Bernardeschi,C,Bologna,Bologna,Fascia media,Titolare offensivo,Alternativa da bonus per N.,,,,,N 26-08; L,Media,Minuti.,matched
+4436,Cambiaghi,Cambiaghi,C,Bologna,Bologna,Scommessa,Scommessa,Upside da pagare poco.,,Minuti incerti.,,,N 26-08; L,Media,Titolarità.,matched
+6054,Moro N.,Moro N.,C,Bologna,Bologna,Scommessa,Scommessa,Upside da pagare poco.,,Minuti incerti.,,,N 26-08; L,Media,Titolarità.,matched
+2167,Orsolini,Orsolini,C,Bologna,Bologna,Top,Premium bonus,Profilo da doppia cifra condiviso.,,,,,G 02-09; N 26-08; L,Alta,,matched
+7126,Baturina,Baturina,C,Como,Como,Fascia alta,Titolare offensivo,Voti e bonus.,,,,,G 02-09; N 26-08; L,Alta,,matched
+5559,Da Cunha,Da Cunha,C,Como,Como,Fascia alta,Titolare offensivo,Profilo completo e qualità-prezzo.,,,,,G 02-09; N 26-08; L,Alta,,matched
+7412,Milla,Milla,C,Como,Como,Scommessa,Scommessa,Upside da pagare poco.,,Minuti incerti.,,,N 26-08; L,Media,Titolarità.,matched
+6875,Paz N.,Paz N.,C,Como,Como,Top,Premium bonus,Profilo da doppia cifra condiviso.,,,,,G 02-09; N 26-08; L,Alta,,matched
+6151,Perrone,Perrone,C,Como,Como,Fascia media,Da voto,Profilo affidabile condiviso.,,,,,G 02-09; N 26-08; L,Alta,,matched
+6908,Atta,Atta,C,Fiorentina,Fiorentina,Fascia media,Titolare offensivo,Alternativa da bonus per N.,,,,,N 26-08; L,Media,Minuti.,matched
+4465,Fagioli,Fagioli,C,Fiorentina,Fiorentina,Fascia media,Da voto,Profilo per continuità di voto.,,,,,G 02-09; L,Media,,matched
+7625,Goncalves P.,Goncalves P.,C,Fiorentina,Fiorentina,Fascia alta,Titolare offensivo,Upside alto per G.,,Minuti incerti.,,,G 02-09; L,Media,Ruolo e minuti.,matched
+7078,Mastantuono,Mastantuono,C,Fiorentina,Fiorentina,Fascia media,Scommessa,Upside alto da verificare.,,Minuti incerti.,,,G 02-09; N 26-08; L,Media,Ruolo e minuti.,matched
+7551,Schmid,Schmid,C,Frosinone,Frosinone,Scommessa,Scommessa,Upside da pagare poco.,,Minuti incerti.,,,N 26-08; L,Media,Titolarità.,matched
+5823,Baldanzi,Baldanzi,C,Genoa,Genoa,Fascia media,Da voto,Profilo per continuità di voto.,,,,,G 02-09; N 26-08; L,Alta,Minuti.,matched
+1870,Barella,Barella,C,Inter,Inter,Fascia alta,Titolare offensivo,Secondo slot affidabile.,,,,,G 02-09; N 26-08; L,Alta,,matched
+2194,Calhanoglu,Calhanoglu,C,Inter,Inter,Top,Premium bonus,"Voti, bonus e rigori.",,,Primo rigorista,,G 02-09; N 26-08; L,Alta,Gerarchia rigori.,matched
+5172,Jones C.,Jones C.,C,Inter,Inter,Scommessa,Scommessa,Upside da pagare poco.,,Minuti incerti.,,,N 26-08; L,Media,Titolarità.,matched
+6503,Stankovic A.,Stankovic A.,C,Inter,Inter,Scommessa,Scommessa,Upside da pagare poco.,,Minuti incerti.,,,N 26-08; L,Media,Titolarità.,matched
+7070,Sucic P.,Sucic P.,C,Inter,Inter,Fascia media,Titolare offensivo,Alternativa da bonus per N.,,Rotazione possibile.,,,N 26-08; L,Media,Minuti.,matched
+152,Zielinski,Zielinski,C,Inter,Inter,Fascia alta,Titolare offensivo,Titolare da bonus condiviso.,,Rotazione possibile.,,,G 02-09; N 26-08; L,Media,Minuti.,matched
+7436,Alajbegovic,Alajbegovic,C,Juventus,Juventus,Scommessa,Scommessa,Upside da pagare poco.,,Minuti incerti.,,,N 26-08; L,Media,Titolarità.,matched
+827,Locatelli,Locatelli,C,Juventus,Juventus,Fascia media,Da voto,Profilo per continuità di voto.,,,,,G 02-09; N 26-08; L,Alta,,matched
+4973,McKennie,McKennie,C,Juventus,Juventus,Fascia media,Titolare offensivo,Alternativa da bonus per N.,,Rotazione possibile.,,,N 26-08; L,Media,Minuti.,matched
+2848,Frattesi,Frattesi,C,Lazio,Lazio,Fascia alta,Titolare offensivo,Potenziale rilancio e bonus.,,Ruolo da consolidare.,,,G 02-09; N 26-08; L,Media,Minuti.,matched
+5800,Gudmundsson A.,Gudmundsson A.,C,Lazio,Lazio,Fascia media,Titolare offensivo,Alternativa da bonus per N.,,,,,N 26-08; L,Media,Minuti.,matched
+6398,Isaksen,Isaksen,C,Lazio,Lazio,Fascia media,Titolare offensivo,Alternativa da bonus per N.,,Rotazione possibile.,,,N 26-08; L,Media,Minuti.,matched
+7314,Taylor K.,Taylor K.,C,Lazio,Lazio,Fascia media,Titolare offensivo,Alternativa da bonus per N.,,,,,N 26-08; L,Media,Minuti.,matched
+632,Zaccagni,Zaccagni,C,Lazio,Lazio,Fascia alta,Titolare offensivo,Titolare da bonus condiviso.,,,,,G 02-09; N 26-08; L,Alta,,matched
+4856,Chukwueze,Chukwueze,C,Milan,Milan,Scommessa,Scommessa,Upside da pagare poco.,,Minuti incerti.,,,N 26-08; L,Media,Titolarità.,matched
+2606,Modric,Modric,C,Milan,Milan,Fascia media,Da voto,Profilo per continuità di voto.,,,,,G 02-09; N 26-08; L,Alta,Minuti.,matched
+6372,Moreira,Moreira,C,Milan,Milan,Fascia alta,Titolare offensivo,Titolare da bonus condiviso.,,,,,G 02-09; N 26-08; L,Alta,Minuti.,matched
+2423,Pulisic,Pulisic,C,Milan,Milan,Top,Premium bonus,Top condiviso.,,,,,G 02-09; N 26-08; L,Alta,,matched
+2379,Rabiot,Rabiot,C,Milan,Milan,Top,Premium bonus,Top condiviso.,,,,,G 02-09; N 26-08; L,Alta,,matched
+4892,Saelemaekers,Saelemaekers,C,Milan,Milan,Scommessa,Scommessa,Upside da pagare poco.,,Minuti incerti.,,,N 26-08; L,Media,Titolarità.,matched
+2741,Pessina,Pessina,C,Monza,Monza,Scommessa,Scommessa,Upside da pagare poco.,,Minuti incerti.,,,N 26-08; L,Media,Titolarità.,matched
+2517,De Bruyne,De Bruyne,C,Napoli,Napoli,Fascia alta,Titolare offensivo,"Upside molto alto, prezzo prudente.",,Ruolo e minuti da consolidare.,Candidato ai rigori,,G 02-09; N 26-08; L,Media,Minuti e gerarchia rigori.,matched
+4287,Lobotka,Lobotka,C,Napoli,Napoli,Fascia media,Da voto,Profilo per continuità di voto.,,,,,G 02-09; N 26-08; L,Alta,,matched
+4777,McTominay,McTominay,C,Napoli,Napoli,Top,Premium bonus,Profilo da doppia cifra condiviso.,,,,,G 02-09; N 26-08; L,Alta,,matched
+536,Politano,Politano,C,Napoli,Napoli,Fascia alta,Titolare offensivo,Titolare da bonus condiviso.,,,,,G 02-09; N 26-08; L,Alta,Minuti.,matched
+6666,Bernabè,Bernabè,C,Parma,Parma,Fascia media,Titolare offensivo,Alternativa da bonus per N.,,,,,N 26-08; L,Media,,matched
+6898,Keita M.,Keita M.,C,Parma,Parma,Fascia media,Da voto,Profilo per continuità di voto.,,,,,N 26-08; L,Media,,matched
+4349,Nicolussi Caviglia,Nicolussi Caviglia,C,Parma,Parma,Fascia media,Da voto,Profilo per continuità di voto.,,,,,N 26-08; L,Media,,matched
+779,Cristante,Cristante,C,Roma,Roma,Fascia media,Da voto,Profilo per continuità di voto.,,,,,N 26-08; L,Media,,matched
+5589,Konè M.,Konè M.,C,Roma,Roma,Fascia media,Da voto,Profilo per continuità di voto.,,,,,G 02-09; N 26-08; L,Alta,,matched
+7556,Mora,Mora,C,Roma,Roma,Fascia media,Titolare offensivo,Alternativa da bonus per N.,,,,,N 26-08; L,Media,Minuti.,matched
+5844,Thorstvedt,Thorstvedt,C,Sassuolo,Sassuolo,Fascia alta,Qualità-prezzo,Titolare e bonus a prezzo sostenibile.,,,,,G 02-09; N 26-08; L,Alta,,matched
+5888,Casadei,Casadei,C,Torino,Torino,Fascia media,Titolare offensivo,Alternativa da bonus per N.,,,,,N 26-08; L,Media,Minuti.,matched
+1933,Mandragora,Mandragora,C,Torino,Torino,Fascia alta,Qualità-prezzo,Occasione condivisa.,,,,,G 02-09; N 26-08; L,Alta,,matched
+5687,Vlasic,Vlasic,C,Torino,Torino,Fascia alta,Titolare offensivo,Bonus e rigori.,,,Primo rigorista,,G 02-09; N 26-08; L,Alta,Gerarchia rigori.,matched
+6684,Ekkelenkamp,Ekkelenkamp,C,Udinese,Udinese,Fascia media,Titolare offensivo,Alternativa da bonus per N.,,,,,N 26-08; L,Media,Minuti.,matched
+6680,Karlstrom,Karlstrom,C,Udinese,Udinese,Fascia media,Da voto,Profilo per continuità di voto.,,,,,N 26-08; L,Media,,matched
+2766,Zaniolo,Zaniolo,C,Udinese,Udinese,Fascia alta,Titolare offensivo,Titolare da bonus condiviso.,,Minuti da confermare.,,,G 02-09; N 26-08; L,Media,Titolarità.,matched
+5507,Busio,Busio,C,Venezia,Venezia,Fascia media,Da voto,Profilo per continuità di voto.,,,,,G 02-09; N 26-08; L,Alta,,matched
+7232,Fernandez T.,Fernandez T.,C,Venezia,Venezia,Scommessa,Scommessa,Ultimo slot indicato da G.,,Minuti incerti.,,,G 02-09; L,Media,Titolarità.,matched
+5995,De Ketelaere,De Ketelaere,A,Atalanta,Atalanta,Semitop,Titolare,Seconda fascia condivisa.,,Rotazione possibile.,,,G 02-09; N 26-08; L,Media,Minuti.,matched
+6435,Krstovic,Krstovic,A,Atalanta,Atalanta,Fascia media,Rotazione offensiva,Copertura per la gerarchia offensiva.,,Competizione interna.,,,G 02-09; N 26-08; L,Media,Gerarchia con Scamacca (Atalanta).,matched
+4371,Raspadori,Raspadori,A,Atalanta,Atalanta,Semitop,Seconda punta / partner,Possibile intuizione e seconda fascia.,,Rotazione possibile.,,,G 02-09; N 26-08; L,Media,Ruolo e minuti.,matched
+2137,Scamacca,Scamacca,A,Atalanta,Atalanta,Top,Prima scelta,Prima fascia condivisa.,,Competizione interna.,,,G 02-09; N 26-08; L,Media,Gerarchia con Krstovic (Atalanta).,matched
+6675,Dovbyk,Dovbyk,A,Bologna,Bologna,Top,Prima scelta,Prima fascia e potenziale doppia cifra.,,,,,G 02-09; N 26-08; L,Alta,Titolarità.,matched
+4359,Piccoli,Piccoli,A,Bologna,Bologna,Fascia media,Ultimo slot,Terza o quarta fascia condivisa.,,,,,G 02-09; N 26-08; L,Alta,Titolarità.,matched
+7547,Kevin Carlos,Kevin Carlos,A,Cagliari,Cagliari,Scommessa,Scommessa,Ultimo slot a prezzo minimo.,,Minuti incerti.,,,G 02-09; N 26-08; L,Media,Titolarità.,matched
+4896,Maldini,Maldini,A,Cagliari,Cagliari,Fascia media,Titolare,Profilo da lega numerosa e possibile titolare da bonus.,,,,,G 02-09; N 26-08; L,Alta,Titolarità.,matched
+7374,Mendy P.,Mendy P.,A,Cagliari,Cagliari,Scommessa,Scommessa,Ultimo slot a prezzo minimo.,,Minuti incerti.,,,G 02-09; N 26-08; L,Media,Titolarità.,matched
+5336,Nzola,Nzola,A,Cagliari,Cagliari,Fascia media,Ultimo slot,Terza fascia per G.,,,,,G 02-09; L,Media,Titolarità.,matched
+6967,Diao,Diao,A,Como,Como,Fascia media,Rotazione offensiva,Terza o quarta fascia condivisa.,,Rotazione possibile.,,,G 02-09; N 26-08; L,Media,Minuti.,matched
+7017,Douvikas,Douvikas,A,Como,Como,Top,Prima scelta,Prima fascia condivisa.,,Competizione interna.,,,G 02-09; N 26-08; L,Media,Gerarchia con Kean (Como).,matched
+2097,Kean,Kean,A,Como,Como,Top,Prima scelta,Prima fascia condivisa.,,Competizione interna.,,,G 02-09; N 26-08; L,Media,Gerarchia con Douvikas (Como).,matched
+5694,Beto,Beto,A,Fiorentina,Fiorentina,Semitop,Titolare,Seconda fascia per G; gerarchia aperta per N.,,Competizione interna.,,,G 02-09; N 26-08; L,Media,Gerarchia con Pellegrino M. (Fiorentina).,matched
+7623,Gnonto,Gnonto,A,Fiorentina,Fiorentina,Scommessa,Scommessa,Ultimo slot indicato da G.,,Minuti incerti.,,,G 02-09; L,Media,Titolarità.,matched
+7023,Pellegrino M.,Pellegrino M.,A,Fiorentina,Fiorentina,Semitop,Titolare,Preferito inizialmente a Beto (Fiorentina).,,Competizione interna.,,,G 02-09; N 26-08; L,Media,Gerarchia con Beto (Fiorentina).,matched
+6530,Ghedjemis,Ghedjemis,A,Frosinone,Frosinone,Scommessa,Scommessa,Ultimo slot a prezzo minimo.,,Minuti incerti.,,,G 02-09; N 26-08; L,Media,Titolarità.,matched
+5436,Raimondo,Raimondo,A,Frosinone,Frosinone,Scommessa,Scommessa,"Terza fascia per G, scommessa per N.",,Minuti incerti.,,,G 02-09; N 26-08; L,Media,Titolarità.,matched
+4923,Colombo,Colombo,A,Genoa,Genoa,Semitop,Titolare,Seconda fascia condivisa.,,,,,G 02-09; N 26-08; L,Alta,Titolarità.,matched
+6164,Vitinha O.,Vitinha O.,A,Genoa,Genoa,Fascia media,Ultimo slot,Terza o quarta fascia condivisa.,,,,,G 02-09; N 26-08; L,Alta,Titolarità.,matched
+6669,Bonny,Bonny,A,Inter,Inter,Fascia media,Rotazione offensiva,Terza o quarta fascia condivisa.,,Rotazione possibile.,,,G 02-09; N 26-08; L,Media,Minuti.,matched
+7071,Esposito F.P.,Esposito F.P.,A,Inter,Inter,Semitop,Titolare,"Prima fascia per G, seconda per N.",,Valutazione editoriale discordante.,,,G 02-09; N 26-08; L,Media,Minuti.,matched
+2764,Martinez L.,Martinez L.,A,Inter,Inter,Super Top,Prima scelta,Primo slot assoluto condiviso.,,,,,G 02-09; N 26-08; L,Alta,,matched
+4871,Thuram,Thuram,A,Inter,Inter,Super Top,Prima scelta,"Primo slot condiviso, un gradino sotto i primi due per G.",,,,,G 02-09; N 26-08; L,Alta,,matched
+2832,Boga,Boga,A,Juventus,Juventus,Semitop,Titolare,Seconda fascia per G.,,Rotazione possibile.,,,G 02-09; L,Media,Minuti.,matched
+6822,Ekhator,Ekhator,A,Juventus,Juventus,Scommessa,Scommessa,Ultimo slot a prezzo minimo.,,Minuti incerti.,,,G 02-09; N 26-08; L,Media,Titolarità.,matched
+5951,Kolo Muani,Kolo Muani,A,Juventus,Juventus,Top,Prima scelta,Prima fascia condivisa.,,,,,G 02-09; N 26-08; L,Alta,Titolarità.,matched
+6752,Woltemade,Woltemade,A,Juventus,Juventus,Semitop,Titolare,Seconda fascia per G.,,,,,G 02-09; L,Media,Titolarità.,matched
+6434,Yildiz,Yildiz,A,Juventus,Juventus,Top,Prima scelta,Prima fascia condivisa.,,,,,G 02-09; N 26-08; L,Alta,,matched
+6556,Noslin,Noslin,A,Lazio,Lazio,Fascia media,Rotazione offensiva,Terza o seconda fascia secondo le fonti.,,Rotazione possibile.,,,G 02-09; N 26-08; L,Media,Minuti.,matched
+2038,Pinamonti,Pinamonti,A,Lazio,Lazio,Semitop,Titolare,Titolare con potenziale bonus.,,,,,G 02-09; N 26-08; L,Alta,,matched
+5029,Geubbels,Geubbels,A,Lecce,Lecce,Scommessa,Scommessa,Ultimo slot a prezzo minimo.,,Minuti incerti.,,,G 02-09; N 26-08; L,Media,Titolarità.,matched
+7252,Stulic,Stulic,A,Lecce,Lecce,Fascia media,Ultimo slot,Quarto slot per N.,,,,,N 26-08; L,Media,Titolarità.,matched
+6519,Camarda,Camarda,A,Milan,Milan,Scommessa,Scommessa,Ultimo slot a prezzo minimo.,,Minuti incerti.,,,G 02-09; N 26-08; L,Media,Titolarità.,matched
+6397,Ramos G.,Ramos G.,A,Milan,Milan,Top,Prima scelta,Prima alternativa con prospettive da titolare.,,,,,G 02-09; N 26-08; L,Alta,Titolarità.,matched
+2155,Cutrone,Cutrone,A,Monza,Monza,Fascia media,Ultimo slot,Terza o quarta fascia condivisa.,,,,,G 02-09; N 26-08; L,Alta,Titolarità.,matched
+7523,Varela G.,Varela G.,A,Monza,Monza,Scommessa,Scommessa,Ultimo slot indicato da G.,,Minuti incerti.,,,G 02-09; L,Media,Titolarità.,matched
+7620,Zeballos,Zeballos,A,Monza,Monza,Scommessa,Scommessa,Ultimo slot indicato da G.,,Minuti incerti.,,,G 02-09; L,Media,Titolarità.,matched
+6052,Hojlund,Hojlund,A,Napoli,Napoli,Top,Prima scelta,Prima alternativa ai super top.,,,,,G 02-09; N 26-08; L,Alta,Titolarità.,matched
+7351,Santos A.,Santos A.,A,Napoli,Napoli,Semitop,Titolare,Seconda fascia per G e N.,,Rotazione possibile.,,,G 02-09; N 26-08; L,Media,Minuti.,matched
+7342,Elphege,Elphege,A,Parma,Parma,Fascia media,Ultimo slot,Terza o quarta fascia condivisa.,,Minuti da confermare.,,,G 02-09; N 26-08; L,Media,Titolarità.,matched
+6229,Tourè E.,Tourè E.,A,Parma,Parma,Fascia media,Ultimo slot,Terza o quarta fascia condivisa.,,,,,G 02-09; N 26-08; L,Alta,Titolarità.,matched
+6572,Castro S.,Castro S.,A,Roma,Roma,Semitop,Titolare,Seconda fascia condivisa.,,,,,G 02-09; N 26-08; L,Alta,Titolarità.,matched
+309,Dybala,Dybala,A,Roma,Roma,Top,Prima scelta,Utile al prezzo corretto.,,Gerarchia piazzati cambiata.,Secondo rigorista,,G 02-09; N 26-08; L,Alta,Rigorista principale.,matched
+5585,Malen,Malen,A,Roma,Roma,Super Top,Prima scelta,Primo slot assoluto condiviso.,,,,,G 02-09; N 26-08; L,Alta,,matched
+5734,Soulè,Soulè,A,Roma,Roma,Semitop,Seconda punta / partner,Seconda fascia condivisa.,,Rotazione possibile.,,,G 02-09; N 26-08; L,Media,Minuti.,matched
+531,Berardi,Berardi,A,Sassuolo,Sassuolo,Semitop,Titolare,Seconda fascia condivisa.,,,,,G 02-09; N 26-08; L,Alta,,matched
+7347,Bowie,Bowie,A,Sassuolo,Sassuolo,Scommessa,Scommessa,Ultimo slot a prezzo minimo.,,Minuti incerti.,,,G 02-09; N 26-08; L,Media,Titolarità.,matched
+4463,Esposito Se.,Esposito Se.,A,Sassuolo,Sassuolo,Semitop,Titolare,Seconda fascia per G.,,,,,G 02-09; L,Media,Titolarità.,matched
+6060,Laurientè,Laurientè,A,Sassuolo,Sassuolo,Semitop,Titolare,Seconda fascia per G.,,,,,G 02-09; L,Media,,matched
+6646,Adams C.,Adams C.,A,Torino,Torino,Fascia media,Ultimo slot,Terza fascia per G.,,,,,G 02-09; L,Media,Titolarità.,matched
+2061,Simeone,Simeone,A,Torino,Torino,Top,Prima scelta,Prima fascia condivisa.,,,,,G 02-09; N 26-08; L,Alta,Titolarità.,matched
+608,Zapata D.,Zapata D.,A,Torino,Torino,Fascia media,Ultimo slot,Terza o quarta fascia condivisa.,,,,,G 02-09; N 26-08; L,Alta,Titolarità.,matched
+5637,Davis K.,Davis K.,A,Udinese,Udinese,Top,Prima scelta,Prima fascia condivisa e valore sui rigori.,,,Primo rigorista,,G 02-09; N 26-08; L,Alta,Gerarchia rigori.,matched
+7484,Adams A.,Adams A.,A,Venezia,Venezia,Fascia media,Ultimo slot,Quarto slot citato da entrambe le fonti.,,Minuti da confermare.,,,G 02-09; N 26-08; L,Media,Titolarità.,matched
+7449,Rrahmani Al.,Rrahmani Al.,A,Venezia,Venezia,Scommessa,Scommessa,Ultimo slot indicato da N; nome ufficiale usato per evitare omonimia.,,Minuti incerti.,,,N 26-08; L,Media,Titolarità.,matched
+6904,Yeboah J.,Yeboah J.,A,Venezia,Venezia,Fascia media,Ultimo slot,Terza o quarta fascia condivisa.,,,,,G 02-09; N 26-08; L,Alta,Titolarità.,matched

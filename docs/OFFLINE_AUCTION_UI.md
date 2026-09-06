@@ -6,7 +6,7 @@ Prima dell'asta, genera gli artefatti della stagione e prepara (o sostituisci) l
 
 ```powershell
 python src/run_ranking.py --season 2026_27
-python src/extract_auction_guide_players.py --season 2026_27 --guide output/guida_unificata_asta_2026_27.md
+python src/connectors/unified_auction_guide.py --season 2026_27
 python src/build_snapshot.py
 ```
 

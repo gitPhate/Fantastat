@@ -1,270 +1,315 @@
 # Guida unificata all'asta 2026/27
 
-**Snapshot:** 5 settembre 2026  
-**Lega:** Classic, 10 squadre, 3 POR / 8 DIF / 8 CEN / 6 ATT, modificatore difesa  
-**Budget:** 500 crediti liberi + 50 utilizzabili soltanto per gli attaccanti
+Sintesi operativa per la lega (Classic, 10 squadre, 500 crediti liberi più 50 riservati agli attaccanti, modificatore difesa). La guida combina le indicazioni editoriali disponibili al 2 settembre 2026 con il listone Fantacalcio.it 2026/27 per squadra e ruolo. Non sostituisce ranking, quotazioni o verifiche alla chiamata.
 
-Questo documento consolida i materiali raccolti nella cartella della stagione e li adatta alle regole della lega. È una guida operativa per l'asta, non un listone né una previsione statistica. Ruoli, trasferimenti, infortuni, titolarità e gerarchie dei piazzati vanno confermati su Fantacalcio.it subito prima delle chiamate. [REG, righe 36-40 e 62-65; CONT, righe 31-36 e 46-50]
+## 1. Metodo e fonti
 
-## Come leggere le indicazioni
+- **G** — Goal.com, *Consigli Fantacalcio Serie A 2026/27*, pubblicato il 2 settembre 2026.
+- **N** — ilNapolista, *Consigli Fantacalcio 2026/27*, pubblicato il 26 agosto 2026.
+- **A** — `docs/GUIDA_ASTA.md`, guida generale della lega 2026/27.
+- **R** — `docs/RULES.md`, regolamento della lega 2026/27.
+- **L** — listone Fantacalcio.it 2026/27; usato soltanto per squadra corrente e ruolo Classic.
 
-- **Obiettivo:** profilo da comprare al prezzo corretto.
-- **Alternativa:** nome della stessa funzione da usare se l'obiettivo viene gonfiato.
-- **Scommessa:** upside interessante, ma solo negli ultimi slot e con titolari già acquistati.
-- **Rischio:** infortunio, ballottaggio, turnover, gerarchia o ruolo da verificare; richiede uno sconto.
-- I prezzi delle fonti Gazzetta e dei listoni Fantamaster misurano proporzioni, non sono prezzi attesi per questa asta: i listoni Fantamaster ragionano su budget diversi dal nostro (250/300/350 crediti). [GAZ, righe 5-8; FM250, riga 7]
+Le fonti G e N sono fotografie editoriali, non conferme di formazione. Le fasce sotto sono una riconciliazione prudenziale: l'accordo tra fonti alza la confidenza; una citazione singola, un ballottaggio o una diversa collocazione abbassano la confidenza. Le informazioni cliniche e i tempi di rientro sono esclusi e appartengono esclusivamente allo step 7 del workflow.
 
-## 1. Cosa cambia con le regole della nostra lega
+## 2. Strategia di lega
 
-In totale l'asta deve assegnare 30 portieri, 80 difensori, 80 centrocampisti e 60 attaccanti. La scarsità dei titolari è quindi reale, soprattutto negli ultimi slot. Campionato e Coppa durano tutta la stagione, gli svincoli sono limitati e un lungo infortunio non dà diritto a una sostituzione anticipata: continuità, salute e stabilità di club valgono più che in una lega corta. [REG, righe 5-17 e 36-48]
-
-Il modificatore usa il voto del portiere e i tre migliori voti puri dei difensori, quando se ne schierano almeno quattro. Il bonus parte da +1 con media 6,00, sale a +2 a 6,50 e +3 a 7,00. Di conseguenza servono almeno quattro difensori realmente schierabili, idealmente cinque o sei, e non soltanto esterni da bonus. [REG, righe 26-34; ASTA, righe 80-84]
-
-Lo storico interno mostra una spesa media vicina al 7% sui portieri, 13% sui difensori, 24% sui centrocampisti e 56% sugli attaccanti. Il tavolo tende a concentrare molti crediti sulle superstar offensive e a risparmiare dietro: i difensori solidi da modificatore e gli attaccanti di seconda fascia possono quindi diventare le inefficienze migliori. I dati storici sono incompleti e vanno usati come range, non come listino. [STO, righe 524-541]
-
-## 2. Piano di budget
-
-Piano principale, coerente con un 4-3-3 orientato al modificatore:
-
-| Reparto | Budget obiettivo | Principio |
-|---|---:|---|
-| Portieri | 35-45 | Valutare il costo del pacchetto, non del solo titolare. |
-| Difensori | 70-85 | Un premium o esterno da bonus + 3-4 voti affidabili + rotazioni. |
-| Centrocampisti | 100-115 | Un top, due/tre portatori di bonus, poi voto e titolarità. |
-| Attaccanti | 305-335 | 255-285 liberi + fino a 50 vincolati; un top oppure due semi-top. |
-
-La traccia documentale è 40/75/105/330 su 550 per il 4-3-3 con modificatore; SOS Fanta propone per una lega a 10 con modificatore 8%/19%/24%/49% su 500. I range sopra sono un adattamento, non un obbligo: scegliere valori che **sommati restino entro 550** (e non combinare fra loro tutti gli estremi superiori), poi ricalibrarli dopo le prime 10-15 aggiudicazioni. [ASTA, righe 31-41; BUD, righe 37-49]
-
-**Perché la difesa resta a 70-85 e non a 95.** Il 19% di SOS Fanta (95 crediti) è calcolato su un tavolo generico. Il nostro storico dice altro: la spesa media sui difensori è ~13% e il reparto è "il più livellato al ribasso", con 1-2 titolari da 10-35 crediti e tutto il resto a 1-5. In questa lega la qualità difensiva si compra a poco, quindi 70-85 permette già un premium più quattro voti affidabili; alzare la cifra significherebbe pagare sopra mercato proprio dove il tavolo non compete. Se però le prime aggiudicazioni mostrano più concorrenza del previsto sui centrali da voto, spostare qui 10-15 crediti presi dall'attacco: è l'unico reparto dove il modificatore rende accettabile sforare la traccia. [STO, righe 528-541; BUD, righe 45-49]
-
-**Regola di sicurezza:** il prezzo massimo tecnico è `crediti liberi residui - (slot residui - 1)`; per un attaccante si aggiunge soltanto il residuo dei 50 vincolati. Tenere i due portafogli separati durante tutta l'asta. [ASTA, righe 43-51]
+Il piano di riferimento della lega resta circa 40 crediti ai portieri, 70 ai difensori, 130 ai centrocampisti e 310 agli attaccanti, dei quali 50 vincolati al reparto offensivo. Con il modificatore servono almeno quattro difensori schierabili con voto stabile e un portiere affidabile. Per ogni obiettivo vanno fissati un prezzo massimo e almeno due alternative; in una lega a 10 la continuità di voto conta quanto l'upside.
 
 ## 3. Portieri
 
-### Strategia consigliata
-
-La scelta più lineare è un blocco di squadra quando la gerarchia è aperta, oppure una coppia di titolari con calendario complementare. Svilar (Roma) è il consenso più forte; Carnesecchi (Atalanta) e Falcone (Lecce) aggiungono valore da modificatore, mentre Butez (Como) e Josep Martinez (Inter) richiedono particolare attenzione ai rispettivi secondi. [SOS, righe 20-27; GAZ, righe 61-69; GOAL, righe 20-30; NAP, righe 21-29]
-
 | Fascia | Nomi | Uso all'asta |
-|---|---|---|
-| Super-top | **Svilar (Roma)** | Prima scelta condivisa; accettare il prezzo premium solo entro il tetto del pacchetto. |
-| Top | **Carnesecchi (Atalanta), Maignan (Milan), Vicario (Juventus), Josep Martinez (Inter), Butez (Como)** | Carnesecchi (Atalanta) per voto; coprire Martinez (Inter) con Provedel (Inter) e Butez (Como) con Sanchez (Como). |
-| Fascia media | **Meret (Napoli), De Gea (Fiorentina), Mandas (Lazio), Falcone (Lecce), Okoye (Udinese)** | Meret (Napoli) è il miglior rapporto qualità-prezzo del ruolo: titolare confermato del Napoli a una frazione del costo dei top. Mandas (Lazio) va comprato in pacchetto con Motta (Lazio). |
-| Low cost / alternanza | **Caprile (Cagliari), Bijlow (Genoa), Perri (Torino), Corvi (Parma), Muric (Sassuolo), Stankovic (Venezia)** | Soltanto con titolarità confermata e un secondo titolare complementare. |
+| --- | --- | --- |
+| Top | Butez (Como), Maignan (Milan), Martinez Jo. (Inter), Meret (Napoli), Svilar (Roma), Vicario (Juventus) | **Funzione:** Titolare sicuro; prime scelte editoriali, con copertura quando la gerarchia non è chiusa. |
+| Fascia alta | Carnesecchi (Atalanta), De Gea (Fiorentina), Falcone (Lecce), Mandas (Lazio), Okoye (Udinese) | **Funzione:** Titolare con riserva; alternative solide, con Falcone (Lecce) e Carnesecchi (Atalanta) particolarmente coerenti con il modificatore. |
+| Fascia media | Caprile (Cagliari), Muric (Sassuolo), Perri (Torino), Skorupski (Bologna), Stankovic F. (Venezia) | **Funzione:** Alternanza; valutare prezzo, calendario e conferma della titolarità. |
+| Scommessa | Corvi (Parma), Mascardi (Torino) | **Funzione:** Titolare con riserva; acquistare solo dopo verifica della gerarchia. |
+| Da monitorare | Sanchez Ro. (Como), Milinkovic-Savic V. (Napoli), Motta (Lazio), Provedel (Inter) | **Funzione:** Secondo da pacchetto; coperture citate nei ballottaggi delle rispettive porte. |
 
-Abbinamenti di calendario più interessanti: Roma-Bologna e Atalanta-Sassuolo (indice 95), Como-Udinese e Milan-Fiorentina/Lecce/Parma (93). Low cost: Genoa-Lecce (93), Genoa-Frosinone (92), Parma-Genoa o Bologna-Venezia (91). Il miglior terzetto low cost indicato è Genoa-Udinese-Lecce (100). [GRI, righe 7-45 e 47-62]
-
-**Gerarchie da non ignorare:** Butez-Sanchez (SOS lo classifica come ballottaggio aperto), Josep Martinez-Provedel, Mandas-Motta. Sono gli unici tre pacchetti da valutare come coppia. [GER, righe 26-29, 54-57 e 68-71; SOS, righe 10-16]
-
-**Napoli: nessun ballottaggio.** Tutte e cinque le fonti danno Meret (Napoli) titolare — SOS lo mette primo nella propria tabella gerarchie, Fantamaster scrive "titolare senza alcun tipo di ballottaggio" e inserisce Milinkovic-Savic (Napoli) tra i portieri da evitare, Gazzetta lo dà "molto più avanti" dopo l'arrivo di Allegri, Goal.com e ilNapolista lo indicano come possibile occasione perché poco valorizzato dall'hype. È il portiere con il miglior rapporto tra certezza di titolarità e prezzo atteso: comprarlo da solo, senza pagare il secondo. [GER, righe 96-99; FMP, righe 19-29 e 50-58; GAZP, riga 35; GAZM, riga 9; GOAL, righe 20-30; NAP, righe 21-29]
+Sintesi: Svilar (Roma), Butez (Como) e Maignan (Milan) hanno il consenso più netto. Meret (Napoli) è indicato come possibile valore, ma la presenza di Milinkovic-Savic V. (Napoli) impone di prezzare il pacchetto. Okoye (Udinese) è soprattutto una scelta da alternanza.
 
 ## 4. Difensori
 
-### Costruzione del reparto
+| Funzione | Fascia (fonti aggregate) | Priorità | Alternative | Nota d'asta |
+| --- | --- | --- | --- | --- |
+| Premium bonus | Super Top | Dimarco (Inter) | — | Massimo investimento del reparto: bonus, piazzati e impatto sul modificatore. |
+| Premium bonus | Top | Bremer (Juventus), Wesley (Roma), Mancini (Roma) | Bisseck (Inter), Akanji (Inter) | I primi tre sono indicati in alto da entrambe le fonti; Bisseck (Inter) e Akanji (Inter) ricevono valutazioni discordanti tra top e profilo da modificatore. |
+| Esterno da bonus | Fascia alta | Belghali (Torino), Celik (Juventus), Di Lorenzo (Napoli), Kempf (Como), Molina N. (Roma), Pavlovic (Milan), Scalvini (Atalanta), Solet (Udinese), Spence (Inter), Spinazzola (Napoli), Couto (Como) | Ostigard (Genoa), Cambiaso (Juventus) | Profili associati a bonus o pericolosità; verificare ruolo e minuti per gli esterni in concorrenza. |
+| Centrale da modificatore | Fascia alta | Bastoni (Inter), Rrahmani (Napoli), Gila (Milan), Kalulu (Juventus), N'Dicka (Roma), Mina (Cagliari) | Chalobah T. (Como), Diego Carlos (Parma), Haps (Venezia), Idzes (Sassuolo), Kristensen T. (Atalanta), Lucumì (Juventus), Miranda J. (Bologna), Ramon (Como), Tiago Gabriel (Lecce), Dodò (Fiorentina) | Blocco da buon voto per sostenere il modificatore; il prezzo deve riflettere la continuità di impiego. |
+| Scommessa | Scommessa | Bellanova (Atalanta), Bracaglia (Frosinone), Cinquegrano (Sassuolo), Comuzzo (Torino), Correia T. (Venezia), Doekhi (Lazio), Fortini (Torino), Heggem (Bologna), Jimenez A. (Fiorentina), Kaiki (Como), Mitaj (Genoa), Rensch (Roma), Stones (Inter) | — | Upside da pagare poco: titolarità, adattamento e concorrenza vanno verificati. |
 
-Obiettivo: un profilo premium, due centrali/titolari ad alta media, uno o due esterni da bonus e almeno due titolari economici. Non riempire la difesa di seconde linee delle big: con il modificatore la disponibilità settimanale è parte del valore. [GOAL, righe 32-47; NAP, righe 31-43]
-
-| Funzione | Priorità | Alternative / prezzo disciplinato | Note |
-|---|---|---|---|
-| Premium bonus + voto | **Dimarco (Inter)** | Wesley (Roma), Bremer (Juventus) | Dimarco (Inter) è il consenso assoluto; Bremer (Juventus) è forte per il modificatore ma va scontato per il rischio fisico. |
-| Top equilibrati | **Bastoni (Inter), Mancini (Roma), Pavlovic (Milan), Solet (Udinese)** | Akanji (Inter), Kalulu (Juventus), Ndicka (Roma), Di Lorenzo (Napoli) | Buon compromesso tra voto, titolarità e piazzati. |
-| Esterni da bonus | **Molina (Roma), Zappacosta (Atalanta), Spinazzola (Napoli), Cambiaso (Juventus)** | Celik (Juventus), Yan Couto (Como), Miranda (Bologna), Belghali (Torino) | Controllare modulo, concorrenza e coppe. |
-| Centrali da bonus + voto | **Ostigard (Genoa), Ramon (Como)** | Bisseck (Inter) | Centrali che segnano: uniscono voto da modificatore e minaccia sui piazzati. Non sono riempitivi. Ramon (Como) porta però molti malus, Ostigard (Genoa) cartellini. |
-| Centrali da modificatore | **Gila (Milan), Rrahmani (Napoli), Chalobah (Como)** | Lucumì (Juventus), Mina (Cagliari), Idzes (Sassuolo), Kristensen (Atalanta), Tiago Gabriel (Lecce) | Preferibili ai puri riempitivi se il prezzo resta medio-basso. |
-| Sorprese / low cost | **Koulierakis (Roma), Vojvoda (Udinese), Jimenez (Fiorentina), Pedraza (Lazio)** | Kaiki (Como), Valdepeñas (Como), Rensch (Roma), Lulli (Roma), Mitaj (Genoa), Drameh (Genoa) | Al massimo uno o due profili incerti nello stesso reparto. |
-
-Le fonti convergono soprattutto su Dimarco (Inter), Bremer (Juventus), Wesley (Roma), Bastoni (Inter), Mancini (Roma), Pavlovic (Milan), Solet (Udinese), Akanji (Inter), Kalulu (Juventus) e Ndicka (Roma). Ostigard (Genoa) è valutato in alto da tutte le fonti — Fantamaster lo mette tra i top ("devastante sugli inserimenti su palle inattive"), Goal.com e ilNapolista tra i titolari da bonus — quindi non va cercato come riempitivo di fine reparto. Vojvoda (Udinese) è un low cost tecnico che può entrare anche nelle rotazioni dei corner. [SOS, righe 28-34 e 82-89; GAZ, righe 47-59; FMD, righe 5-35; GOAL, righe 32-47; NAP, righe 31-43; FMT, righe 77-79]
-
-**Bonus nascosto sui rigori:** Solet (Udinese) è il secondo rigorista dell'Udinese per entrambe le fonti e Mina (Cagliari) il secondo del Cagliari per Fantamaster. A parità di prezzo con un centrale equivalente, è un vantaggio reale. [RIG, righe 112-116; FMR, righe 14-15 e 62-63]
-
-**Rischi espliciti:** Spence (Inter) non è ancora pienamente in gruppo; Kempf (Como), Carlos Augusto (Inter) e Pavard (Inter) sono appetibili soltanto se pagati come rotazioni, non come titolari certi. [IND, righe 43-53; SOS, righe 82-89]
-
-**Divergenze da non appiattire:**
-
-- **Stones (Inter) e Bisseck (Inter).** SOS Fanta li tratta come non titolari fissi, ma Fantamaster scrive "pochi dubbi su entrambi" per Stones (Inter) e Goal.com mette Bisseck (Inter) tra i **top** del ruolo. Prezzo da rotazione se si segue SOS, ma se al tavolo partono bassi il rischio è contenuto. [SOS, righe 82-89; FMD, riga 25; GOAL, riga 36]
-- **Hien (Atalanta).** SOS lo dà in dubbio per la 6ª giornata, Fantamaster lo dice fermo "fino a metà ottobre" e lo sconsiglia per il solo infortunio. Le due finestre non coincidono: verificare alla chiamata e, nel dubbio, usare la stima più lunga. [IND, riga 11; FMD, riga 39]
-
-**Ultimo arrivo da integrare:** Ricardo Rodriguez (Torino) torna al Torino ed è indicato come low cost di prima fascia, probabile centrale sinistro titolare nella difesa a tre e possibile vice-rigorista. È un profilo di copertura interessante, ma trasferimento e gerarchia sui rigori vanno confermati alla chiamata. [ARR, righe 18-28]
+La costruzione consigliata è un premium da bonus, tre o quattro titolari affidabili e non più di due scommesse. Non si attribuisce automaticamente una qualità da modificatore a un giocatore solo perché compare in una lista editoriale.
 
 ## 5. Centrocampisti
 
-### Gerarchia operativa
-
 | Fascia / funzione | Nomi | Motivo principale |
-|---|---|---|
-| Super-top | **Calhanoglu (Inter), Nico Paz (Como)** | Rigori e piazzati per il primo; bonus e punizioni per il secondo. |
-| Top | **McTominay (Napoli), Orsolini (Bologna), Pulisic (Milan), Rabiot (Milan), Baturina (Como), De Bruyne (Napoli), Frattesi (Lazio)** | Potenziale da doppia cifra o ruolo molto offensivo; scontare infortuni e minutaggio. |
-| Semi-top | **Zaccagni (Lazio), Vlasic (Torino), Zaniolo (Udinese), Atta (Fiorentina), Kessié (Atalanta), Mastantuono (Fiorentina), Mora (Roma), McKennie (Juventus), Zielinski (Inter)** | Molti hanno rigori/piazzati o giocano avanzati; più variabilità dei top. |
-| Rapporto qualità-prezzo | **Barella (Inter), Thorstvedt (Sassuolo), Mandragora (Torino), Perrone (Como), Da Cunha (Como), Ederson (Atalanta), Bernardeschi (Bologna), Politano (Napoli), Modric (Milan)** | Titolarità/voto con bonus realistici; utili come secondo-terzo slot. Modric (Milan) non è un low cost: SOS lo colloca in fascia alta e guida punizioni e corner del Milan. |
-| Upside / assist | **Rowe (Atalanta), Conceição (Juventus), Moreira (Milan), Sucic (Inter), Saelemaekers (Milan), Douglas Luiz (Juventus), Samardzic (Atalanta)** | Da prendere solo se ruolo e minuti sono confermati. |
-| Low cost da voto | **Cristante (Roma), Locatelli (Juventus), Frendrup (Genoa), Lobotka (Napoli), Busio (Venezia), Fazzini (Cagliari), Ferguson (Bologna), Karlstrom (Udinese)** | Servono a non dipendere da otto profili offensivi incerti. |
-| Scommesse finali | **Liberali (Como), Oulai (Fiorentina), Unai Gómez (Udinese), Romano (Cagliari), Fadera (Cagliari), Bakola (Sassuolo), Cissé (Verona), Meichtry (Genoa)** | Uno o due nomi, con almeno cinque/sei voti affidabili già in rosa. |
-
-Calhanoglu (Inter) e Nico Paz (Como) sono il consenso più netto. Orsolini (Bologna) guadagna valore se resta listato centrocampista e conserva rigori/piazzati; McTominay (Napoli) ha upside da top ma rientra da un problema medico; Pulisic (Milan) e Rabiot (Milan) vanno valutati nel ruolo reale del nuovo Milan. [SOS, righe 36-42 e 90-100; GAZ, righe 35-45; GOAL, righe 49-63; FMC, righe 5-31]
-
-Tra le possibili inefficienze del tavolo: Thorstvedt (Sassuolo) per titolarità e bonus, Barella (Inter) per continuità, Mandragora (Torino) se sottovalutato, Perrone (Como) per voto/assist, Frattesi (Lazio) per il nuovo ruolo. Le scommesse Liberali (Como), Oulai (Fiorentina), Unai Gómez (Udinese), Fadera (Cagliari) e Bakola (Sassuolo) ricorrono in più materiali Fantamaster, ma non vanno promosse automaticamente a titolari. [NAP, righe 51-59; FMS, righe 33-51; FMLC, righe 5-23]
-
-**Ruoli in conflitto tra le fonti.** In una lega Classic il ruolo a listone vale quanto il giocatore: questi tre casi vanno verificati sul listone ufficiale prima di assegnare un prezzo, perché le fonti non concordano.
-
-| Giocatore | Listato come | Conflitto |
-|---|---|---|
-| De Ketelaere (Atalanta) | Attaccante per SOS, Goal e ilNapolista | Fantamaster lo mette tra i **semitop di centrocampo**; è anche primo sulle punizioni dell'Atalanta per Fantamaster. |
-| Diao (Como) | Attaccante per SOS | Fantamaster lo elenca tra i **centrocampisti** di 3ª-4ª fascia. |
-| Gudmundsson (Lazio) | Centrocampista per SOS | Fantamaster lo elenca tra gli **attaccanti** di 3ª-4ª fascia e come terzo rigorista della Lazio. |
-
-[SOS, righe 52 e 93; FMC, righe 15 e 23; FMA, riga 28; FMT, riga 6; FMR, riga 36]
-
-**Ultimo arrivo da integrare:** El Shaarawy (Genoa) passa al Genoa ed è riportato come centrocampista di terzo-quarto slot. Nel 3-5-2 può giocare esterno o seconda punta e dovrebbe trovare più minuti, ma non parte ancora come titolare fisso: appetibile solo a prezzo da fascia media, senza pagare in anticipo il nuovo ruolo offensivo. Fantamaster lo inserisce già tra i tiratori di punizioni e corner del Genoa, terzo dietro Baldanzi e Messias: un piccolo argomento in più a parità di prezzo. [ARR, righe 10-16; FMT, righe 30-31]
+| --- | --- | --- |
+| Top — Premium bonus | Calhanoglu (Inter), McTominay (Napoli), Orsolini (Bologna), Paz N. (Como), Pulisic (Milan), Rabiot (Milan) | Consenso di vertice: gol, assist, voti e centralità offensiva. |
+| Fascia alta — Titolare offensivo | Barella (Inter), Baturina (Como), Da Cunha (Como), De Bruyne (Napoli), Ederson D.S. (Atalanta), Frattesi (Lazio), Kessiè (Atalanta), Mandragora (Torino), Moreira (Milan), Goncalves P. (Fiorentina), Politano (Napoli), Rowe (Atalanta), Thorstvedt (Sassuolo), Vlasic (Torino), Zaccagni (Lazio), Zaniolo (Udinese), Zielinski (Inter) | Nomi da bonus o qualità-prezzo; distinguere certezza di minuti e upside. |
+| Fascia media — Qualità-prezzo | Atta (Fiorentina), Bernabè (Parma), Bernardeschi (Bologna), Casadei (Torino), Ekkelenkamp (Udinese), Gudmundsson A. (Lazio), Isaksen (Lazio), Mastantuono (Fiorentina), McKennie (Juventus), Mora (Roma), Sucic P. (Inter), Taylor K. (Lazio) | Alternative offensive citate da una fonte; prezzo disciplinato e verifica del ruolo. |
+| Fascia media — Da voto | Baldanzi (Genoa), Busio (Venezia), Cristante (Roma), Fagioli (Fiorentina), Gaetano (Atalanta), Karlstrom (Udinese), Keita M. (Parma), Konè M. (Roma), Lobotka (Napoli), Locatelli (Juventus), Modric (Milan), Nicolussi Caviglia (Parma), Perrone (Como) | Continuità e copertura della formazione, con bonus secondari. |
+| Scommessa — Scommessa | Alajbegovic (Juventus), Cambiaghi (Bologna), Chukwueze (Milan), Jones C. (Inter), Milla (Como), Moro N. (Bologna), Pessina (Monza), Saelemaekers (Milan), Samardzic (Atalanta), Schmid (Frosinone), Stankovic A. (Inter) | Upside non ancora stabilizzato; da prendere a costo contenuto. |
 
 ## 6. Attaccanti
 
-### Piano A e piano B
-
-- **Piano A:** uno tra Malen (Roma) e Lautaro (Inter) entro il tetto prefissato, poi due titolari di fascia media, due profili da rotazione e una scommessa.
-- **Piano B:** se i due super-top superano il tetto, due tra Gonçalo Ramos (Milan), Hojlund (Napoli), Thuram (Inter), Kolo Muani (Juventus), Kean (Como)/Douvikas (Como) e Davis (Udinese), preservando crediti per quattro giocatori con voto.
-- I 50 crediti vincolati servono a migliorare la qualità complessiva del reparto, non a vincere a ogni costo una singola chiamata. [SOS, righe 44-54 e 66-72; GOAL, righe 88-95]
-
 | Fascia | Nomi | Valutazione |
-|---|---|---|
-| Super-top | **Malen (Roma), Lautaro Martinez (Inter)** | Investimento massimo; Malen (Roma) ha possibile quota rigori, Lautaro (Inter) non è il primo rigorista. |
-| Top / prima fascia | **Gonçalo Ramos (Milan), Hojlund (Napoli), Thuram (Inter)** | Alternative più pulite ai due super-top; monitorare rigori e turnover. |
-| Semi-top | **Kolo Muani (Juventus), Kean (Como), Douvikas (Como), Keinan Davis (Udinese), Dybala (Roma), Scamacca (Atalanta), Berardi (Sassuolo)** | Alto potenziale con concorrenza o rischio fisico; Davis (Udinese) è primo rigorista Udinese, Berardi (Sassuolo) lo è del Sassuolo ma con lo storico fisico da scontare. |
-| Fascia media titolare | **Simeone (Torino), Pinamonti (Lazio), Dovbyk (Bologna), De Ketelaere (Atalanta), Raspadori (Atalanta), Laurienté (Sassuolo), Colombo (Genoa)** | Base per completare il reparto senza dipendere da sole scommesse. Colombo (Genoa) è primo rigorista del Genoa per entrambe le fonti; Dovbyk (Bologna) è secondo o terzo del Bologna; Simeone (Torino) terzo del Torino per Fantamaster. |
-| Rotazioni di qualità | **Pio Esposito (Inter), Woltemade (Juventus), Krstovic (Atalanta), Castro (Roma), Soulé (Roma), Bonny (Inter), Pellegrino (Fiorentina), Piccoli (Bologna)** | Minuti e gerarchie da verificare; alcune coppie hanno costo complessivo rischioso. |
-| Low cost / ultimo slot | **El Bilal Touré (Parma), Akor (Venezia)/Che Adams (Torino), Raimondo (Frosinone), Bowie (Sassuolo), Geubbels (Lecce), Ghedjemis (Frosinone), Camarda (Milan), Kevin Carlos (Cagliari), Havel (Genoa), Lontani (Parma)** | Profilo da prezzo minimo o quasi, non sostituto di un titolare. |
+| --- | --- | --- |
+| Super Top | Martinez L. (Inter), Malen (Roma), Thuram (Inter) | **Funzione:** Prima scelta; i tre primi slot condivisi, con soglia fissata prima dell'asta. |
+| Top | Davis K. (Udinese), Douvikas (Como), Dovbyk (Bologna), Dybala (Roma), Hojlund (Napoli), Kean (Como), Kolo Muani (Juventus), Ramos G. (Milan), Scamacca (Atalanta), Simeone (Torino), Yildiz (Juventus) | **Funzione:** Prima scelta; concorrenza e gerarchie possono cambiare il prezzo. |
+| Semitop | Esposito F.P. (Inter), Santos A. (Napoli), Beto (Fiorentina), Boga (Juventus), Castro S. (Roma), De Ketelaere (Atalanta), Berardi (Sassuolo), Colombo (Genoa), Laurientè (Sassuolo), Pellegrino M. (Fiorentina), Pinamonti (Lazio), Raspadori (Atalanta), Esposito Se. (Sassuolo), Soulè (Roma), Woltemade (Juventus) | **Funzione:** Titolare; Esposito F.P. (Inter) è valutato più in alto da G che da N, mentre Pellegrino M. (Fiorentina) e Beto (Fiorentina) dipendono dalla gerarchia. |
+| Fascia media | Adams A. (Venezia), Adams C. (Torino), Bonny (Inter), Cutrone (Monza), Diao (Como), Elphege (Parma), Krstovic (Atalanta), Maldini (Cagliari), Noslin (Lazio), Nzola (Cagliari), Piccoli (Bologna), Stulic (Lecce), Tourè E. (Parma), Vitinha O. (Genoa), Zapata D. (Torino), Yeboah J. (Venezia) | **Funzione:** Ultimo slot; privilegiare voto e prezzo sostenibile. |
+| Scommessa | Bowie (Sassuolo), Camarda (Milan), Ekhator (Juventus), Geubbels (Lecce), Ghedjemis (Frosinone), Gnonto (Fiorentina), Kevin Carlos (Cagliari), Mendy P. (Cagliari), Raimondo (Frosinone), Rrahmani Al. (Venezia), Fernandez T. (Venezia), Varela G. (Monza), Zeballos (Monza) | **Funzione:** Scommessa; ultimi slot a prezzo minimo, con titolarità e collocazione da confermare. |
 
-Le convergenze più forti sono Malen (Roma) e Lautaro (Inter) sopra tutti, seguiti da Ramos (Milan), Hojlund (Napoli) e Thuram (Inter). Davis (Udinese) acquista valore dai rigori; Simeone (Torino) e Pinamonti (Lazio) sono nomi da titolarità; Pio Esposito (Inter) e Krstovic (Atalanta) possono produrre anche senza partire sempre dall'inizio. [SOS, righe 44-54 e 102-110; GAZ, righe 16-33; GOAL, righe 65-86; FMA, righe 5-39]
+## 7. Rigoristi e piazzati
 
-**Caso a parte — Yildiz (Juventus).** Goal.com e ilNapolista lo mettono in prima fascia (10 gol e 6 assist), ma è atteso in dubbio fino alla 13ª giornata ed è anche il primo tiratore di punizioni e corner della Juventus per SOS Fanta. Non entra nelle fasce sopra proprio per questo: ha senso solo a prezzo da scommessa, con il reparto già completo di titolari. [GOAL, riga 70; NAP, righe 65 e 71; IND, riga 53; TIR, righe 53-57]
+| Giocatore | Responsabilità normalizzata | Evidenza e cautela |
+| --- | --- | --- |
+| Dimarco (Inter) | Tiratore piazzati | G gli attribuisce valore anche per i piazzati; gerarchia specifica da confermare. |
+| Calhanoglu (Inter) | Primo rigorista | G e N lo valorizzano per i rigori; confermare la gerarchia alla chiamata. |
+| De Bruyne (Napoli) | Candidato ai rigori | G lo indica come possibile rigorista, non come gerarchia certa. |
+| Vlasic (Torino) | Primo rigorista | N lo descrive come rigorista; confermare alla chiamata. |
+| Davis K. (Udinese) | Primo rigorista | N collega esplicitamente il suo valore ai rigori; confermare la gerarchia. |
+| Dybala (Roma) | Secondo rigorista | Entrambe le fonti segnalano che non è più il rigorista principale. |
 
-**Coppie da non sovrappagare:** Kean-Douvikas, Kolo Muani-Woltemade, Scamacca-Krstovic, Pellegrino-Beto e Dovbyk-Piccoli. La copertura è sensata solo se il costo totale rimane inferiore a quello di due titolari indipendenti. Le fonti divergono persino sull'opportunità di alcune coppie: è un segnale per assegnare un prezzo individuale a ciascun giocatore. [SOS, righe 102-110 e 112-116; FMA, righe 14-33]
+Nessuna responsabilità viene inferita dal silenzio delle fonti. Per tutti gli altri giocatori il campo `rigori_piazzati` resta vuoto.
 
-## 7. Rigoristi e piazzati: premio da applicare con cautela
+## 8. Rischi e verifiche alla chiamata
 
-### Gerarchie più solide
+| Giocatore | Status non clinico | Da verificare |
+| --- | --- | --- |
+| Butez (Como) | Competizione interna | Gerarchia con Sanchez Ro. (Como) e costo del pacchetto. |
+| Meret (Napoli) | Competizione interna | Confermare il vantaggio su Milinkovic-Savic V. (Napoli). |
+| Martinez Jo. (Inter) | Gerarchia da confermare | Rapporto con Provedel (Inter) e costo del pacchetto. |
+| Mandas (Lazio) | Gerarchia da confermare | Rapporto con Motta (Lazio) e costo del pacchetto. |
+| Molina N. (Roma) | Minuti e ruolo incerti | Collocazione e continuità d'impiego. |
+| Spinazzola (Napoli) | Minuti e ruolo incerti | Collocazione e continuità d'impiego. |
+| De Bruyne (Napoli) | Ruolo e minuti da consolidare | Centralità, minutaggio e gerarchia dei rigori. |
+| Mastantuono (Fiorentina) | Minuti incerti | Ruolo effettivo e continuità. |
+| Goncalves P. (Fiorentina) | Minuti incerti | Ruolo effettivo e continuità. |
+| Rowe (Atalanta) | Minuti incerti | Ruolo effettivo e continuità. |
+| Douvikas (Como) | Competizione interna | Gerarchia con Kean (Como); evitare di assumere che la coppia sia automaticamente conveniente. |
+| Kean (Como) | Competizione interna | Gerarchia con Douvikas (Como). |
+| Dybala (Roma) | Gerarchia piazzati cambiata | Confermare il rigorista principale. |
+| Pellegrino M. (Fiorentina) | Competizione interna | Gerarchia con Beto (Fiorentina). |
+| Beto (Fiorentina) | Competizione interna | Gerarchia con Pellegrino M. (Fiorentina). |
+| Scamacca (Atalanta) | Competizione interna | Gerarchia con Krstovic (Atalanta). |
+| Krstovic (Atalanta) | Competizione interna | Gerarchia con Scamacca (Atalanta). |
 
-Le due fonti (SOS Fanta e Fantamaster) concordano sul primo rigorista di queste undici squadre.
+## 9. Schede giocatore normalizzate
 
-| Squadra | Rigori | Punizioni / corner di maggiore interesse |
-|---|---|---|
-| Bologna | Orsolini (Bologna), poi Bernardeschi (Bologna) e Dovbyk (Bologna) | Orsolini (Bologna), Bernardeschi (Bologna) |
-| Cagliari | Nzola (Cagliari) | Maldini (Cagliari), Fazzini (Cagliari), Winks (Cagliari) |
-| Genoa | Colombo (Genoa) | Baldanzi, Messias, Mitaj (Genoa) |
-| Inter | Calhanoglu (Inter) | Calhanoglu (Inter), Dimarco (Inter), Zielinski (Inter) |
-| Lecce | Geubbels (Lecce) | Gerarchia piazzati discordante: Ilic-Gallo per SOS, Pierotti-Berisha per Fantamaster |
-| Monza | Pessina (Monza) al rientro | Colpani (Monza), Pessina (Monza), Ciurria (Monza) |
-| Roma | Malen (Roma) e Dybala (Roma) quasi alla pari, Malen (Roma) avanti per continuità fisica | Dybala (Roma), Soulé (Roma), Pellegrini (Roma) |
-| Sassuolo | Berardi (Sassuolo) | Berardi (Sassuolo), Laurienté (Sassuolo) |
-| Torino | Vlasic (Torino), poi Mandragora (Torino) | Vlasic (Torino), Mandragora (Torino), Rodriguez (Torino) |
-| Udinese | Davis (Udinese), poi Solet (Udinese) | Zaniolo (Udinese), Ekkelenkamp (Udinese), Vojvoda (Udinese) |
-| Venezia | Busio (Venezia) | Busio (Venezia), Kike Pérez, Basic |
+Questa sezione è la fonte umana di verità. `L` sostiene squadra e ruolo; `G` e `N` sostengono giudizio editoriale e note. Un campo vuoto significa soltanto che le fonti consultate non forniscono evidenza sufficiente.
 
-[RIG, righe 11-21, 40-50, 65-69, 77-79, 92-122; TIR, righe 11-21, 41-51, 65-69, 77-81, 95-123; FMR, righe 8-66; FMT, righe 5-83]
+### Portieri
 
-### Gerarchie aperte o discordanti
+| nome_guida | squadra_guida | fascia | funzione | note | status_rischi | rigori_piazzati | gerarchia_pacchetto | fonti | confidenza | da_verificare |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Butez | Como | Top | Titolare con riserva | Prima fascia condivisa. | Competizione interna. | | Butez (Como)–Sanchez Ro. (Como) | G 02-09; N 26-08; L | Alta | Gerarchia e costo coppia. |
+| Maignan | Milan | Top | Titolare sicuro | Prima fascia condivisa. | | | | G 02-09; N 26-08; L | Alta | |
+| Martinez Jo. | Inter | Top | Titolare con riserva | Prima fascia condivisa; le fonti usano una grafia estesa diversa. | Gerarchia da confermare. | | Martinez Jo. (Inter)–Provedel (Inter) | G 02-09; N 26-08; L | Media | Gerarchia e costo coppia. |
+| Meret | Napoli | Top | Titolare con riserva | Possibile valore qualità-prezzo. | Competizione interna. | | Meret (Napoli)–Milinkovic-Savic V. (Napoli) | G 02-09; N 26-08; L | Alta | Confermare titolare. |
+| Svilar | Roma | Top | Titolare sicuro | Riferimento condiviso per rendimento. | | | | G 02-09; N 26-08; L | Alta | |
+| Vicario | Juventus | Top | Titolare sicuro | Top per N, consigliato per G. | | | | G 02-09; N 26-08; L | Media | |
+| Carnesecchi | Atalanta | Fascia alta | Titolare sicuro | Alternativa forte, adatta al modificatore. | | | | G 02-09; N 26-08; L | Alta | |
+| De Gea | Fiorentina | Fascia alta | Titolare sicuro | Consigliato da entrambe le fonti. | | | | G 02-09; N 26-08; L | Alta | |
+| Falcone | Lecce | Fascia alta | Titolare sicuro | Profilo associato al modificatore. | | | | G 02-09; N 26-08; L | Alta | |
+| Mandas | Lazio | Fascia alta | Titolare con riserva | Consigliato, con gerarchia aperta. | Gerarchia da confermare. | | Mandas (Lazio)–Motta (Lazio) | G 02-09; N 26-08; L | Media | Gerarchia e costo coppia. |
+| Okoye | Udinese | Fascia alta | Alternanza | Indicato soprattutto per alternanza. | | | | G 02-09; N 26-08; L | Alta | Calendario. |
+| Caprile | Cagliari | Fascia media | Alternanza | Alternativa o scommessa condivisa. | | | | G 02-09; N 26-08; L | Alta | Titolarità. |
+| Muric | Sassuolo | Fascia media | Alternanza | Alternativa o scommessa condivisa. | | | | G 02-09; N 26-08; L | Alta | Titolarità. |
+| Perri | Torino | Fascia media | Alternanza | Alternativa indicata da G. | | | | G 02-09; L | Media | Titolarità. |
+| Skorupski | Bologna | Fascia media | Titolare sicuro | Alternativa o scommessa condivisa. | | | | G 02-09; N 26-08; L | Alta | |
+| Stankovic F. | Venezia | Fascia media | Titolare con riserva | Scommessa condivisa da confermare. | Minuti da confermare. | | | G 02-09; N 26-08; L | Media | Titolarità. |
+| Corvi | Parma | Scommessa | Titolare con riserva | Scommessa condivisa da confermare. | Minuti da confermare. | | | G 02-09; N 26-08; L | Media | Titolarità. |
+| Mascardi | Torino | Scommessa | Titolare con riserva | Scommessa indicata da N. | Minuti da confermare. | | | N 26-08; L | Bassa | Titolarità. |
+| Sanchez Ro. | Como | Da monitorare | Secondo da pacchetto | Copertura citata per Butez (Como). | Gerarchia da confermare. | | Butez (Como)–Sanchez Ro. (Como) | G 02-09; N 26-08; L | Media | Gerarchia. |
+| Milinkovic-Savic V. | Napoli | Da monitorare | Secondo da pacchetto | Copertura citata per Meret (Napoli). | Gerarchia da confermare. | | Meret (Napoli)–Milinkovic-Savic V. (Napoli) | G 02-09; N 26-08; L | Media | Gerarchia. |
+| Motta | Lazio | Da monitorare | Secondo da pacchetto | Copertura citata per Mandas (Lazio). | Gerarchia da confermare. | | Mandas (Lazio)–Motta (Lazio) | G 02-09; N 26-08; L | Media | Gerarchia. |
+| Provedel | Inter | Da monitorare | Secondo da pacchetto | Copertura citata per Martinez Jo. (Inter). | Gerarchia da confermare. | | Martinez Jo. (Inter)–Provedel (Inter) | G 02-09; N 26-08; L | Media | Gerarchia. |
 
-- **Atalanta:** Kessié-Scamacca sui rigori. Sui piazzati le fonti divergono: SOS Fanta indica Samardzic (Atalanta) come specialista principale, Fantamaster mette De Ketelaere (Atalanta) primo sulle punizioni e Gaetano (Atalanta) primo sui corner. Nessuno dei tre va pagato come specialista sicuro.
-- **Como:** Da Cunha (Como) davanti a Kean (Como); Douvikas (Como) e Baturina (Como) restano candidati, Nico Paz (Como) guida le punizioni.
-- **Fiorentina:** SOS Fanta segnala gerarchia tutta da definire e mette Mastantuono (Fiorentina) davanti; Fantamaster mette Gonçalves davanti. Nessun premio pieno da rigorista finché non emerge una scelta stabile.
-- **Frosinone:** SOS Fanta mette Schmid (Frosinone) davanti, Fantamaster Calò (Frosinone). Sui piazzati però entrambe indicano Calò (Frosinone) come primo tiratore: è il nome con più valore garantito.
-- **Juventus:** Kolo Muani (Juventus), Locatelli (Juventus) e Woltemade (Juventus) sono in competizione; anche le liste di punizioni/corner divergono molto (SOS: Yildiz (Juventus), Cambiaso (Juventus), Locatelli (Juventus); Fantamaster: Douglas Luiz (Juventus), Alajbegovic (Juventus), Locatelli (Juventus)). Va ricordato che Yildiz (Juventus), primo tiratore per SOS, è atteso in dubbio fino alla 13ª giornata.
-- **Lazio:** Zaccagni (Lazio), Taylor (Lazio) e Pinamonti (Lazio) per SOS; Fantamaster inserisce Gudmundsson (Lazio) terzo, davanti a Pinamonti (Lazio). Zaccagni (Lazio) rimane il nome più completo anche sui piazzati.
-- **Milan:** Gonçalo Ramos-Pulisic; Modric (Milan) guida molti piazzati.
-- **Napoli:** De Bruyne-Hojlund; Politano (Napoli) è alternativa e specialista mancino.
-- **Parma:** SOS Fanta mette El Bilal Touré (Parma) davanti sui rigori, Fantamaster Bernabé (Parma); sui piazzati entrambe mettono Bernabé (Parma) primo. Gerarchia da non monetizzare prima della conferma.
+### Difensori
 
-[RIG, righe 5-10, 22-39, 51-64, 71-76, 81-91; FMR, righe 8-66; TIR, righe 5-10, 23-40, 53-64, 71-76, 83-94; FMT, righe 5-83; IND, riga 53]
+| nome_guida | squadra_guida | fascia | funzione | note | status_rischi | rigori_piazzati | gerarchia_pacchetto | fonti | confidenza | da_verificare |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Dimarco | Inter | Super Top | Premium bonus | Massimo investimento del reparto e impatto sul modificatore. | | Tiratore piazzati | | G 02-09; N 26-08; L | Alta | Gerarchia piazzati. |
+| Bremer | Juventus | Top | Centrale da modificatore | Centrale premium condiviso. | | | | G 02-09; N 26-08; L | Alta | |
+| Wesley | Roma | Top | Premium bonus | Top condiviso. | | | | G 02-09; N 26-08; L | Alta | |
+| Mancini | Roma | Top | Centrale da modificatore | Top condiviso. | | | | G 02-09; N 26-08; L | Alta | |
+| Bisseck | Inter | Semitop | Centrale da modificatore | Top per G, da buon voto per N. | Valutazione editoriale discordante. | | | G 02-09; N 26-08; L | Media | Minuti. |
+| Akanji | Inter | Semitop | Centrale da modificatore | Da buon voto per G, top per N. | Valutazione editoriale discordante. | | | G 02-09; N 26-08; L | Media | Minuti. |
+| Belghali | Torino | Fascia alta | Esterno da bonus | Titolare da bonus per G. | | | | G 02-09; L | Media | Minuti. |
+| Celik | Juventus | Fascia alta | Esterno da bonus | Titolare da bonus per G. | | | | G 02-09; L | Media | Ruolo e minuti. |
+| Di Lorenzo | Napoli | Fascia alta | Esterno da bonus | Titolare da bonus condiviso. | | | | G 02-09; N 26-08; L | Alta | |
+| Kempf | Como | Fascia alta | Premium bonus | Titolare da bonus condiviso. | | | | G 02-09; N 26-08; L | Alta | |
+| Molina N. | Roma | Fascia alta | Esterno da bonus | Esterno da bonus condiviso. | Minuti e ruolo incerti. | | | G 02-09; N 26-08; L | Media | Collocazione e minuti. |
+| Pavlovic | Milan | Fascia alta | Premium bonus | Centrale con pericolosità offensiva. | | | | G 02-09; N 26-08; L | Alta | |
+| Scalvini | Atalanta | Fascia alta | Titolare affidabile | Titolare da bonus condiviso. | | | | G 02-09; N 26-08; L | Alta | Minuti. |
+| Solet | Udinese | Fascia alta | Premium bonus | Titolare da bonus condiviso. | | | | G 02-09; N 26-08; L | Alta | |
+| Spence | Inter | Fascia alta | Esterno da bonus | Titolare da bonus condiviso. | Rotazione possibile. | | | G 02-09; N 26-08; L | Media | Minuti. |
+| Spinazzola | Napoli | Fascia alta | Esterno da bonus | Esterno da bonus condiviso. | Minuti e ruolo incerti. | | | G 02-09; N 26-08; L | Media | Collocazione e minuti. |
+| Couto | Como | Fascia alta | Esterno da bonus | Titolare da bonus condiviso. | | | | G 02-09; N 26-08; L | Alta | Minuti. |
+| Ostigard | Genoa | Fascia alta | Premium bonus | Centrale con capacità realizzativa. | | | | G 02-09; N 26-08; L | Alta | |
+| Cambiaso | Juventus | Fascia alta | Esterno da bonus | Titolare da bonus per N. | | | | N 26-08; L | Media | Minuti. |
+| Bastoni | Inter | Fascia alta | Centrale da modificatore | Profilo da buon voto condiviso. | | | | G 02-09; N 26-08; L | Alta | |
+| Rrahmani | Napoli | Fascia alta | Centrale da modificatore | Profilo da buon voto condiviso. | | | | G 02-09; N 26-08; L | Alta | |
+| Gila | Milan | Fascia alta | Centrale da modificatore | Profilo da buon voto condiviso. | | | | G 02-09; N 26-08; L | Alta | |
+| Kalulu | Juventus | Fascia alta | Centrale da modificatore | Profilo da buon voto condiviso. | | | | G 02-09; N 26-08; L | Alta | |
+| N'Dicka | Roma | Fascia alta | Centrale da modificatore | Profilo da buon voto condiviso. | | | | G 02-09; N 26-08; L | Alta | |
+| Mina | Cagliari | Fascia alta | Centrale da modificatore | Specialista del modificatore secondo N. | | | | G 02-09; N 26-08; L | Alta | |
+| Chalobah T. | Como | Fascia alta | Centrale da modificatore | Profilo da buon voto condiviso. | | | | G 02-09; N 26-08; L | Alta | |
+| Diego Carlos | Parma | Fascia alta | Centrale da modificatore | Profilo da buon voto per G. | | | | G 02-09; L | Media | |
+| Haps | Venezia | Fascia alta | Titolare affidabile | Profilo da buon voto condiviso. | | | | G 02-09; N 26-08; L | Alta | |
+| Idzes | Sassuolo | Fascia alta | Centrale da modificatore | Profilo da buon voto condiviso. | | | | G 02-09; N 26-08; L | Alta | |
+| Kristensen T. | Atalanta | Fascia alta | Centrale da modificatore | Profilo da buon voto condiviso. | | | | G 02-09; N 26-08; L | Alta | |
+| Lucumì | Juventus | Fascia alta | Centrale da modificatore | Profilo da buon voto condiviso. | | | | G 02-09; N 26-08; L | Alta | |
+| Miranda J. | Bologna | Fascia alta | Centrale da modificatore | Profilo da buon voto condiviso. | | | | G 02-09; N 26-08; L | Alta | |
+| Ramon | Como | Fascia alta | Centrale da modificatore | Profilo da buon voto condiviso. | | | | G 02-09; N 26-08; L | Alta | |
+| Tiago Gabriel | Lecce | Fascia alta | Centrale da modificatore | Profilo da buon voto condiviso. | | | | G 02-09; N 26-08; L | Alta | |
+| Dodò | Fiorentina | Fascia alta | Centrale da modificatore | Profilo da buon voto per N. | | | | N 26-08; L | Media | |
+| Bellanova | Atalanta | Scommessa | Scommessa | Upside indicato da G. | Minuti da confermare. | | | G 02-09; L | Media | Titolarità. |
+| Bracaglia | Frosinone | Scommessa | Scommessa | Upside indicato da G. | Minuti da confermare. | | | G 02-09; L | Media | Titolarità. |
+| Cinquegrano | Sassuolo | Scommessa | Scommessa | Upside indicato da G. | Minuti da confermare. | | | G 02-09; L | Media | Titolarità. |
+| Comuzzo | Torino | Scommessa | Scommessa | Upside indicato da G. | Minuti da confermare. | | | G 02-09; L | Media | Titolarità. |
+| Correia T. | Venezia | Scommessa | Scommessa | Upside indicato da G. | Minuti da confermare. | | | G 02-09; L | Media | Titolarità. |
+| Doekhi | Lazio | Scommessa | Scommessa | Upside indicato da G. | Minuti da confermare. | | | G 02-09; L | Media | Titolarità. |
+| Fortini | Torino | Scommessa | Scommessa | Upside indicato da G. | Minuti da confermare. | | | G 02-09; L | Media | Titolarità. |
+| Heggem | Bologna | Scommessa | Scommessa | Upside indicato da G. | Minuti da confermare. | | | G 02-09; L | Media | Titolarità. |
+| Jimenez A. | Fiorentina | Scommessa | Scommessa | Upside indicato da G. | Minuti da confermare. | | | G 02-09; L | Media | Titolarità. |
+| Kaiki | Como | Scommessa | Scommessa | Upside indicato da G. | Minuti da confermare. | | | G 02-09; L | Media | Titolarità. |
+| Mitaj | Genoa | Scommessa | Scommessa | Upside indicato da G. | Minuti da confermare. | | | G 02-09; L | Media | Titolarità. |
+| Rensch | Roma | Scommessa | Scommessa | Upside indicato da G. | Minuti da confermare. | | | G 02-09; L | Media | Titolarità. |
+| Stones | Inter | Scommessa | Scommessa | Upside indicato da G. | Minuti da confermare. | | | G 02-09; L | Media | Titolarità. |
 
-## 8. Infortuni e altri rischi da prezzare
+### Centrocampisti
 
-La fotografia degli indisponibili è del 3 settembre e può diventare obsoleta rapidamente. I casi con maggiore impatto d'asta sono:
+| nome_guida | squadra_guida | fascia | funzione | note | status_rischi | rigori_piazzati | gerarchia_pacchetto | fonti | confidenza | da_verificare |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Calhanoglu | Inter | Top | Premium bonus | Voti, bonus e rigori. | | Primo rigorista | | G 02-09; N 26-08; L | Alta | Gerarchia rigori. |
+| McTominay | Napoli | Top | Premium bonus | Profilo da doppia cifra condiviso. | | | | G 02-09; N 26-08; L | Alta | |
+| Orsolini | Bologna | Top | Premium bonus | Profilo da doppia cifra condiviso. | | | | G 02-09; N 26-08; L | Alta | |
+| Paz N. | Como | Top | Premium bonus | Profilo da doppia cifra condiviso. | | | | G 02-09; N 26-08; L | Alta | |
+| Pulisic | Milan | Top | Premium bonus | Top condiviso. | | | | G 02-09; N 26-08; L | Alta | |
+| Rabiot | Milan | Top | Premium bonus | Top condiviso. | | | | G 02-09; N 26-08; L | Alta | |
+| Barella | Inter | Fascia alta | Titolare offensivo | Secondo slot affidabile. | | | | G 02-09; N 26-08; L | Alta | |
+| Baturina | Como | Fascia alta | Titolare offensivo | Voti e bonus. | | | | G 02-09; N 26-08; L | Alta | |
+| Da Cunha | Como | Fascia alta | Titolare offensivo | Profilo completo e qualità-prezzo. | | | | G 02-09; N 26-08; L | Alta | |
+| De Bruyne | Napoli | Fascia alta | Titolare offensivo | Upside molto alto, prezzo prudente. | Ruolo e minuti da consolidare. | Candidato ai rigori | | G 02-09; N 26-08; L | Media | Minuti e gerarchia rigori. |
+| Ederson D.S. | Atalanta | Fascia alta | Titolare offensivo | Titolare da bonus condiviso. | | | | G 02-09; N 26-08; L | Alta | |
+| Frattesi | Lazio | Fascia alta | Titolare offensivo | Potenziale rilancio e bonus. | Ruolo da consolidare. | | | G 02-09; N 26-08; L | Media | Minuti. |
+| Kessiè | Atalanta | Fascia alta | Titolare offensivo | Titolare da bonus per G. | | | | G 02-09; L | Media | Minuti. |
+| Mandragora | Torino | Fascia alta | Qualità-prezzo | Occasione condivisa. | | | | G 02-09; N 26-08; L | Alta | |
+| Moreira | Milan | Fascia alta | Titolare offensivo | Titolare da bonus condiviso. | | | | G 02-09; N 26-08; L | Alta | Minuti. |
+| Goncalves P. | Fiorentina | Fascia alta | Titolare offensivo | Upside alto per G. | Minuti incerti. | | | G 02-09; L | Media | Ruolo e minuti. |
+| Politano | Napoli | Fascia alta | Titolare offensivo | Titolare da bonus condiviso. | | | | G 02-09; N 26-08; L | Alta | Minuti. |
+| Rowe | Atalanta | Fascia alta | Titolare offensivo | Upside alto condiviso. | Minuti incerti. | | | G 02-09; N 26-08; L | Media | Ruolo e minuti. |
+| Thorstvedt | Sassuolo | Fascia alta | Qualità-prezzo | Titolare e bonus a prezzo sostenibile. | | | | G 02-09; N 26-08; L | Alta | |
+| Vlasic | Torino | Fascia alta | Titolare offensivo | Bonus e rigori. | | Primo rigorista | | G 02-09; N 26-08; L | Alta | Gerarchia rigori. |
+| Zaccagni | Lazio | Fascia alta | Titolare offensivo | Titolare da bonus condiviso. | | | | G 02-09; N 26-08; L | Alta | |
+| Zaniolo | Udinese | Fascia alta | Titolare offensivo | Titolare da bonus condiviso. | Minuti da confermare. | | | G 02-09; N 26-08; L | Media | Titolarità. |
+| Zielinski | Inter | Fascia alta | Titolare offensivo | Titolare da bonus condiviso. | Rotazione possibile. | | | G 02-09; N 26-08; L | Media | Minuti. |
+| Atta | Fiorentina | Fascia media | Titolare offensivo | Alternativa da bonus per N. | | | | N 26-08; L | Media | Minuti. |
+| Bernabè | Parma | Fascia media | Titolare offensivo | Alternativa da bonus per N. | | | | N 26-08; L | Media | |
+| Bernardeschi | Bologna | Fascia media | Titolare offensivo | Alternativa da bonus per N. | | | | N 26-08; L | Media | Minuti. |
+| Casadei | Torino | Fascia media | Titolare offensivo | Alternativa da bonus per N. | | | | N 26-08; L | Media | Minuti. |
+| Ekkelenkamp | Udinese | Fascia media | Titolare offensivo | Alternativa da bonus per N. | | | | N 26-08; L | Media | Minuti. |
+| Gudmundsson A. | Lazio | Fascia media | Titolare offensivo | Alternativa da bonus per N. | | | | N 26-08; L | Media | Minuti. |
+| Isaksen | Lazio | Fascia media | Titolare offensivo | Alternativa da bonus per N. | Rotazione possibile. | | | N 26-08; L | Media | Minuti. |
+| Mastantuono | Fiorentina | Fascia media | Scommessa | Upside alto da verificare. | Minuti incerti. | | | G 02-09; N 26-08; L | Media | Ruolo e minuti. |
+| McKennie | Juventus | Fascia media | Titolare offensivo | Alternativa da bonus per N. | Rotazione possibile. | | | N 26-08; L | Media | Minuti. |
+| Mora | Roma | Fascia media | Titolare offensivo | Alternativa da bonus per N. | | | | N 26-08; L | Media | Minuti. |
+| Sucic P. | Inter | Fascia media | Titolare offensivo | Alternativa da bonus per N. | Rotazione possibile. | | | N 26-08; L | Media | Minuti. |
+| Taylor K. | Lazio | Fascia media | Titolare offensivo | Alternativa da bonus per N. | | | | N 26-08; L | Media | Minuti. |
+| Baldanzi | Genoa | Fascia media | Da voto | Profilo per continuità di voto. | | | | G 02-09; N 26-08; L | Alta | Minuti. |
+| Busio | Venezia | Fascia media | Da voto | Profilo per continuità di voto. | | | | G 02-09; N 26-08; L | Alta | |
+| Cristante | Roma | Fascia media | Da voto | Profilo per continuità di voto. | | | | N 26-08; L | Media | |
+| Fagioli | Fiorentina | Fascia media | Da voto | Profilo per continuità di voto. | | | | G 02-09; L | Media | |
+| Gaetano | Atalanta | Fascia media | Da voto | Da voto per G, scommessa per N. | Valutazione editoriale discordante. | | | G 02-09; N 26-08; L | Media | Ruolo e minuti. |
+| Karlstrom | Udinese | Fascia media | Da voto | Profilo per continuità di voto. | | | | N 26-08; L | Media | |
+| Keita M. | Parma | Fascia media | Da voto | Profilo per continuità di voto. | | | | N 26-08; L | Media | |
+| Konè M. | Roma | Fascia media | Da voto | Profilo per continuità di voto. | | | | G 02-09; N 26-08; L | Alta | |
+| Lobotka | Napoli | Fascia media | Da voto | Profilo per continuità di voto. | | | | G 02-09; N 26-08; L | Alta | |
+| Locatelli | Juventus | Fascia media | Da voto | Profilo per continuità di voto. | | | | G 02-09; N 26-08; L | Alta | |
+| Modric | Milan | Fascia media | Da voto | Profilo per continuità di voto. | | | | G 02-09; N 26-08; L | Alta | Minuti. |
+| Nicolussi Caviglia | Parma | Fascia media | Da voto | Profilo per continuità di voto. | | | | N 26-08; L | Media | |
+| Perrone | Como | Fascia media | Da voto | Profilo affidabile condiviso. | | | | G 02-09; N 26-08; L | Alta | |
+| Alajbegovic | Juventus | Scommessa | Scommessa | Upside da pagare poco. | Minuti incerti. | | | N 26-08; L | Media | Titolarità. |
+| Cambiaghi | Bologna | Scommessa | Scommessa | Upside da pagare poco. | Minuti incerti. | | | N 26-08; L | Media | Titolarità. |
+| Chukwueze | Milan | Scommessa | Scommessa | Upside da pagare poco. | Minuti incerti. | | | N 26-08; L | Media | Titolarità. |
+| Jones C. | Inter | Scommessa | Scommessa | Upside da pagare poco. | Minuti incerti. | | | N 26-08; L | Media | Titolarità. |
+| Milla | Como | Scommessa | Scommessa | Upside da pagare poco. | Minuti incerti. | | | N 26-08; L | Media | Titolarità. |
+| Moro N. | Bologna | Scommessa | Scommessa | Upside da pagare poco. | Minuti incerti. | | | N 26-08; L | Media | Titolarità. |
+| Pessina | Monza | Scommessa | Scommessa | Upside da pagare poco. | Minuti incerti. | | | N 26-08; L | Media | Titolarità. |
+| Saelemaekers | Milan | Scommessa | Scommessa | Upside da pagare poco. | Minuti incerti. | | | N 26-08; L | Media | Titolarità. |
+| Samardzic | Atalanta | Scommessa | Scommessa | Upside da pagare poco. | Minuti incerti. | | | N 26-08; L | Media | Titolarità. |
+| Schmid | Frosinone | Scommessa | Scommessa | Upside da pagare poco. | Minuti incerti. | | | N 26-08; L | Media | Titolarità. |
+| Stankovic A. | Inter | Scommessa | Scommessa | Upside da pagare poco. | Minuti incerti. | | | N 26-08; L | Media | Titolarità. |
 
-| Giocatore | Stato riportato | Impatto operativo |
-|---|---|---|
-| Koné I. (Roma) | Dubbio fino alla 20ª | Assenza più lunga di tutta la tabella: mezza stagione. Fuori lista, salvo prezzo simbolico. |
-| Thuram K. (Juventus) | Dubbio fino alla 17ª | Solo prezzo da scommessa con ampia copertura. |
-| Yildiz (Juventus) | Dubbio fino alla 13ª | Forte sconto; non costruirgli attorno il reparto. |
-| Addai (Como) | Dubbio fino alla 6ª | La fonte indica la 6ª, ma il problema riportato è la rottura del tendine d'Achille: la finestra realistica è molto più lunga. Trattarlo come indisponibile. |
-| McTominay (Napoli) | Rientro previsto alla 6ª | Top soltanto a prezzo scontato. |
-| Buongiorno (Napoli) | Dubbio fino alla 12ª | Non pagarlo da titolare immediato. |
-| Nicolussi Caviglia (Parma) | Dubbio fino alla 12ª | Perde valore anche come specialista sui piazzati. |
-| Ekhator (Juventus) | Dubbio fino alla 9ª | Sesto slot, mai copertura principale. |
-| Pessina (Monza) | Dubbio fino alla 9ª | Rigori potenziali, ma serve un titolare alternativo. |
-| Orsolini (Bologna), Zaniolo (Udinese), Spence (Inter) | Stop/condizione con rientri più brevi | Piccolo sconto e controllo finale. |
-| Hien (Atalanta) | 6ª per SOS, "metà ottobre" per Fantamaster | Le fonti non coincidono: usare la stima più lunga finché non si verifica. |
+### Attaccanti
 
-SOS Fanta segnala esplicitamente Thuram K. (Juventus), Koné I. (Roma), Pessina (Monza) e Addai (Como) come "infortunati da scontare": sono i quattro da non comprare a prezzo pieno. [IND, righe 8-17, 25-28, 43-63, 75-104 e 111-127; SOS, riga 97; FMD, riga 39]
+| nome_guida | squadra_guida | fascia | funzione | note | status_rischi | rigori_piazzati | gerarchia_pacchetto | fonti | confidenza | da_verificare |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Martinez L. | Inter | Super Top | Prima scelta | Primo slot assoluto condiviso. | | | | G 02-09; N 26-08; L | Alta | |
+| Malen | Roma | Super Top | Prima scelta | Primo slot assoluto condiviso. | | | | G 02-09; N 26-08; L | Alta | |
+| Thuram | Inter | Super Top | Prima scelta | Primo slot condiviso, un gradino sotto i primi due per G. | | | | G 02-09; N 26-08; L | Alta | |
+| Davis K. | Udinese | Top | Prima scelta | Prima fascia condivisa e valore sui rigori. | | Primo rigorista | | G 02-09; N 26-08; L | Alta | Gerarchia rigori. |
+| Douvikas | Como | Top | Prima scelta | Prima fascia condivisa. | Competizione interna. | | | G 02-09; N 26-08; L | Media | Gerarchia con Kean (Como). |
+| Dovbyk | Bologna | Top | Prima scelta | Prima fascia e potenziale doppia cifra. | | | | G 02-09; N 26-08; L | Alta | Titolarità. |
+| Dybala | Roma | Top | Prima scelta | Utile al prezzo corretto. | Gerarchia piazzati cambiata. | Secondo rigorista | | G 02-09; N 26-08; L | Alta | Rigorista principale. |
+| Hojlund | Napoli | Top | Prima scelta | Prima alternativa ai super top. | | | | G 02-09; N 26-08; L | Alta | Titolarità. |
+| Kean | Como | Top | Prima scelta | Prima fascia condivisa. | Competizione interna. | | | G 02-09; N 26-08; L | Media | Gerarchia con Douvikas (Como). |
+| Kolo Muani | Juventus | Top | Prima scelta | Prima fascia condivisa. | | | | G 02-09; N 26-08; L | Alta | Titolarità. |
+| Ramos G. | Milan | Top | Prima scelta | Prima alternativa con prospettive da titolare. | | | | G 02-09; N 26-08; L | Alta | Titolarità. |
+| Scamacca | Atalanta | Top | Prima scelta | Prima fascia condivisa. | Competizione interna. | | | G 02-09; N 26-08; L | Media | Gerarchia con Krstovic (Atalanta). |
+| Simeone | Torino | Top | Prima scelta | Prima fascia condivisa. | | | | G 02-09; N 26-08; L | Alta | Titolarità. |
+| Yildiz | Juventus | Top | Prima scelta | Prima fascia condivisa. | | | | G 02-09; N 26-08; L | Alta | |
+| Esposito F.P. | Inter | Semitop | Titolare | Prima fascia per G, seconda per N. | Valutazione editoriale discordante. | | | G 02-09; N 26-08; L | Media | Minuti. |
+| Santos A. | Napoli | Semitop | Titolare | Seconda fascia per G e N. | Rotazione possibile. | | | G 02-09; N 26-08; L | Media | Minuti. |
+| Beto | Fiorentina | Semitop | Titolare | Seconda fascia per G; gerarchia aperta per N. | Competizione interna. | | | G 02-09; N 26-08; L | Media | Gerarchia con Pellegrino M. (Fiorentina). |
+| Boga | Juventus | Semitop | Titolare | Seconda fascia per G. | Rotazione possibile. | | | G 02-09; L | Media | Minuti. |
+| Castro S. | Roma | Semitop | Titolare | Seconda fascia condivisa. | | | | G 02-09; N 26-08; L | Alta | Titolarità. |
+| De Ketelaere | Atalanta | Semitop | Titolare | Seconda fascia condivisa. | Rotazione possibile. | | | G 02-09; N 26-08; L | Media | Minuti. |
+| Berardi | Sassuolo | Semitop | Titolare | Seconda fascia condivisa. | | | | G 02-09; N 26-08; L | Alta | |
+| Colombo | Genoa | Semitop | Titolare | Seconda fascia condivisa. | | | | G 02-09; N 26-08; L | Alta | Titolarità. |
+| Laurientè | Sassuolo | Semitop | Titolare | Seconda fascia per G. | | | | G 02-09; L | Media | |
+| Pellegrino M. | Fiorentina | Semitop | Titolare | Preferito inizialmente a Beto (Fiorentina). | Competizione interna. | | | G 02-09; N 26-08; L | Media | Gerarchia con Beto (Fiorentina). |
+| Pinamonti | Lazio | Semitop | Titolare | Titolare con potenziale bonus. | | | | G 02-09; N 26-08; L | Alta | |
+| Raspadori | Atalanta | Semitop | Seconda punta / partner | Possibile intuizione e seconda fascia. | Rotazione possibile. | | | G 02-09; N 26-08; L | Media | Ruolo e minuti. |
+| Esposito Se. | Sassuolo | Semitop | Titolare | Seconda fascia per G. | | | | G 02-09; L | Media | Titolarità. |
+| Soulè | Roma | Semitop | Seconda punta / partner | Seconda fascia condivisa. | Rotazione possibile. | | | G 02-09; N 26-08; L | Media | Minuti. |
+| Woltemade | Juventus | Semitop | Titolare | Seconda fascia per G. | | | | G 02-09; L | Media | Titolarità. |
+| Adams A. | Venezia | Fascia media | Ultimo slot | Quarto slot citato da entrambe le fonti. | Minuti da confermare. | | | G 02-09; N 26-08; L | Media | Titolarità. |
+| Adams C. | Torino | Fascia media | Ultimo slot | Terza fascia per G. | | | | G 02-09; L | Media | Titolarità. |
+| Bonny | Inter | Fascia media | Rotazione offensiva | Terza o quarta fascia condivisa. | Rotazione possibile. | | | G 02-09; N 26-08; L | Media | Minuti. |
+| Cutrone | Monza | Fascia media | Ultimo slot | Terza o quarta fascia condivisa. | | | | G 02-09; N 26-08; L | Alta | Titolarità. |
+| Diao | Como | Fascia media | Rotazione offensiva | Terza o quarta fascia condivisa. | Rotazione possibile. | | | G 02-09; N 26-08; L | Media | Minuti. |
+| Elphege | Parma | Fascia media | Ultimo slot | Terza o quarta fascia condivisa. | Minuti da confermare. | | | G 02-09; N 26-08; L | Media | Titolarità. |
+| Krstovic | Atalanta | Fascia media | Rotazione offensiva | Copertura per la gerarchia offensiva. | Competizione interna. | | | G 02-09; N 26-08; L | Media | Gerarchia con Scamacca (Atalanta). |
+| Maldini | Cagliari | Fascia media | Titolare | Profilo da lega numerosa e possibile titolare da bonus. | | | | G 02-09; N 26-08; L | Alta | Titolarità. |
+| Noslin | Lazio | Fascia media | Rotazione offensiva | Terza o seconda fascia secondo le fonti. | Rotazione possibile. | | | G 02-09; N 26-08; L | Media | Minuti. |
+| Nzola | Cagliari | Fascia media | Ultimo slot | Terza fascia per G. | | | | G 02-09; L | Media | Titolarità. |
+| Piccoli | Bologna | Fascia media | Ultimo slot | Terza o quarta fascia condivisa. | | | | G 02-09; N 26-08; L | Alta | Titolarità. |
+| Stulic | Lecce | Fascia media | Ultimo slot | Quarto slot per N. | | | | N 26-08; L | Media | Titolarità. |
+| Tourè E. | Parma | Fascia media | Ultimo slot | Terza o quarta fascia condivisa. | | | | G 02-09; N 26-08; L | Alta | Titolarità. |
+| Vitinha O. | Genoa | Fascia media | Ultimo slot | Terza o quarta fascia condivisa. | | | | G 02-09; N 26-08; L | Alta | Titolarità. |
+| Zapata D. | Torino | Fascia media | Ultimo slot | Terza o quarta fascia condivisa. | | | | G 02-09; N 26-08; L | Alta | Titolarità. |
+| Yeboah J. | Venezia | Fascia media | Ultimo slot | Terza o quarta fascia condivisa. | | | | G 02-09; N 26-08; L | Alta | Titolarità. |
+| Bowie | Sassuolo | Scommessa | Scommessa | Ultimo slot a prezzo minimo. | Minuti incerti. | | | G 02-09; N 26-08; L | Media | Titolarità. |
+| Camarda | Milan | Scommessa | Scommessa | Ultimo slot a prezzo minimo. | Minuti incerti. | | | G 02-09; N 26-08; L | Media | Titolarità. |
+| Ekhator | Juventus | Scommessa | Scommessa | Ultimo slot a prezzo minimo. | Minuti incerti. | | | G 02-09; N 26-08; L | Media | Titolarità. |
+| Geubbels | Lecce | Scommessa | Scommessa | Ultimo slot a prezzo minimo. | Minuti incerti. | | | G 02-09; N 26-08; L | Media | Titolarità. |
+| Ghedjemis | Frosinone | Scommessa | Scommessa | Ultimo slot a prezzo minimo. | Minuti incerti. | | | G 02-09; N 26-08; L | Media | Titolarità. |
+| Gnonto | Fiorentina | Scommessa | Scommessa | Ultimo slot indicato da G. | Minuti incerti. | | | G 02-09; L | Media | Titolarità. |
+| Kevin Carlos | Cagliari | Scommessa | Scommessa | Ultimo slot a prezzo minimo. | Minuti incerti. | | | G 02-09; N 26-08; L | Media | Titolarità. |
+| Mendy P. | Cagliari | Scommessa | Scommessa | Ultimo slot a prezzo minimo. | Minuti incerti. | | | G 02-09; N 26-08; L | Media | Titolarità. |
+| Raimondo | Frosinone | Scommessa | Scommessa | Terza fascia per G, scommessa per N. | Minuti incerti. | | | G 02-09; N 26-08; L | Media | Titolarità. |
+| Rrahmani Al. | Venezia | Scommessa | Scommessa | Ultimo slot indicato da N; nome ufficiale usato per evitare omonimia. | Minuti incerti. | | | N 26-08; L | Media | Titolarità. |
+| Fernandez T. | Venezia | Scommessa | Scommessa | Ultimo slot indicato da G. | Minuti incerti. | | | G 02-09; L | Media | Titolarità. |
+| Varela G. | Monza | Scommessa | Scommessa | Ultimo slot indicato da G. | Minuti incerti. | | | G 02-09; L | Media | Titolarità. |
+| Zeballos | Monza | Scommessa | Scommessa | Ultimo slot indicato da G. | Minuti incerti. | | | G 02-09; L | Media | Titolarità. |
 
-Altri rischi strutturali: Dybala (Roma) e Berardi (Sassuolo) per lo storico fisico; Como, Inter, Napoli e Roma per turnover europeo; i nuovi allenatori e i trasferimenti recenti rendono le formazioni tipo ipotesi, non garanzie. [SOS, righe 56-64; FORM, riga 3]
+## 10. Controlli finali dello step 4
 
-## 9. Sequenza pratica durante l'asta
-
-1. Segnare le prime 10-15 aggiudicazioni per capire se il tavolo replica lo storico molto aggressivo sugli attaccanti.
-2. Fissare sempre un tetto per il **pacchetto** portieri e per ogni top, non soltanto un ordine di preferenza.
-3. In difesa comprare presto uno dei profili premium solo se il prezzo è coerente; completare poi il nucleo da modificatore prima delle scommesse.
-4. A centrocampo evitare più di due giocatori contemporaneamente infortunati, in ballottaggio o senza titolarità.
-5. In attacco passare automaticamente al piano B se Malen (Roma) e Lautaro (Inter) superano il tetto; non inseguire il secondo nome dello stesso livello per reazione.
-6. Prima di ogni rilancio aggiornare il prezzo massimo tecnico e il residuo separato dei 50 crediti offensivi.
-7. Tenere almeno un credito libero per ogni slot mancante e almeno due alternative annotate per ciascuna fascia. [ASTA, righe 43-68 e 96-109]
-
-## 10. Ambiguità da chiarire o verificare
-
-- Il nome della lega cambia nel tempo, senza effetto sulle regole. [CONT, righe 1-10]
-- Moduli ammessi, panchina/sostituzioni, ordine delle chiamate, rilanci, base d'asta principale e recupero crediti negli svincoli non risultano definiti nei documenti.
-- La gestione della formazione non consegnata presenta due esiti alternativi; la regola 2026/27 va confermata. [REG, righe 50-54]
-- Lo storico è parziale e contiene alcune trascrizioni/totali incerti: usare soltanto medie e range aggregati. [STO, righe 5-13 e 472-526]
-- **Ruoli a listone da verificare uno per uno.** Cambi di ruolo segnalati da Gazzetta: Pulisic (Milan), Orsolini (Bologna), Francisco Conceição (Juventus) e Alisson Santos (Napoli) — se non sono confermati centrocampisti, il loro valore cambia radicalmente. Conflitti tra fonti: De Ketelaere (Atalanta), Diao (Como) e Gudmundsson (vedi §5). [GAZ, riga 82]
-- **Omonimia da sciogliere: Colombo (Genoa).** Le fonti citano un Colombo (Genoa) attaccante del Genoa (primo rigorista, consigliato) e un Colombo (Monza) del Monza ("da evitare" per Fantamaster). Verificare quale dei due si sta chiamando prima di rilanciare. [RIG, riga 41; FMC, riga 40]
-- Le formazioni tipo, gli indisponibili e le gerarchie di portieri, rigori e piazzati sono snapshot editoriali. Le divergenze tra SOS Fanta e Fantamaster sono state mantenute esplicitamente.
-
-## 11. Registro delle fonti locali
-
-Tutti i percorsi sono relativi a questo file, che vive in `output/`.
-
-### Contesto e regole
-
-- **REG** — [`RULES.md`](../docs/RULES.md)
-- **CONT** — [`CONTEXT.md`](../docs/CONTEXT.md)
-- **ASTA** — [`GUIDA_ASTA.md`](../docs/GUIDA_ASTA.md)
-- **STO** — [`STORICO_ASTE.md`](../docs/STORICO_ASTE.md)
-
-### Sintesi editoriali principali
-
-- **SOS** — [`sosfanta_2026_27.md`](../data/seasons/2026-27/sosfanta/sosfanta_2026_27.md)
-- **GAZ** — [`gazzetta_2026_27.md`](../data/seasons/2026-27/gazzetta/gazzetta_2026_27.md)
-- **GOAL** — [`goal_2026_27.md`](../data/seasons/2026-27/goal_2026_27.md)
-- **NAP** — [`ilnapolista_2026_27.md`](../data/seasons/2026-27/ilnapolista_2026_27.md)
-
-### SOS Fanta: dettagli operativi
-
-- **BUD** — [`divisione-budget.md`](../data/seasons/2026-27/sosfanta/divisione-budget.md)
-- **GRI** — [`griglia-portieri.md`](../data/seasons/2026-27/sosfanta/griglia-portieri.md)
-- **GER** — [`gerarchie-portieri.md`](../data/seasons/2026-27/sosfanta/gerarchie-portieri.md)
-- **RIG** — [`rigoristi.md`](../data/seasons/2026-27/sosfanta/rigoristi.md)
-- **TIR** — [`tiratori.md`](../data/seasons/2026-27/sosfanta/tiratori.md)
-- **IND** — [`indisponibili.md`](../data/seasons/2026-27/sosfanta/indisponibili.md)
-- **FORM** — [`formazioni-tipo.md`](../data/seasons/2026-27/sosfanta/formazioni-tipo.md)
-- **ARR** — [`nuovi-arrivi-el-shaarawy-rodriguez.md`](../data/seasons/2026-27/sosfanta/nuovi-arrivi-el-shaarawy-rodriguez.md)
-- Fasce complete: [`guida-asta.md`](../data/seasons/2026-27/sosfanta/guida-asta.md)
-- Indice del kit: [`kit-asta.md`](../data/seasons/2026-27/sosfanta/kit-asta.md) e [`README.md`](../data/seasons/2026-27/sosfanta/README.md)
-
-### Fantamaster
-
-- **FMP / FMD / FMC / FMA** — [`portieri_2026_2027.md`](../data/seasons/2026-27/fantamaster/portieri_2026_2027.md), [`difensori_2026_2027.md`](../data/seasons/2026-27/fantamaster/difensori_2026_2027.md), [`centrocampisti_2026_2027.md`](../data/seasons/2026-27/fantamaster/centrocampisti_2026_2027.md), [`attaccanti_2026_2027.md`](../data/seasons/2026-27/fantamaster/attaccanti_2026_2027.md)
-- **FMS** — [`sorprese_scommesse_2026_2027.md`](../data/seasons/2026-27/fantamaster/sorprese_scommesse_2026_2027.md)
-- **FMLC** — [`centrocampisti_low_cost_listone_2026_2027.md`](../data/seasons/2026-27/fantamaster/centrocampisti_low_cost_listone_2026_2027.md)
-- **FMR / FMT** — [`rigoristi_2026_2027.md`](../data/seasons/2026-27/fantamaster/rigoristi_2026_2027.md), [`tiratori_punizioni_corner_2026_2027.md`](../data/seasons/2026-27/fantamaster/tiratori_punizioni_corner_2026_2027.md)
-- Approfondimenti: [`assistman_2026_2027.md`](../data/seasons/2026-27/fantamaster/assistman_2026_2027.md), [`dieci_low_cost_2026_2027.md`](../data/seasons/2026-27/fantamaster/dieci_low_cost_2026_2027.md), [`difensori_low_cost_listone_2026_2027.md`](../data/seasons/2026-27/fantamaster/difensori_low_cost_listone_2026_2027.md), [`attaccanti_low_cost_listone_2026_2027.md`](../data/seasons/2026-27/fantamaster/attaccanti_low_cost_listone_2026_2027.md)
-- Strategie listone (budget diversi dal nostro): **FM250** [`rosa_listone_250_crediti_2026_2027.md`](../data/seasons/2026-27/fantamaster/rosa_listone_250_crediti_2026_2027.md), [`rosa_listone_300_crediti_2026_2027.md`](../data/seasons/2026-27/fantamaster/rosa_listone_300_crediti_2026_2027.md), [`rosa_listone_350_crediti_2026_2027.md`](../data/seasons/2026-27/fantamaster/rosa_listone_350_crediti_2026_2027.md)
-- Calendario e titolarità: [`griglia_portieri_2026_2027.md`](../data/seasons/2026-27/fantamaster/griglia_portieri_2026_2027.md), [`probabili_formazioni_2026_2027.md`](../data/seasons/2026-27/fantamaster/probabili_formazioni_2026_2027.md), [`README.md`](../data/seasons/2026-27/fantamaster/README.md)
-
-### Gazzetta: articoli di dettaglio
-
-- **GAZP** — [`portieri-fantacalcio-2026-27-titolari-secondi-terzi-squadre.md`](../data/seasons/2026-27/gazzetta/portieri-fantacalcio-2026-27-titolari-secondi-terzi-squadre.md)
-- **GAZM** — [`portieri-migliori-fantacalcio-nomi-su-cui-puntare.md`](../data/seasons/2026-27/gazzetta/portieri-migliori-fantacalcio-nomi-su-cui-puntare.md)
-
-La sintesi **GAZ** è stata verificata contro tutti gli articoli nella cartella [`gazzetta/`](../data/seasons/2026-27/gazzetta/README.md): migliori, low cost, possibili sorprese, profili da un credito e non titolari da bonus per ciascun ruolo; difensori e centrocampisti da bonus; gerarchie dei portieri. I 21 file di dettaglio sono elencati e collegati in [`gazzetta/README.md`](../data/seasons/2026-27/gazzetta/README.md), righe 7-37. Attenzione: `gazzetta_2026_27.md` non copre i portieri di seconda fascia — per Meret (Napoli) e per le gerarchie squadra per squadra valgono **GAZP** e **GAZM**.
-
----
-
-**Nota di manutenzione:** aggiornare prima le sezioni 3, 7 e 8 quando cambiano gerarchie, mercato o disponibilità; non cancellare una divergenza tra fonti senza registrare quale informazione l'ha risolta.
+- Tutti i nomi nella vista d'asta hanno forma `Name (Team)` e una scheda normalizzata.
+- Le fasce e le funzioni usano esclusivamente il vocabolario canonico del workflow.
+- Le squadre sono state controllate sul listone 2026/27; i nomi ufficiali abbreviati evitano omonimie.
+- I disaccordi tra fonti e le gerarchie aperte sono dichiarati, non risolti per supposizione.
+- Non sono presenti diagnosi, disponibilità o tempi di rientro: rimangono separati nello step 7.

@@ -10,7 +10,7 @@ directory name under `output/`.
 1. Download the new Fantacalcio.it workbooks and convert them to CSV.
 2. Optionally update the auction-guide source material and regenerate `docs/GUIDA_ASTA.md`.
 3. Create the season research folder and collect current-season source material.
-4. Aggregate the research into `output/<season>/guida_unificata_asta.md`.
+4. Aggregate the research into a unified guide and standardized player records in `output/<season>/guida_unificata_asta.md`.
 5. Extract the unified guide into the standard player CSV.
 6. Generate the statistical ranking for the new season.
 7. Read the Fantacalcio injury list, create the season Markdown note, and extract the ID-bound `infortuni_fantacalcio.csv`.
@@ -89,27 +89,131 @@ Ask it to reconcile the sources and write:
 output/2027-28/guida_unificata_asta.md
 ```
 
-The guide should preserve source traceability, identify disagreements, and
-separate facts, recommendations, and risks. It must follow the Markdown
-structure expected by `src/extract_auction_guide_players.py`: sections for
-portieri, difensori, centrocampisti, attaccanti, piazzati, and injuries/risks.
+Build the guide from one logical, standardized player record for each player
+mentioned. Narrative and role tables are the readable auction view of those
+records; they must not introduce extra player facts or conflicting categories.
+The guide must preserve source traceability, identify disagreements, and
+separate facts, recommendations, and non-clinical risks.
 
-Standardize every player's category against the canonical
-`giocatori_guida_unificata_asta.csv` layout before extraction. In particular,
-use stable values and meanings for `fascia` (tier) and `funzione` (auction
-function); do not invent spelling variants or put a category in free-form
-notes. Keep player names accompanied by their team so the connector can match
-them to the official quotation list. If a source cannot identify a player
-unambiguously, leave the match unresolved for review rather than guessing.
+Do not collect or normalize current injuries, availability, or expected return
+in this step. Those data belong exclusively to the separate injury workflow in
+step 7 and its `infortuni_fantacalcio.csv`; the snapshot builder imports that
+CSV into the existing injury field in the database.
+
+### Player identity and record
+
+Write every player reference as `Name (Team)`. Once the identity is unambiguous,
+prefer the exact `Nome` spelling in the current quotation list; retain a useful
+different source spelling in `note`. The connector attaches the official
+Fantacalcio.it `Id`, Classic role, and current team. Names are not authoritative
+keys: do not guess an identity, role, or club for an ambiguous reference. Keep
+the researched team in `squadra_guida` when it differs from the quotation list,
+so that the discrepancy is emitted as `matched_team_mismatch`. If neither name
+nor team can be resolved safely, use `Da verificare` for `squadra_guida`, set
+`confidenza` to `Bassa`, explain the ambiguity in `da_verificare`, and accept an
+`unmatched` row rather than inventing an identity.
+
+To identify each player's current team, consult the current-season file in
+`data/player_lists/`.
+
+For every player cited in the guide, collect these normalized fields:
+
+| Field | Purpose |
+|---|---|
+| `nome_guida` | Player name as written in the guide. |
+| `squadra_guida` | Team stated by the research source. |
+| `fascia` | Canonical auction tier. |
+| `funzione` | Canonical auction role or intended use. Multiple values use ` | `. |
+| `note` | Concise auction thesis and rationale. |
+| `status_rischi` | Non-clinical risk: rotation, competition, uncertain minutes or role, unconfirmed transfer, or open set-piece hierarchy. |
+| `rigori_piazzati` | Penalty, free-kick, and corner responsibilities or hierarchy. |
+| `gerarchia_pacchetto` | Goalkeeper hierarchy, pairing, or another package dependency. |
+| `fonti` | Supporting source labels and retrieval dates. |
+| `confidenza` | `Alta`, `Media`, or `Bassa`, based on source agreement and freshness. |
+| `da_verificare` | Facts to confirm at the call. Leave empty when none are needed. |
+
+Use only these values for `fascia`:
+
+```text
+Super Top
+Top
+Semitop
+Fascia alta
+Fascia media
+Low cost
+Scommessa
+Da monitorare
+```
+
+Use these canonical values for `funzione`, selecting one or more that apply:
+
+```text
+P: Titolare sicuro | Titolare con riserva | Secondo da pacchetto | Alternanza
+D: Premium bonus | Esterno da bonus | Centrale da modificatore | Titolare affidabile | Rotazione | Scommessa
+C: Premium bonus | Titolare offensivo | Qualità-prezzo | Da voto | Rotazione | Scommessa
+A: Prima scelta | Titolare | Seconda punta / partner | Rotazione offensiva | Ultimo slot | Scommessa
+```
+
+For `rigori_piazzati`, use controlled terms such as `Primo rigorista`,
+`Secondo rigorista`, `Candidato ai rigori`, `Primo tiratore punizioni`,
+`Primo tiratore corner`, `Tiratore piazzati`, `Gerarchia aperta`, or
+`Gerarchia discordante`. Put explanations and exceptional cases in `note` or
+`status_rischi`, not in alternative category spellings.
+
+Facts must have supporting sources; recommendations belong in `fascia`,
+`funzione`, and `note`; uncertainty belongs in `status_rischi` or
+`da_verificare`. Do not turn missing evidence into a negative fact. In
+particular, an empty set-piece field does not mean the player cannot take set
+pieces, and no non-clinical risk recorded does not mean there is no risk.
+
+### Required Markdown structure
+
+Keep these sections and role tables for the human-readable auction view:
+
+```text
+## 3. Portieri
+## 4. Difensori
+## 5. Centrocampisti
+## 6. Attaccanti
+## 7. Rigoristi e piazzati
+## 8. Rischi e verifiche alla chiamata
+## 9. Schede giocatore normalizzate
+```
+
+The role tables must explicitly assign each cited player a tier, function, and
+auction note. Section 7 must name players using the same `Name (Team)` form
+when recording penalty and set-piece hierarchies. Section 8 contains only
+non-clinical risks and checks to make at the call; it must not contain injury
+or expected-return data. Section 9 contains one normalized record per cited
+player using all fields listed above, and is both the human-review source of
+truth and the only guide section parsed by the connector. The prose and role
+tables may summarize those records, but the connector never reconstructs
+structured facts from narrative text.
+
+Before publishing, verify that every cited player has a team, tier, and
+function; that every set-piece, hierarchy, risk, and package reference belongs
+to a player; that there are no duplicate logical `Name + Team` records; that
+categories use the canonical vocabulary; and that source/listone discrepancies
+are explicit. If a source cannot identify a player unambiguously, leave the
+match unresolved for review rather than guessing.
 
 ## 5. Extract the guide into the standard CSV
 
-The connector is `src/extract_auction_guide_players.py`. It reads the unified
-Markdown guide, resolves names against the current quotation CSV, attaches the
-official `Id`, role, and team, and writes the season-scoped CSV. Run:
+Use the single reusable connector at
+`src/connectors/unified_auction_guide.py`. Do not copy or customize it for each
+season: season-specific differences belong in the guide and quotation CSV, not
+in Python branches, alias tables, or hard-coded player categories. Preparing a
+new season should require only new inputs and a different `--season` value. If
+the normalized guide format itself changes, update this one connector and its
+tests for every season.
+
+The connector reads only the normalized records in section 9, validates the
+required fields and canonical vocabulary, resolves each record against the
+current quotation CSV, attaches the official `Id`, Classic role, and current
+team, and atomically writes the season-scoped CSV. Run:
 
 ```powershell
-python src/extract_auction_guide_players.py --season <season>
+python src/connectors/unified_auction_guide.py --season <season>
 ```
 
 For `2027_28`, the inputs and output are:
@@ -132,16 +236,30 @@ The standard CSV layout is:
 | `fascia` | Standardized auction tier, such as `Top`, `Semitop`, `Fascia media`, or `Low cost`. |
 | `funzione` | Standardized auction use, such as a role or tactical purpose. |
 | `note` | Player-specific auction notes and rationale. |
-| `infortuni` | Injury or availability information extracted from the guide. |
-| `status_rischi` | Other risks, such as rotation, role uncertainty, or physical history. |
+| `infortuni` | Always empty here; populated only by the separate injury workflow. |
+| `status_rischi` | Non-clinical risks such as rotation, competition, or role uncertainty. |
 | `rigori_piazzati` | Penalty and free-kick/corner responsibilities. |
 | `gerarchia_pacchetto` | Goalkeeper package or hierarchy information. |
-| `source_sections` | Guide sections that contributed information to the row. |
+| `fonti` | Source labels and dates copied from the normalized record. |
+| `confidenza` | `Alta`, `Media`, or `Bassa`, copied from the normalized record. |
+| `da_verificare` | Open checks copied from the normalized record. |
 | `match_status` | Matching result, such as `matched`, `matched_team_mismatch`, or `unmatched`. |
 
-Review rows with `match_status` other than `matched`, blank IDs, duplicate IDs,
-and unexpected category values before continuing. The snapshot builder only
-loads rows with valid IDs and never substitutes a guessed identity.
+The connector uses conservative normalized equality for case, accents, spaces,
+and punctuation; it never uses fuzzy name matching. It first requires the same
+guide team and then permits a different official team only when the normalized
+name identifies exactly one listone player. Structural errors, duplicate
+logical records, invalid categories, and functions incompatible with the
+official Classic role stop publication. Unresolved identities remain in the
+CSV with a blank ID and `match_status=unmatched`; team discrepancies are marked
+`matched_team_mismatch`.
+
+The `infortuni` column is emitted empty for compatibility with the snapshot
+schema. Do not populate it from the guide: step 7 is the exclusive injury
+source. Review all rows whose `match_status` is not `matched`, all blank or
+duplicate IDs, and unexpected output counts before continuing. The snapshot
+builder loads only rows with valid IDs and never substitutes a guessed
+identity.
 
 ## 6. Generate the ranking
 
