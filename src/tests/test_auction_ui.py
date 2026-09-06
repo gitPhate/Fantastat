@@ -37,6 +37,7 @@ class SnapshotAndUiTests(unittest.TestCase):
             self.assertIsNone(next(player for player in players if player["id"] == 2)["rank"])
             detail = player_detail(database, 2026, 1)
             self.assertEqual("Rossi", detail["player"]["name"])
+            self.assertEqual("Milan", detail["history"][0]["club"])
             self.assertEqual(0.0, detail["history"][0]["appearances"])
             self.assertEqual("2025/26", detail["history"][0]["label"])
 

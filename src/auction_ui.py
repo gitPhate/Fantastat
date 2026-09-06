@@ -135,7 +135,7 @@ def player_detail(database: Path, season_start: int, player_id: int) -> dict[str
         if not current:
             raise SnapshotUnavailable("Giocatore non presente nella stagione selezionata.")
         history = _rows(connection, """
-            SELECT seasons.season_start, s.appearances, s.fantasy_average,
+            SELECT seasons.season_start, s.club, s.appearances, s.fantasy_average,
               r.rank, r.predicted_appearances, r.predicted_fantasy_average, r.expected_points,
               CASE WHEN s.player_id IS NULL THEN 0 ELSE 1 END AS has_statistics,
               CASE WHEN r.player_id IS NULL THEN 0 ELSE 1 END AS has_ranking

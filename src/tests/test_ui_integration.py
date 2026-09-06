@@ -296,6 +296,10 @@ class OfflineAuctionUiTests(unittest.TestCase):
         self.assertIn("Punti attesi", detail.inner_text())
         self.assertIn("Storico", detail.inner_text())
         self.assertGreaterEqual(detail.locator("table.history tbody tr").count(), 2)
+        self.assertEqual(
+            ["Stagione", "Squadra", "Pv", "FM", "Rank", "Pt. attesi"],
+            detail.locator("table.history tr").first.locator("th").all_text_contents(),
+        )
         self.assertEqual(2, detail.locator("svg.chart").count())
 
     def test_missing_guide_data_is_explicitly_unavailable(self) -> None:
