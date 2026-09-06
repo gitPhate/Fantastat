@@ -7,7 +7,7 @@ Guida operativa per l'asta della lega. Unisce il metodo di preparazione della gu
 ## 1. Dati della nostra asta
 
 - **Stagione:** 2026/27
-- **Data prevista:** 5 settembre 2026
+- **Asta principale:** 5 settembre 2026 (conclusa)
 - **Partecipanti:** 10 squadre
 - **Formato:** Classic, asta a chiamata
 - **Rosa:** 3 portieri, 8 difensori, 8 centrocampisti, 6 attaccanti
@@ -30,15 +30,18 @@ La lista serve a distinguere valore e impulso: può cambiare se l'asta offre un'
 
 ## 3. Budget: piani adatti alla lega
 
-Le fonti propongono due messaggi complementari: Sisal invita a non svuotare la rosa per l'attacco, mentre Fantacalcio.it, con un esempio da 500 crediti e rose da 25 in leghe da 8--10, assegna normalmente 20--50 alla porta, circa 40 alla difesa senza modificatore (70--80 con modificatore), 105--150 al centrocampo e 280--320 all'attacco. Nella nostra lega i 50 crediti offensivi vincolati aumentano il margine effettivo dell'attacco.
+La base più utile è il mercato effettivo del gruppo. Sulle 11 rose storiche con totale affidabile disponibili prima dell'asta 2026/27, la ripartizione media è stata 7% portieri, 13% difensori, 24% centrocampisti e 56% attaccanti (vedi [STORICO_ASTE.md](STORICO_ASTE.md#come-viene-diviso-il-budget-analisi)). Su 550 crediti questo corrisponde a circa 40 / 70 / 130 / 310: è il piano di riferimento, non un obbligo.
+
+Le fonti esterne restano un controllo utile: Sisal invita a non svuotare la rosa per l'attacco, mentre Fantacalcio.it, con un esempio da 500 crediti e rose da 25 in leghe da 8--10, assegna normalmente 20--50 alla porta, circa 40 alla difesa senza modificatore (70--80 con modificatore), 105--150 al centrocampo e 280--320 all'attacco. Il mercato della lega tende però a spostare ulteriormente risorse sull'attacco; i 50 crediti offensivi vincolati ampliano quel margine.
 
 | Piano | Portieri | Difensori | Centrocampisti | Attaccanti | Quando usarlo |
 | --- | ---: | ---: | ---: | ---: | --- |
+| Storico della lega | 40 | 70 | 130 | 310 (260 liberi + 50 vincolati) | Punto di partenza aderente alle aste precedenti: una punta premium e completamento low-cost negli altri reparti. |
 | 4-3-3 con modificatore | 40 | 75 | 105 | 330 (280 liberi + 50 vincolati) | Si vuole una difesa solida senza sacrificare il reparto decisivo. |
 | 3-4-3 senza modificatore | 35 | 45 | 135 | 335 (285 + 50) | Si cercano due centrocampisti da bonus e più peso offensivo. |
 | 4-4-2 equilibrato | 40 | 60 | 145 | 305 (255 + 50) | Il listone offre valore a centrocampo e si punta su due punte forti. |
 
-I piani sono tetti iniziali, non obblighi. Se un difensore premium assorbe da solo una quota anomala, ricalibrare gli altri reparti; se invece le punte vengono pagate meno del previsto, non rinunciare al valore per rispettare meccanicamente una percentuale.
+I piani sono tetti iniziali, non obblighi. Il piano storico descrive prezzi osservati, non la scelta necessariamente migliore per la prossima asta. Se un difensore premium assorbe da solo una quota anomala, ricalibrare gli altri reparti; se invece le punte vengono pagate meno del previsto, non rinunciare al valore per rispettare meccanicamente una percentuale.
 
 ### Regola del prezzo massimo
 
