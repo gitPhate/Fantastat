@@ -12,7 +12,7 @@
 - [ ] Matches are ordered by exact name match first, name prefix second, and other substring matches third before the active table sort resolves ties.
 - [ ] Role, club, and unified-guide tier filters can be combined with each other and with name search.
 - [ ] Players without unified-guide coverage remain visible and can be distinguished from players assigned a guide tier.
-- [ ] The table displays name, role, club, current quotation, FVM, rank, predicted appearances, predicted fantasy average, expected points, and guide tier.
+- [ ] The table displays name, role, club, current quotation, FVM, expected points, predicted appearances, predicted fantasy average, and guide tier. Expected points occupy the former rank-column position; rank remains available in the player detail panel.
 - [ ] Every displayed column supports deterministic sorting, including missing-value behavior.
 - [ ] Search, filtering, and sorting operate entirely from data already loaded into the local page.
 - [ ] Automated tests cover matching precedence, case handling, combined filters, missing enrichment, empty results, and deterministic sorting.

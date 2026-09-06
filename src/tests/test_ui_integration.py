@@ -62,7 +62,7 @@ def _add_synthetic_season(database: Path) -> None:
                predicted_fantasy_average, expected_points, validation_status)
             VALUES (?, ?, ?, ?, ?, ?, ?)
             """,
-            (2025, 900001, 1, 30, 7.0, 210, "VALIDATO"),
+            (2025, 900001, 1, 30, 7.0, 210.4, "VALIDATO"),
         )
         connection.execute(
             """
@@ -238,9 +238,14 @@ class OfflineAuctionUiTests(unittest.TestCase):
     def test_catalogue_exposes_all_auction_evidence_columns(self) -> None:
         headers = self.page.locator("thead th").all_text_contents()
         self.assertEqual(
-            ["Nome", "R", "Squadra", "Qt.", "FVM", "Rank", "Pres.", "FM", "Pt.", "Fascia"],
+            ["Nome", "R", "Squadra", "Qt.", "FVM", "Pt.", "Pres.", "FM", "Fascia"],
             headers,
         )
+
+    def test_catalogue_rounds_expected_points_for_display(self) -> None:
+        self.page.locator("#season").select_option("2025")
+        row = self.page.locator('tr[data-id="900001"]')
+        self.assertEqual("210", row.locator("td").nth(5).inner_text())
 
     def test_search_filters_and_sorting_use_loaded_catalogue(self) -> None:
         self.page.locator("#search").fill("adams")
