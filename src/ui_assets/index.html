@@ -1,22 +1,22 @@
 <!doctype html>
-<html lang="it">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Fantastat — Asta offline</title>
+  <title data-i18n-title="title.app">Fantastat — Offline auction</title>
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-  <header><h1>Fantastat</h1><div class="season-controls"><label>Stagione <select id="season"></select></label><a id="guide" class="button" href="/guide.html">Documenti</a></div></header>
+  <header><h1>Fantastat</h1><div class="season-controls"><label><span data-i18n="season"></span> <select id="season"></select></label><a id="guide" class="button" href="/guide.html" data-i18n="documents"></a><select id="lang" aria-label="Language"><option value="en">English</option><option value="it">Italiano</option></select></div></header>
   <main>
     <section class="catalogue"><div class="filters">
-      <input id="search" placeholder="Cerca un giocatore" autocomplete="off">
-      <select id="role"><option value="">Tutti i ruoli</option><option>P</option><option>D</option><option>C</option><option>A</option></select>
-      <select id="club"><option value="">Tutte le squadre</option></select>
-      <select id="fascia"><option value="">Tutte le fasce</option><option value="__missing__">Senza guida</option></select>
+      <input id="search" data-i18n-placeholder="search" autocomplete="off">
+      <select id="role"><option value="" data-i18n="all.roles"></option><option>P</option><option>D</option><option>C</option><option>A</option></select>
+      <select id="club"><option value="" data-i18n="all.clubs"></option></select>
+      <select id="fascia"><option value="" data-i18n="all.tiers"></option><option value="__missing__" data-i18n="no.guide"></option></select>
     </div><p id="count"></p><div class="table-wrap"><table><thead><tr>
-      <th data-key="name" data-tooltip="Nome del giocatore" tabindex="0">Nome</th><th data-key="role" data-tooltip="Ruolo del giocatore" tabindex="0">R</th><th data-key="club" data-tooltip="Squadra di appartenenza" tabindex="0">Squadra</th><th data-key="quotation" data-tooltip="Quotazione attuale" tabindex="0">Qt.</th><th data-key="fvm" data-tooltip="Fantavalore medio" tabindex="0">FVM</th><th data-key="expected_points" data-tooltip="Punti attesi" tabindex="0">Pt.</th><th data-key="predicted_appearances" data-tooltip="Presenze previste" tabindex="0">Pres.</th><th data-key="predicted_fantasy_average" data-tooltip="Fantamedia prevista" tabindex="0">FM</th><th data-key="tier" data-tooltip="Fascia nella guida d'asta unificata" tabindex="0">Fascia</th>
+      <th data-key="name" data-i18n="col.name" data-i18n-tooltip="tip.name" tabindex="0"></th><th data-key="role" data-i18n="col.role" data-i18n-tooltip="tip.role" tabindex="0"></th><th data-key="club" data-i18n="col.club" data-i18n-tooltip="tip.club" tabindex="0"></th><th data-key="quotation" data-i18n="col.quotation" data-i18n-tooltip="tip.quotation" tabindex="0"></th><th data-key="fvm" data-i18n="col.fvm" data-i18n-tooltip="tip.fvm" tabindex="0"></th><th data-key="expected_points" data-i18n="col.points" data-i18n-tooltip="tip.points" tabindex="0"></th><th data-key="predicted_appearances" data-i18n="col.apps" data-i18n-tooltip="tip.apps" tabindex="0"></th><th data-key="predicted_fantasy_average" data-i18n="col.fm" data-i18n-tooltip="tip.fm" tabindex="0"></th><th data-key="tier" data-i18n="col.tier" data-i18n-tooltip="tip.tier" tabindex="0"></th>
     </tr></thead><tbody id="players"></tbody></table></div></section>
-    <aside id="detail"><p>Seleziona un giocatore per vedere le evidenze dell'asta.</p></aside>
-  </main><script src="/app.js"></script>
+    <aside id="detail"><p data-i18n="select.player"></p></aside>
+  </main><script src="/i18n.js"></script><script src="/app.js"></script>
 </body></html>

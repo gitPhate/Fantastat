@@ -25,3 +25,11 @@ lega unicamente alla macchina locale. Non ricostruisce né modifica lo snapshot.
 
 Se lo snapshot manca, è incompatibile o non contiene stagioni, rigeneralo con
 `python src/build_snapshot.py`; il messaggio di avvio indica lo stesso rimedio.
+
+## Lingua
+
+La UI è in inglese per impostazione predefinita; il selettore in alto
+permette di passare all'italiano. La scelta è salvata nel browser
+(`localStorage`). Le traduzioni sono in `src/ui_assets/i18n.js`; i messaggi
+di errore del server sono in inglese e vengono tradotti dal client. I
+documenti Markdown di `docs/` restano nella loro lingua originale.

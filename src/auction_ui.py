@@ -28,24 +28,24 @@ def preferred_season_start(today: date) -> int:
 
 def choose_season(seasons: list[int], today: date | None = None) -> int:
     if not seasons:
-        raise SnapshotUnavailable("Lo snapshot non contiene stagioni selezionabili. Esegui python src/build_snapshot.py dopo avere generato gli artefatti stagionali.")
+        raise SnapshotUnavailable("The snapshot contains no selectable seasons. Run python src/build_snapshot.py after generating the season artifacts.")
     preferred = preferred_season_start(today or date.today())
     return preferred if preferred in seasons else max(seasons)
 
 
 def _connect(database: Path) -> sqlite3.Connection:
     if not database.is_file():
-        raise SnapshotUnavailable("Snapshot mancante. Esegui: python src/build_snapshot.py")
+        raise SnapshotUnavailable("Snapshot missing. Run: python src/build_snapshot.py")
     connection = sqlite3.connect(f"file:{database}?mode=ro", uri=True)
     connection.row_factory = sqlite3.Row
     try:
         version = connection.execute("SELECT value FROM metadata WHERE key = 'schema_version'").fetchone()
     except sqlite3.DatabaseError as exc:
         connection.close()
-        raise SnapshotUnavailable("Snapshot incompatibile. Rigeneralo con: python src/build_snapshot.py") from exc
+        raise SnapshotUnavailable("Snapshot incompatible. Rebuild it with: python src/build_snapshot.py") from exc
     if version is None or version["value"] != str(SCHEMA_VERSION):
         connection.close()
-        raise SnapshotUnavailable("Snapshot incompatibile. Rigeneralo con: python src/build_snapshot.py")
+        raise SnapshotUnavailable("Snapshot incompatible. Rebuild it with: python src/build_snapshot.py")
     return connection
 
 
@@ -68,7 +68,7 @@ def catalogue(database: Path, season_start: int) -> list[dict[str, object]]:
     try:
         valid = connection.execute("SELECT 1 FROM seasons WHERE season_start = ?", (season_start,)).fetchone()
         if valid is None:
-            raise SnapshotUnavailable("Stagione non presente nello snapshot. Scegli una stagione dal selettore.")
+            raise SnapshotUnavailable("Season not found in the snapshot. Choose a season from the selector.")
         return _rows(connection, """
             SELECT p.player_id AS id, p.name, p.role, p.club, p.quotation, p.fvm,
                    p.starting_index, p.age,
@@ -90,14 +90,14 @@ def auction_guide(root: Path, season_start: int) -> str:
     try:
         return path.read_text(encoding="utf-8")
     except (OSError, UnicodeError) as exc:
-        raise SnapshotUnavailable(f"Guida d'asta non disponibile per la stagione {season}.") from exc
+        raise SnapshotUnavailable(f"Auction guide not available for season {season}.") from exc
 
 
 def documentation(root: Path) -> list[dict[str, str]]:
     """Return the files available in the repository documentation directory."""
     directory = root / "docs"
     if not directory.is_dir():
-        raise SnapshotUnavailable("La directory docs non è disponibile.")
+        raise SnapshotUnavailable("The docs directory is not available.")
     return [
         {"path": path.relative_to(directory).as_posix(), "name": path.name}
         for path in sorted(directory.rglob("*"))
@@ -112,13 +112,13 @@ def document(root: Path, relative_path: str) -> dict[str, str]:
     try:
         path.relative_to(directory)
     except ValueError as exc:
-        raise SnapshotUnavailable("Documento non valido.") from exc
+        raise SnapshotUnavailable("Invalid document.") from exc
     if not path.is_file():
-        raise SnapshotUnavailable("Documento non trovato.")
+        raise SnapshotUnavailable("Document not found.")
     try:
         return {"name": path.name, "path": path.relative_to(directory).as_posix(), "content": path.read_text(encoding="utf-8")}
     except (OSError, UnicodeError) as exc:
-        raise SnapshotUnavailable("Il documento non può essere letto.") from exc
+        raise SnapshotUnavailable("The document cannot be read.") from exc
 
 
 def player_detail(database: Path, season_start: int, player_id: int) -> dict[str, object]:
@@ -135,7 +135,7 @@ def player_detail(database: Path, season_start: int, player_id: int) -> dict[str
             WHERE p.season_start=? AND p.player_id=?
         """, (season_start, player_id))
         if not current:
-            raise SnapshotUnavailable("Giocatore non presente nella stagione selezionata.")
+            raise SnapshotUnavailable("Player not found in the selected season.")
         history = _rows(connection, """
             SELECT seasons.season_start, s.club, s.appearances, s.fantasy_average,
               r.rank, r.predicted_appearances, r.predicted_fantasy_average, r.expected_points,
@@ -201,14 +201,14 @@ class AuctionHandler(SimpleHTTPRequestHandler):
             elif route.path == "/api/doc":
                 payload = document(ROOT, query["path"][0])
             else:
-                self._json({"error": "Endpoint non trovato."}, HTTPStatus.NOT_FOUND)
+                self._json({"error": "Endpoint not found."}, HTTPStatus.NOT_FOUND)
                 return
             self._json(payload)
         except (KeyError, ValueError, SnapshotUnavailable) as exc:
             self._json({"error": str(exc)}, HTTPStatus.BAD_REQUEST)
 
     def do_POST(self) -> None:  # noqa: N802
-        self._json({"error": "L'applicazione è in sola lettura."}, HTTPStatus.METHOD_NOT_ALLOWED)
+        self._json({"error": "The application is read-only."}, HTTPStatus.METHOD_NOT_ALLOWED)
 
 
 def serve(database: Path, port: int) -> None:
@@ -217,7 +217,7 @@ def serve(database: Path, port: int) -> None:
     AuctionHandler.database = database
     server = ThreadingHTTPServer(("127.0.0.1", port), AuctionHandler)
     print(f"Fantastat offline: http://127.0.0.1:{port}")
-    print("Usa Ctrl+C per arrestare il server.")
+    print("Press Ctrl+C to stop the server.")
     server.serve_forever()
 
 

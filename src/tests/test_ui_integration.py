@@ -232,13 +232,13 @@ class OfflineAuctionUiTests(unittest.TestCase):
         self.assertIn("2026/27", self.page.locator("#season").inner_text())
         self.assertIn("Adams C.", self._names())
         self.assertGreater(self.page.locator("#players tr").count(), 0)
-        self.assertRegex(self.page.locator("#count").inner_text(), r"\d+ giocatori")
+        self.assertRegex(self.page.locator("#count").inner_text(), r"\d+ players")
         self.assertEqual("2026", self.page.locator("#season").input_value())
 
     def test_catalogue_exposes_all_auction_evidence_columns(self) -> None:
         headers = self.page.locator("thead th").all_text_contents()
         self.assertEqual(
-            ["Nome", "R", "Squadra", "Qt.", "FVM", "Pt.", "Pres.", "FM", "Fascia"],
+            ["Name", "R", "Club", "Cost", "FVM", "Pts.", "Apps", "FM", "Tier"],
             headers,
         )
 
@@ -267,7 +267,7 @@ class OfflineAuctionUiTests(unittest.TestCase):
         self.page.locator("#role").select_option("A")
         self.page.locator("#club").select_option(label="Venezia")
         self.assertEqual(["Adams A."], self._names())
-        self.assertEqual("1 giocatori", self.page.locator("#count").inner_text())
+        self.assertEqual("1 players", self.page.locator("#count").inner_text())
 
         self.page.locator("#search").fill("")
         self.page.locator("#role").select_option("")
@@ -310,12 +310,12 @@ class OfflineAuctionUiTests(unittest.TestCase):
         self.page.locator('tr[data-id="6646"]').click()
         detail = self.page.locator("#detail")
         self.assertIn("Adams C.", detail.inner_text())
-        self.assertIn("ID Fantacalcio: 6646", detail.inner_text())
-        self.assertIn("Punti attesi", detail.inner_text())
-        self.assertIn("Storico", detail.inner_text())
+        self.assertIn("Fantacalcio ID: 6646", detail.inner_text())
+        self.assertIn("Expected points", detail.inner_text())
+        self.assertIn("History", detail.inner_text())
         self.assertGreaterEqual(detail.locator("table.history tbody tr").count(), 2)
         self.assertEqual(
-            ["Stagione", "Squadra", "Pv", "FM", "Rank", "Pt. attesi"],
+            ["Season", "Club", "Apps", "FM", "Rank", "Exp. pts"],
             detail.locator("table.history tr").first.locator("th").all_text_contents(),
         )
         self.assertEqual(2, detail.locator("svg.chart").count())
@@ -324,8 +324,8 @@ class OfflineAuctionUiTests(unittest.TestCase):
         self.page.locator('tr[data-id="6021"]').click()
         detail = self.page.locator("#detail").inner_text()
         self.assertIn("Abankwah", detail)
-        self.assertIn("Fascia\nNon disponibile", detail)
-        self.assertIn("Infortuni\nNon disponibile", detail)
+        self.assertIn("Tier\nNot available", detail)
+        self.assertIn("Injuries\nNot available", detail)
 
     def test_switching_players_preserves_catalogue_state(self) -> None:
         self.page.locator("#search").fill("Adams")
@@ -338,9 +338,9 @@ class OfflineAuctionUiTests(unittest.TestCase):
         row = self.page.locator('tr[data-id="2167"]')
         icon = row.locator(".injury-alert")
         self.assertEqual(1, icon.count())
-        self.assertEqual("Infortunato", icon.get_attribute("data-tooltip"))
+        self.assertEqual("Injured", icon.get_attribute("data-tooltip"))
         icon.hover()
-        self.assertEqual("Infortunato", self.page.locator(".column-tooltip").inner_text())
+        self.assertEqual("Injured", self.page.locator(".column-tooltip").inner_text())
 
     def test_partial_history_keeps_each_source_visible(self) -> None:
         self.page.locator("#season").select_option("2025")
@@ -368,7 +368,7 @@ class OfflineAuctionUiTests(unittest.TestCase):
         self.page.wait_for_selector('tr[data-id="900002"]')
         self._click_player(900002, "Test Bianchi")
         detail = self.page.locator("#detail")
-        self.assertIn("Nessuna evidenza storica disponibile", detail.inner_text())
+        self.assertIn("No historical evidence available", detail.inner_text())
         self.assertEqual(0, detail.locator("svg.chart").count())
 
     def test_changing_season_resets_catalogue_state(self) -> None:
@@ -389,7 +389,18 @@ class OfflineAuctionUiTests(unittest.TestCase):
         self.assertEqual("", self.page.locator("#club").input_value())
         self.assertEqual("", self.page.locator("#fascia").input_value())
         self.assertIn("Test Rossi", self._names())
+        self.assertIn("Select a player", self.page.locator("#detail").inner_text())
+
+    def test_language_defaults_to_english_and_switches_to_italian(self) -> None:
+        self.assertEqual("en", self.page.locator("#lang").input_value())
+        self.page.locator("#lang").select_option("it")
+        self.assertRegex(self.page.locator("#count").inner_text(), r"\d+ giocatori")
+        self.assertEqual("Nome", self.page.locator("th[data-key='name']").inner_text())
         self.assertIn("Seleziona un giocatore", self.page.locator("#detail").inner_text())
+        self.page.reload()
+        self.assertEqual("it", self.page.locator("#lang").input_value())
+        self.page.locator("#lang").select_option("en")
+        self.assertEqual("Name", self.page.locator("th[data-key='name']").inner_text())
 
     def test_documents_open_in_index_and_back_button_navigates_in_one_tab(self) -> None:
         self.page.locator("#guide").click()
@@ -443,7 +454,7 @@ class OfflineAuctionUiTests(unittest.TestCase):
         response = self.context.request.post(f"{self.base_url}/api/catalogue")
         try:
             self.assertEqual(405, response.status)
-            self.assertIn("sola lettura", response.json()["error"])
+            self.assertIn("read-only", response.json()["error"])
         finally:
             response.dispose()
 
@@ -472,21 +483,21 @@ class OfflineAuctionUiTests(unittest.TestCase):
 
     def test_missing_snapshot_has_recovery_instructions(self) -> None:
         missing = Path(self.tempdir.name) / "missing.sqlite3"
-        self.assertIn("Snapshot mancante", self._startup_error(missing))
+        self.assertIn("Snapshot missing", self._startup_error(missing))
 
     def test_incompatible_snapshot_has_recovery_instructions(self) -> None:
         incompatible = Path(self.tempdir.name) / "incompatible.sqlite3"
         with sqlite3.connect(incompatible) as connection:
             connection.execute("CREATE TABLE metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL)")
             connection.execute("INSERT INTO metadata VALUES ('schema_version', '999')")
-        self.assertIn("Snapshot incompatibile", self._startup_error(incompatible))
+        self.assertIn("Snapshot incompatible", self._startup_error(incompatible))
 
     def test_snapshot_without_seasons_has_recovery_instructions(self) -> None:
         empty = Path(self.tempdir.name) / "empty.sqlite3"
         shutil.copy2(self.database, empty)
         with sqlite3.connect(empty) as connection:
             connection.execute("DELETE FROM seasons")
-        self.assertIn("non contiene stagioni selezionabili", self._startup_error(empty))
+        self.assertIn("contains no selectable seasons", self._startup_error(empty))
 
 
 if __name__ == "__main__":

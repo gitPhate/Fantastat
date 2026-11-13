@@ -21,17 +21,18 @@ async function start() {
   try {
     if (!path) {
       const response = await fetch("/api/docs");
-      if (!response.ok) throw new Error("I documenti non sono disponibili.");
+      if (!response.ok) throw new Error(t("docs.unavailable"));
       const documents = await response.json();
       content.innerHTML = `<ul class="document-list">${documents.map(doc => `<li><a href="/document.html?path=${encodeURIComponent(doc.path)}">${escapeHtml(doc.name)}</a></li>`).join("")}</ul>`;
       return;
     }
     const response = await fetch(`/api/doc?path=${encodeURIComponent(path)}`);
-    if (!response.ok) throw new Error("Documento non disponibile.");
+    if (!response.ok) throw new Error(t("doc.unavailable"));
     const doc = await response.json();
     document.title = `Fantastat — ${doc.name}`;
     document.getElementById("document-title").textContent = doc.name;
     content.innerHTML = doc.name.toLowerCase().endsWith(".md") ? marked.parse(doc.content) : `<pre>${escapeHtml(doc.content)}</pre>`;
   } catch (error) { content.innerHTML = `<p class="unavailable">${escapeHtml(error.message)}</p>`; }
 }
+document.addEventListener("langchange", start);
 start();
