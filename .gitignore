@@ -4,3 +4,6 @@ output/*.sqlite3
 
 # Private league chat export
 data/chats/
+
+# Private docs with personal information
+docs/private/

@@ -30,7 +30,7 @@ La lista serve a distinguere valore e impulso: può cambiare se l'asta offre un'
 
 ## 3. Budget: piani adatti alla lega
 
-La base più utile è il mercato effettivo del gruppo. Sulle 11 rose storiche con totale affidabile disponibili prima dell'asta 2026/27, la ripartizione media è stata 7% portieri, 13% difensori, 24% centrocampisti e 56% attaccanti (vedi [STORICO_ASTE.md](STORICO_ASTE.md#come-viene-diviso-il-budget-analisi)). Su 550 crediti questo corrisponde a circa 40 / 70 / 130 / 310: è il piano di riferimento, non un obbligo.
+La base più utile è il mercato effettivo del gruppo. Sulle 11 rose storiche con totale affidabile disponibili prima dell'asta 2026/27, la ripartizione media è stata 7% portieri, 13% difensori, 24% centrocampisti e 56% attaccanti (vedi `docs/private/STORICO_ASTE.md`, documento privato non versionato). Su 550 crediti questo corrisponde a circa 40 / 70 / 130 / 310: è il piano di riferimento, non un obbligo.
 
 Le fonti esterne restano un controllo utile: Sisal invita a non svuotare la rosa per l'attacco, mentre Fantacalcio.it, con un esempio da 500 crediti e rose da 25 in leghe da 8--10, assegna normalmente 20--50 alla porta, circa 40 alla difesa senza modificatore (70--80 con modificatore), 105--150 al centrocampo e 280--320 all'attacco. Il mercato della lega tende però a spostare ulteriormente risorse sull'attacco; i 50 crediti offensivi vincolati ampliano quel margine.
 
