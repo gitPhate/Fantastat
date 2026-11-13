@@ -1,3 +1,6 @@
 __pycache__/
 *.py[cod]
 output/*.sqlite3
+
+# Private league chat export
+data/chats/

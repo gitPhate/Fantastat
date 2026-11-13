@@ -61,5 +61,5 @@ Regolamento comunicato dall'amministratore per la stagione 2026/27. Le sezioni n
 
 ## Note
 
-- Le regole di mercato/svincoli vengono **ridiscusse quasi ogni stagione** e votate a maggioranza in chat: prima di dare per buono questo documento per una nuova stagione, verificare in chat se ci sono state modifiche.
+- Le regole di mercato/svincoli vengono **ridiscusse quasi ogni stagione** e votate a maggioranza in chat: prima di dare per buono questo documento per una nuova stagione, verificare in chat se ci sono state modifiche (l'export della chat è un file locale, non versionato, in `data/chats/`).
 - Fonte dati ufficiale per voti/quotazioni/formazioni: **fantacalcio.it** (probabilmente tramite l'app "Fantacalcio.it Leghe").
