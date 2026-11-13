@@ -51,6 +51,19 @@ python src/run_ranking.py --season 2026_27
 
 The command must produce `output/ranking_2026_27.csv` and `output/validation_2026_27.csv` only after calculation and validation succeed. Confirm schema, role ordering, reproducibility, and any ranking changes against the relevant specification.
 
+## Running the Auction UI
+
+The offline auction UI is a read-only local server over a SQLite snapshot (see `docs/OFFLINE_AUCTION_UI.md`). From the repository root:
+
+```powershell
+python src/run_ranking.py --season 2026_27
+python src/connectors/unified_auction_guide.py --season 2026_27
+python src/build_snapshot.py   # writes output/fantastat.sqlite3 (not versioned)
+python src/auction_ui.py       # serves http://127.0.0.1:8765
+```
+
+Run the first three steps only when the season data or ranking changed; otherwise start `auction_ui.py` directly. Use `--port` to change the port and `--database` to point at another snapshot. If the snapshot is missing or incompatible, the server tells you to rerun `build_snapshot.py`.
+
 ## Commits and Pull Requests
 
 Recent history favors short imperative subjects such as `Implement player ranking backtest` and `Add role-specific recency weights support`. Keep each commit scoped to one coherent change.
