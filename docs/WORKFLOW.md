@@ -7,6 +7,7 @@ directory name under `output/`.
 
 ## Checklist
 
+0. Export the league WhatsApp chat and regenerate the private documents.
 1. Download the Fantacalcio.it and Fantacalcio Online player lists and convert them to CSV.
 2. Optionally update the auction-guide source material and regenerate `docs/GUIDA_ASTA.md`.
 3. Create the season research folder and collect current-season source material.
@@ -20,6 +21,45 @@ directory name under `output/`.
 The order matters: the player list and guide CSV must exist before the snapshot
 is built, the injury CSV must be available before the snapshot build, and the
 historical statistics must exist before ranking generation.
+
+## 0. Export the chat and regenerate the private documents
+
+Before the season starts, refresh the league context that lives only on the
+maintainer's machine. The chat export and the documents derived from it contain
+personal information: they are ignored by git (`data/chats/` and
+`docs/private/`) and must never be committed, pasted into tracked files, or
+sent to an external service.
+
+1. In WhatsApp, open the league group and use *Export chat* (include media only
+   if the auction-sheet photos need to be read again). Save the text file in
+   `data/chats/`, replacing the previous export. Keep the file name WhatsApp
+   generates.
+2. Give an LLM the new export together with the current
+   `docs/private/CONTEXT.md`, `docs/private/STORICO_ASTE.md` and
+   `docs/RULES.md`, and ask it to update them with what happened since the last
+   export:
+   - `docs/private/CONTEXT.md`: group and organizers, participants (with
+     entries and exits), the new season's organization and dates, recurring
+     informal conventions, tools used, and the roll of honour.
+   - `docs/private/STORICO_ASTE.md`: rosters and prices paid for each new
+     auction, reconstructed from the photographed auction sheets and the chat
+     text, one section per team with the poster of the photo. Mark uncertain
+     names or prices (**?** or bold with a note) and keep the coverage and
+     reliability notes; uncertain data must not be presented as verified.
+   - `docs/RULES.md` (public, no personal data): rule changes voted in the chat,
+     without names of members.
+3. Review the output manually, in particular the reliability notes. Do not copy
+   member names or chat quotations into any tracked file.
+4. Before committing, check that nothing private leaked:
+
+```powershell
+git status --short
+git grep -n -i "<a member name or a chat quotation>"
+```
+
+The original auction-sheet photos are not in the repository. The private
+documents are the only structured record of historical auctions, so back them
+up outside the repository.
 
 ## 1. Download, convert, and merge player lists
 
